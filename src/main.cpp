@@ -10,7 +10,6 @@ static Button randomButton;
 static Button nextButton;
 static Button prevButton;
 
-// TODO: Change pins before uploading
 static constexpr uint8_t PIN_SLEEP_BUTTON = 6;
 static constexpr uint8_t PIN_RANDOM_BUTTON = 4;
 static constexpr uint8_t PIN_NEXT_BUTTON = 5;
@@ -40,7 +39,6 @@ static uint32_t stateEnteredAt = 0;
 // operationStartedAt decides when Updating is done.
 static uint32_t operationStartedAt = 0;
 
-static constexpr ApplicationState INITIAL_STATE = ApplicationState::Boot;
 static constexpr PendingAction INITIAL_PENDING_ACTION_STATE =
     PendingAction::None;
 
@@ -55,6 +53,9 @@ static const char *const insults[] = {
 };
 
 static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
+
+// ─── Forward Declarations ─────────────────────────────────────────────
+static void startOperation(PendingAction action, uint32_t now);
 
 // ─── State Entry Functions ────────────────────────────────────────────
 void enterBoot() {
@@ -83,7 +84,8 @@ void enterSleep() {
 }
 
 // ─── Button Event Handler  ────────────────────────────────────────────
-static void handleButtonEvent(ButtonId buttonId, ButtonEvent event) {
+static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
+                              uint32_t now) {
   switch (buttonId) {
   case ButtonId::Sleep: {
     if (event == ButtonEvent::HoldStart) {
@@ -92,24 +94,37 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event) {
     }
     break;
   }
+
   case ButtonId::Random: {
     if (event == ButtonEvent::Tap) {
       Serial.println("Random tapped");
+      if (currentState == ApplicationState::Idle) {
+        startOperation(PendingAction::Random, now);
+      }
     }
     break;
   }
+
   case ButtonId::Next: {
     if (event == ButtonEvent::Tap) {
       Serial.println("Next tapped");
+      if (currentState == ApplicationState::Idle) {
+        startOperation(PendingAction::Next, now);
+      }
     }
     break;
   }
+
   case ButtonId::Prev: {
     if (event == ButtonEvent::Tap) {
       Serial.println("Prev tapped");
+      if (currentState == ApplicationState::Idle) {
+        startOperation(PendingAction::Prev, now);
+      }
     }
     break;
   }
+
   default:
     break;
   }
@@ -159,11 +174,7 @@ static void beginWorkFor(PendingAction action) {
 static void startOperation(PendingAction action, uint32_t now) {
   pendingAction = action;
   operationStartedAt = now;
-
   enterUpdating();
-  operationPhase =
-      OperationPhase::Idle; // will be set to Waiting by beginWorkFor()
-
   beginWorkFor(action);
 }
 
@@ -204,7 +215,6 @@ void setup() {
   buttonInit(nextButton, PIN_NEXT_BUTTON);
   buttonInit(prevButton, PIN_PREV_BUTTON);
 
-  currentState = INITIAL_STATE;
   pendingAction = INITIAL_PENDING_ACTION_STATE;
   operationPhase = OperationPhase::Idle;
 
@@ -216,22 +226,22 @@ void loop() {
 
   const ButtonEvent sleepEvent = updateButton(sleepButton, now);
   if (sleepEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Sleep, sleepEvent);
+    handleButtonEvent(ButtonId::Sleep, sleepEvent, now);
   }
 
   const ButtonEvent randomEvent = updateButton(randomButton, now);
   if (randomEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Random, randomEvent);
+    handleButtonEvent(ButtonId::Random, randomEvent, now);
   }
 
   const ButtonEvent nextEvent = updateButton(nextButton, now);
   if (nextEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Next, nextEvent);
+    handleButtonEvent(ButtonId::Next, nextEvent, now);
   }
 
   const ButtonEvent prevEvent = updateButton(prevButton, now);
   if (prevEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Prev, prevEvent);
+    handleButtonEvent(ButtonId::Prev, prevEvent, now);
   }
 
   switch (currentState) {
@@ -242,14 +252,7 @@ void loop() {
     break;
 
   case ApplicationState::Idle:
-    // Only start work on Tap while Idle
-    if (randomEvent == ButtonEvent::Tap) {
-      startOperation(PendingAction::Random, now);
-    } else if (nextEvent == ButtonEvent::Tap) {
-      startOperation(PendingAction::Next, now);
-    } else if (prevEvent == ButtonEvent::Tap) {
-      startOperation(PendingAction::Prev, now);
-    }
+    // Nothing here now — taps start operations inside handleButtonEvent()
     break;
 
   case ApplicationState::Updating:
