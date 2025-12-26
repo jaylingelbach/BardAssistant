@@ -6,3 +6,5 @@
 .pio/
 .vscode/
 .DS_Store
+# deps
+node_modules/

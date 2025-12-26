@@ -26,15 +26,15 @@ void ledInit() {
 }
 
 void ledShowBoot() {
-  setColor(0, 0, 255);   // Blue
+  setColor(0, 0, 255);     // Blue
 }
 
 void ledShowIdle() {
-  setColor(0, 255, 0);   // Green
+  setColor(0, 255, 0);     // Green
 }
 
 void ledShowUpdating() {
-  setColor(255, 255, 0); // Yellow
+  setColor(255, 255, 0);   // Yellow
 }
 
 void ledOff() {

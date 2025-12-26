@@ -1,0 +1,29 @@
+{
+  "name": "bardassistant",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaylingelbach/BardAssistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaylingelbach/BardAssistant/issues"
+  },
+  "homepage": "https://github.com/jaylingelbach/BardAssistant#readme",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^3.7.4"
+  }
+}
