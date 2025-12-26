@@ -3,9 +3,9 @@
 #include <Arduino.h>
 #include <esp_sleep.h>
 
-    // ─── Configuration ────────────────────────────────────────────────────
+// ─── Configuration ────────────────────────────────────────────────────
 
-    static Button sleepButton;
+static Button sleepButton;
 static Button randomButton;
 static Button nextButton;
 static Button prevButton;
