@@ -4,7 +4,15 @@
 #define DEBOUNCE_TIME_MS 30
 #define HOLD_THRESHOLD_MS 800
 
-// ─── Constructor style initializer ──────────────────────────────
+/**
+ * @brief Prepare a Button object for use on the specified Arduino pin.
+ *
+ * Configures the pin as INPUT_PULLUP, captures a baseline reading and timestamp,
+ * sets the button state to Idle, and clears timing/hold-tracking fields.
+ *
+ * @param button Reference to the Button instance to initialize.
+ * @param pin Arduino digital pin number; the pin will be configured with INPUT_PULLUP.
+ */
 void buttonInit(Button &button, uint8_t pin) {
   button.pin = pin;
 
@@ -24,6 +32,16 @@ void buttonInit(Button &button, uint8_t pin) {
   button.holdFired = false;
 }
 
+/**
+ * @brief Advance the button state machine by reading the pin, applying debounce, and detecting taps and holds.
+ *
+ * Updates the provided Button instance (debounce timer, state, pressedAt, and holdFired) based on the current pin level
+ * and the supplied timestamp, and produces a single ButtonEvent when a meaningful transition occurs.
+ *
+ * @param button Reference to the Button object to update; its fields will be mutated to reflect the new state.
+ * @param now Current time in milliseconds (e.g., from millis()) used for debounce and hold timing.
+ * @return ButtonEvent One of ButtonEvent::None, ::Tap, ::HoldStart, or ::HoldEnd describing the observed event.
+ */
 ButtonEvent updateButton(Button &button, uint32_t now) {
   ButtonEvent event = ButtonEvent::None;
 

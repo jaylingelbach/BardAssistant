@@ -57,33 +57,61 @@ static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 // ─── Forward Declarations ─────────────────────────────────────────────
 static void startOperation(PendingAction action, uint32_t now);
 
-// ─── State Entry Functions ────────────────────────────────────────────
+/**
+ * @brief Enter the Boot state and record the transition.
+ *
+ * Shows the boot indicator LED, sets the application state to Boot, and records the current timestamp in stateEnteredAt.
+ */
 void enterBoot() {
   ledShowBoot(); // Blue
   currentState = ApplicationState::Boot;
   stateEnteredAt = millis();
 }
 
+/**
+ * @brief Enter the Idle application state and show the idle LED.
+ *
+ * Sets the application state to Idle and records the current time as the state's entry timestamp.
+ */
 void enterIdle() {
   ledShowIdle(); // Green
   currentState = ApplicationState::Idle;
   stateEnteredAt = millis();
 }
 
+/**
+ * @brief Switches the application to the Updating state, signals it with the updating LED, and records the state entry time.
+ *
+ * Sets the global application state to Updating, triggers the yellow updating LED, and stores the current millis() in stateEnteredAt.
+ */
 void enterUpdating() {
   ledShowUpdating(); // Yellow
   currentState = ApplicationState::Updating;
   stateEnteredAt = millis();
 }
 
-// ─── Sleep  ───────────────────────────────────────────────────────────
+/**
+ * @brief Turns off LEDs and places the device into deep sleep until the configured wake timer expires.
+ *
+ * Disables visible indicators, programs the deep-sleep wakeup timer (based on the configured timeout),
+ * and initiates the ESP32 deep sleep mode.
+ */
 void enterSleep() {
   ledOff();
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP_S * US_PER_S);
   esp_deep_sleep_start();
 }
 
-// ─── Button Event Handler  ────────────────────────────────────────────
+/**
+ * @brief Dispatches a button event and triggers the corresponding action or state transition.
+ *
+ * Processes events from the four hardware buttons and, depending on the button and event type,
+ * performs side effects such as initiating a pending operation or requesting sleep.
+ *
+ * @param buttonId Identifier of the button that generated the event (Sleep, Random, Next, Prev).
+ * @param event The button event type (e.g., Tap, HoldStart).
+ * @param now Current monotonic timestamp in milliseconds used to time-start operations.
+ */
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
   switch (buttonId) {
@@ -133,7 +161,15 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 // ─── Operation Mocking ───────────────────────────────────────────────
 
 // Set up “work context” for the chosen action.
-// Must put the operation into a state that pollOperation() can finish.
+/**
+ * @brief Prepares the pending insult index and operation phase for the given action so pollOperation() can complete it.
+ *
+ * For PendingAction::Random selects a random insult index (0..insultCount-1) and, when possible, avoids repeating the current index.
+ * For PendingAction::Next and PendingAction::Prev computes the next or previous index modulo insultCount.
+ * For PendingAction::None sets the operation phase to Idle.
+ *
+ * @param action The pending action to begin (Random, Next, Prev, or None). This updates `pendingInsultIndex` and `operationPhase`.
+ */
 static void beginWorkFor(PendingAction action) {
   // Decide what “target index” should be for each action
   if (action == PendingAction::Random) {
@@ -170,7 +206,15 @@ static void beginWorkFor(PendingAction action) {
   operationPhase = OperationPhase::Idle;
 }
 
-// Start operation (called from Idle only)
+/**
+ * @brief Initiates a pending operation and transitions the system into the Updating state.
+ *
+ * Records the requested action, stamps the operation start time, enters the Updating state,
+ * and begins preparing work for the specified action.
+ *
+ * @param action The pending action to start (e.g., Random, Next, Prev).
+ * @param now Current time in milliseconds used to record when the operation started.
+ */
 static void startOperation(PendingAction action, uint32_t now) {
   pendingAction = action;
   operationStartedAt = now;
@@ -178,7 +222,18 @@ static void startOperation(PendingAction action, uint32_t now) {
   beginWorkFor(action);
 }
 
-// Called every loop while Updating
+/**
+ * @brief Completes a pending operation once its mock work duration has elapsed.
+ *
+ * If an operation is in the Waiting phase and the elapsed time since the operation
+ * started meets or exceeds the mock work duration, this function applies the
+ * operation result, logs the selected insult to Serial, clears the pending
+ * action and phase, and transitions the application to the Idle state. If the
+ * operation is not waiting or the work duration has not yet passed, the call
+ * has no effect.
+ *
+ * @param now Current time in milliseconds used to evaluate operation completion.
+ */
 static void pollOperation(uint32_t now) {
   if (operationPhase != OperationPhase::Waiting) {
     return;
@@ -203,6 +258,12 @@ static void pollOperation(uint32_t now) {
   enterIdle();
 }
 
+/**
+ * @brief Initialize hardware, reset application state, and transition into the boot state.
+ *
+ * Initializes the serial console, the LED subsystem, and all button inputs with their configured pins.
+ * Resets the pending action and operation phase to their initial values, then enters the Boot application state.
+ */
 void setup() {
   Serial.begin(115200);
   delay(50);
@@ -221,6 +282,13 @@ void setup() {
   enterBoot();
 }
 
+/**
+ * @brief Main Arduino loop: poll inputs and drive the application state machine.
+ *
+ * Continuously samples all configured buttons, dispatches any generated button events
+ * to the central handler, and advances the application state machine — transitioning
+ * from Boot to Idle after a fixed delay and invoking operation polling while in Updating.
+ */
 void loop() {
   const uint32_t now = millis();
 
