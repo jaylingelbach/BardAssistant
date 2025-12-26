@@ -27,9 +27,8 @@ struct Button {
   bool holdFired; // Prevent tap + hold
 };
 
-void buttonInit(Button &button, uint8_t pin);
-
 // ─── API ────────────────────────────────────────────────────────
+void buttonInit(Button &button, uint8_t pin);
 ButtonEvent updateButton(Button &button, uint32_t now);
 
 #endif // BUTTON_H
