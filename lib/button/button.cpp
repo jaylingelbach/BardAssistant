@@ -37,7 +37,7 @@ ButtonEvent updateButton(Button &button, uint32_t now) {
     // Reset the debounce timer if the state is unstable
     button.lastDebounceTime = now;
     button.lastReading = raw;
-    return ButtonEvent::None; // early return here?
+    return ButtonEvent::None;
   }
 
   if ((now - button.lastDebounceTime) < DEBOUNCE_TIME_MS) {
