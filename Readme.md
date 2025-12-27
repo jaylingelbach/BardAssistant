@@ -13,7 +13,6 @@ Right now it:
 
 Planned:
 
-- Move insult / deck / history logic into its own module.
 - Add a **Waveshare 2.13" E-Ink** screen and render insults + header there.
 - Power stuff / sleep / wake on long-press.
 
@@ -199,8 +198,7 @@ Hit `Ctrl + C` to exit.
     - State transitions
     - Calling “work engine” functions
 
-  - Insult/deck/history logic is being prepped to move into a dedicated module
-    (e.g., `lib/insults`).
+- Insult/deck/history logic lives in `lib/insults/`
 
 ---
 
