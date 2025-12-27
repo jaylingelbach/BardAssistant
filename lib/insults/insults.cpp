@@ -119,6 +119,7 @@ static void appendToHistory(uint16_t index) {
   }
 
   // For now, just clamp at full; we can convert to a ring buffer later.
+  Serial.println(F("[WARN] History full; oldest entries will be lost."));
   historyPosition = historySize - 1;
 }
 
