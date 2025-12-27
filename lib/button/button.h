@@ -7,7 +7,7 @@
 enum class ButtonState { Idle, Pressed };
 
 // ─── Button Events (Intent) ─────────────────────────────────────
-enum class ButtonEvent { None, Tap, HoldStart, HoldEnd };
+enum class ButtonEvent { None = 0, Tap, HoldStart, HoldEnd };
 
 // ─── Button State Container ─────────────────────────────────────
 struct Button {
