@@ -29,10 +29,10 @@ static void setColor(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 /**
- * @brief Initialize the NeoPixel LED and clear its color state.
+ * @brief Initialize the NeoPixel LED and leave it off.
  *
- * Configures the NeoPixel driver, clears any previous color data, and updates
- * the LED so it is off after initialization.
+ * Sets up the NeoPixel driver, applies the configured brightness (LED_BRIGHTNESS),
+ * clears any color data, and updates the LED so the pixel is off after initialization.
  */
 void ledInit() {
   led.begin();
