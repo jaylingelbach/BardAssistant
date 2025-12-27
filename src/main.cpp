@@ -68,7 +68,12 @@ static size_t historyPosition = 0; // cursor into history
 static uint16_t currentInsultIndex = 0;
 static uint16_t pendingInsultIndex = 0;
 
-// ───────────────── Helpers: deck / history ───────
+/**
+ * @brief Populate the deck with indices for available insults, randomize their order, and reset the draw position.
+ *
+ * Uses the global insultCount to determine the number of entries, fills the deck with values 0..insultCount-1,
+ * randomizes the deck order, and sets deckPosition to 0 so the next draw starts from the beginning of the shuffled deck.
+ */
 
 static void initDeck() {
   // Fill with 0,1,2,...,N-1
@@ -87,6 +92,14 @@ static void initDeck() {
   deckPosition = 0;
 }
 
+/**
+ * @brief Draws the next insult index from the shuffled deck.
+ *
+ * If the deck has been exhausted it is reshuffled before drawing. When there
+ * are no insults configured, returns 0.
+ *
+ * @return uint16_t Index of the next insult in the range [0, insultCount - 1], or `0` if `insultCount == 0`.
+ */
 static uint16_t drawFromDeck() {
   if (insultCount == 0) {
     return 0;
@@ -102,6 +115,16 @@ static uint16_t drawFromDeck() {
   return idx;
 }
 
+/**
+ * @brief Appends an insult index to the displayed-history buffer.
+ *
+ * Adds the provided insult index to history and advances the history cursor to the newest entry.
+ *
+ * @param index Index of the insult to append (expected to be a valid index into the insults array).
+ *
+ * If HISTORY_CAP is zero the function is a no-op. If the history is already at capacity the function
+ * does not add the new index and instead clamps the history cursor to the most recent entry.
+ */
 static void appendToHistory(uint16_t index) {
   if (HISTORY_CAP == 0) {
     return;
@@ -118,7 +141,12 @@ static void appendToHistory(uint16_t index) {
   historyPosition = historySize - 1;
 }
 
-// ───────────────── State Entry ───────────────────
+/**
+ * @brief Transition the application into the boot state.
+ *
+ * Sets the application state to Boot, records the time of entry, and triggers
+ * the boot LED indicator.
+ */
 
 static void enterBoot() {
   ledShowBoot();
@@ -126,19 +154,35 @@ static void enterBoot() {
   stateEnteredAt = millis();
 }
 
+/**
+ * @brief Enter the Idle application state.
+ *
+ * Triggers the idle LED display, sets the current state to Idle, and records
+ * the time the state was entered.
+ */
 static void enterIdle() {
   ledShowIdle();
   currentState = ApplicationState::Idle;
   stateEnteredAt = millis();
 }
 
+/**
+ * @brief Enter the Updating application state and show the updating LED pattern.
+ *
+ * Displays the updating LED indication, sets the application state to Updating,
+ * and records the time the state was entered.
+ */
 static void enterUpdating() {
   ledShowUpdating();
   currentState = ApplicationState::Updating;
   stateEnteredAt = millis();
 }
 
-// ───────────────── Power / Sleep ─────────────────
+/**
+ * @brief Powers down the device and enters deep sleep until the configured wakeup time.
+ *
+ * Turns off LEDs, schedules a timer-based wakeup after TIME_TO_SLEEP_S seconds, and starts deep sleep.
+ */
 
 static void enterSleep() {
   ledOff();
@@ -146,7 +190,9 @@ static void enterSleep() {
   esp_deep_sleep_start();
 }
 
-// ───────────────── Rendering (Serial stub) ───────
+/**
+ * @brief Print the ASCII logo banner to the Serial console.
+ */
 
 static void renderLogo() {
   Serial.println(F(" /$$      /$$                     /$$                      "
@@ -173,6 +219,11 @@ static void renderLogo() {
                    "     \\______/ "));
 }
 
+/**
+ * @brief Render the application's title screen to the serial console.
+ *
+ * Prints the presentation header, the application title, and the ASCII logo with surrounding blank lines to the Serial output.
+ */
 static void renderTitleScreen() {
   Serial.println();
   Serial.println(F("Brown Bear Creative presents..."));
@@ -182,7 +233,17 @@ static void renderTitleScreen() {
   Serial.println();
 }
 
-// In the future this will draw to E-Ink; for now it’s just Serial.
+/**
+ * @brief Render a formatted insult block for a given insult index.
+ *
+ * Prints a framed block to Serial showing the insult text and optional
+ * headers for the render reason and the user action. If no insults are
+ * available or the index is out of range, a warning line is printed instead.
+ *
+ * @param index Index of the insult in the `insults` array (0 .. insultCount-1).
+ * @param action Optional action label to display (e.g., Random, Next, Prev, None).
+ * @param reason Header reason for the render (e.g., Boot, OperationStart, OperationComplete, UserTap).
+ */
 static void renderInsultAtIndex(uint16_t index, PendingAction action,
                                 RenderReason reason) {
   if (insultCount == 0) {
@@ -235,7 +296,20 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
 // ───────────────── Work Orchestration ────────────
 
 // Decide what work to do for the requested action.
-// Only sets operationPhase = Waiting when there is actual work.
+/**
+ * @brief Prepare pending work for the specified pending action and mark the operation as waiting when work is available.
+ *
+ * Depending on the action, this selects the next insult index to process and updates operation-related state:
+ * - For `Random`: selects a new insult from the deck and marks the operation as a new insult.
+ * - For `Next`: advances to the next history entry if available; otherwise selects a new insult from the deck and marks it new.
+ * - For `Prev`: moves to the previous history entry if available.
+ *
+ * When work is selected, `operationPhase` is set to `OperationPhase::Waiting`, `pendingInsultIndex` is updated, and
+ * `operationIsNewInsult` is updated to indicate whether the selected insult is newly drawn. If no work is available
+ * for the requested action, no state changes are made and a diagnostic line may be printed to Serial.
+ *
+ * @param action The pending action to prepare work for (None, Random, Next, Prev).
+ */
 static void beginWorkFor(PendingAction action) {
   operationIsNewInsult = false;
 
@@ -281,7 +355,15 @@ static void beginWorkFor(PendingAction action) {
   // No work for PendingAction::None here.
 }
 
-// Called when we want to start doing “work” (Random/Next/Prev)
+/**
+ * @brief Initiates an operation for the specified pending action and transitions the app into the updating flow.
+ *
+ * Records the start time, prepares internal operation state, switches to the Updating state, and begins work for
+ * the given action. If no work is available for the action, clears the pending action and returns the app to Idle.
+ *
+ * @param action The pending action to start (e.g., Random, Next, Prev).
+ * @param now Current timestamp in milliseconds used to record when the operation started.
+ */
 static void startOperation(PendingAction action, uint32_t now) {
   pendingAction = action;
   operationPhase = OperationPhase::Idle; // will flip to Waiting if work exists
@@ -298,7 +380,17 @@ static void startOperation(PendingAction action, uint32_t now) {
   }
 }
 
-// Called every loop while in Updating
+/**
+ * @brief Finalizes a pending update operation when its work delay has elapsed.
+ *
+ * When the operation has finished (based on the provided timestamp and the mock
+ * work duration), this function applies the pending action: it updates the
+ * current insult index, updates the history according to the action taken,
+ * renders the completed insult with the "OperationComplete" reason, resets
+ * operation-related state, and transitions the application back to Idle.
+ *
+ * @param now Current time in milliseconds used to determine whether the operation has completed.
+ */
 static void pollOperation(uint32_t now) {
   if (operationPhase != OperationPhase::Waiting) {
     return;
@@ -339,7 +431,19 @@ static void pollOperation(uint32_t now) {
   enterIdle();
 }
 
-// ───────────────── Button Handling ───────────────
+/**
+ * @brief Handle a button event and trigger state-appropriate actions.
+ *
+ * Processes a single button event: ignores `None` events; always handles the Sleep
+ * button (currently only acknowledging hold events); and for Random/Next/Prev
+ * buttons, only reacts when the application is in the Idle state — a Tap starts
+ * the corresponding operation.
+ *
+ * @param buttonId Identifier of the button that generated the event.
+ * @param event The button event to process.
+ * @param now Current time in milliseconds (typically from millis()) used for
+ *            timestamping operations that are started.
+ */
 
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
@@ -381,7 +485,17 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   }
 }
 
-// ───────────────── Arduino Lifecycle ─────────────
+/**
+ * @brief Initialize hardware, state, and startup display for the application.
+ *
+ * Performs global initialization: configures serial output, seeds the random
+ * number generator, initializes LEDs, the insult deck, and all button inputs;
+ * resets history tracking; enters the boot state and renders the title screen.
+ *
+ * If configured to show an insult on boot and insults are available, it draws
+ * an initial insult, appends it to history, renders it with a boot reason,
+ * and then transitions the application to the idle state.
+ */
 
 void setup() {
   Serial.begin(115200);
@@ -416,6 +530,15 @@ void setup() {
   }
 }
 
+/**
+ * @brief Main application loop that polls inputs and advances the application state.
+ *
+ * Polls all four buttons, dispatches their events to the unified button handler,
+ * and advances the high-level state machine. In Boot state, if no insult was
+ * printed on boot and at least two seconds have passed since entering the state,
+ * transitions to Idle. In Updating state, progresses the ongoing operation by
+ * calling pollOperation. Idle state has no time-driven behavior.
+ */
 void loop() {
   const uint32_t now = millis();
 
