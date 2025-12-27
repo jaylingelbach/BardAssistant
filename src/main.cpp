@@ -425,14 +425,13 @@ void loop() {
   const ButtonEvent nextEvent = updateButton(nextButton, now);
   const ButtonEvent prevEvent = updateButton(prevButton, now);
 
-  if (sleepEvent != ButtonEvent::None)
-    handleButtonEvent(ButtonId::Sleep, sleepEvent, now);
-  if (randomEvent != ButtonEvent::None)
-    handleButtonEvent(ButtonId::Random, randomEvent, now);
-  if (nextEvent != ButtonEvent::None)
-    handleButtonEvent(ButtonId::Next, nextEvent, now);
-  if (prevEvent != ButtonEvent::None)
-    handleButtonEvent(ButtonId::Prev, prevEvent, now);
+  handleButtonEvent(ButtonId::Sleep, sleepEvent, now);
+
+  handleButtonEvent(ButtonId::Random, randomEvent, now);
+
+  handleButtonEvent(ButtonId::Next, nextEvent, now);
+
+  handleButtonEvent(ButtonId::Prev, prevEvent, now);
 
   // High-level app state machine
   switch (currentState) {
