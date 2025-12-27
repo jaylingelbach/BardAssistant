@@ -3,20 +3,21 @@
 #include <Adafruit_NeoPixel.h>
 
 // ─── Hardware configuration (private to this module) ───────────
-#define LED_PIN   21
+#define LED_PIN 21
 #define LED_COUNT 1
 
-static Adafruit_NeoPixel led(
-  LED_COUNT,
-  LED_PIN,
-  NEO_RGB + NEO_KHZ800
-);
+// 0–255, where 255 = full blast.
+// Try 10–32 for “nice and dim but visible”.
+static constexpr uint8_t LED_BRIGHTNESS = 8;
+
+static Adafruit_NeoPixel led(LED_COUNT, LED_PIN, NEO_RGB + NEO_KHZ800);
 
 /**
- * @brief Set the single NeoPixel to the specified RGB color and apply the change.
+ * @brief Set the single NeoPixel to the specified RGB color and apply the
+ * change.
  *
- * Sets the LED color using the provided red, green, and blue components and updates
- * the strip so the new color is visible.
+ * Sets the LED color using the provided red, green, and blue components and
+ * updates the strip so the new color is visible.
  *
  * @param r Red component (0–255).
  * @param g Green component (0–255).
@@ -30,11 +31,12 @@ static void setColor(uint8_t r, uint8_t g, uint8_t b) {
 /**
  * @brief Initialize the NeoPixel LED and clear its color state.
  *
- * Configures the NeoPixel driver, clears any previous color data, and updates the LED
- * so it is off after initialization.
+ * Configures the NeoPixel driver, clears any previous color data, and updates
+ * the LED so it is off after initialization.
  */
 void ledInit() {
   led.begin();
+  led.setBrightness(LED_BRIGHTNESS);
   led.clear();
   led.show();
 }
@@ -45,14 +47,14 @@ void ledInit() {
  * Updates the LED color to RGB(0, 0, 255) and applies the change.
  */
 void ledShowBoot() {
-  setColor(0, 0, 255);     // Blue
+  setColor(0, 0, 255); // Blue
 }
 
 /**
  * @brief Set the status LED to green to indicate the system is idle.
  */
 void ledShowIdle() {
-  setColor(0, 255, 0);     // Green
+  setColor(0, 255, 0); // Green
 }
 
 /**
@@ -61,7 +63,7 @@ void ledShowIdle() {
  * Sets the single RGB LED to yellow to represent the "updating" state.
  */
 void ledShowUpdating() {
-  setColor(255, 255, 0);   // Yellow
+  setColor(255, 255, 0); // Yellow
 }
 
 /**
