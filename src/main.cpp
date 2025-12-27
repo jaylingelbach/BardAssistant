@@ -2,9 +2,8 @@
 #include "led.h"
 #include <Arduino.h>
 #include <esp_sleep.h>
-#include <esp_system.h> // esp_random()
 
-// ─── Configuration ────────────────────────────────────────────────────
+// ───────────────── Configuration ─────────────────
 
 static Button sleepButton;
 static Button randomButton;
@@ -16,48 +15,37 @@ static constexpr uint8_t PIN_RANDOM_BUTTON = 4;
 static constexpr uint8_t PIN_NEXT_BUTTON = 5;
 static constexpr uint8_t PIN_PREV_BUTTON = 7;
 
-// Conversion factor for micro seconds to seconds
+// Time/Power config
 static constexpr uint64_t US_PER_S = 1000000ULL;
-
-// Time ESP32 will go to sleep (in seconds)
 static constexpr uint64_t TIME_TO_SLEEP_S = 5ULL;
-
-// Mock delay to simulate “work”
 static constexpr uint32_t MOCK_WORK_MS = 800;
 
-// Optional: print something once at boot
+// Toggle this later when you want boot-insult behavior on screen too.
 static constexpr bool PRINT_INSULT_ON_BOOT = true;
 
-// ─── Application States ───────────────────────────────────────────────
+// ───────────────── App State ─────────────────────
+
 enum class ApplicationState { Boot, Idle, Updating };
 enum class ButtonId { Sleep, Random, Next, Prev };
 enum class PendingAction { None, Random, Next, Prev };
-enum class OperationPhase { Idle, Waiting };
-enum class RenderReason { Boot, OperationComplete, UserTap };
+enum class OperationPhase { Idle, Waiting, Done };
+enum class RenderReason { Boot, OperationStart, OperationComplete, UserTap };
 
 static ApplicationState currentState = ApplicationState::Boot;
 static PendingAction pendingAction = PendingAction::None;
 static OperationPhase operationPhase = OperationPhase::Idle;
 
-// Boot timing: keeps LED blue for 2 seconds
+// “Is the thing we’re working on a brand-new insult or just history
+// navigation?”
+static bool operationIsNewInsult = false;
+
+// Timing
 static uint32_t stateEnteredAt = 0;
-// Operation timing: decides when Updating is done
 static uint32_t operationStartedAt = 0;
 
-static constexpr ApplicationState INITIAL_STATE = ApplicationState::Boot;
-static constexpr PendingAction INITIAL_PENDING_ACTION_STATE =
-    PendingAction::None;
+// ───────────────── Insults / History / Deck ──────
 
-// Insult indices
-static uint16_t pendingInsultIndex = 0;
-static uint16_t currentInsultIndex = 0;
-static uint16_t lastRenderedInsultIndex = 0;
-
-// Tracking what last render was “for”
-static RenderReason lastRenderedReason = RenderReason::Boot;
-static PendingAction lastRenderedAction = PendingAction::None;
-
-// A fixed list of string literals (stored in flash / read-only memory)
+// Source data (future: swap this to a table from flash or SD)
 static const char *const insults[] = {
     "You fight like a dairy farmer.",
     "You have the manners of a troll.",
@@ -66,134 +54,58 @@ static const char *const insults[] = {
 
 static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 
-// ─── Non-repeat “deck” + history ─────────────────────────────────────
+// Random “deck” of indices 0..insultCount-1
 static uint16_t deck[insultCount] = {0};
 static size_t deckPosition = 0;
 
-// history[] stores indices you’ve displayed (in order)
-static constexpr size_t HISTORY_CAP = insultCount; // insult count
+// History: sequence of actually displayed insults
+static constexpr size_t HISTORY_CAP = insultCount;
 static uint16_t history[HISTORY_CAP] = {0};
-static size_t historySize = 0;
-static size_t historyPosition = 0;
+static size_t historySize = 0;     // how many are valid
+static size_t historyPosition = 0; // cursor into history
 
-// Random index helper to avoid casting
-static uint16_t randomIndex(uint16_t upperExclusive) {
-  return static_cast<uint16_t>(random(0, static_cast<long>(upperExclusive)));
-}
+// Current index being shown
+static uint16_t currentInsultIndex = 0;
+static uint16_t pendingInsultIndex = 0;
 
-// example calls
-// pendingInsultIndex = randomIndex(static_cast<uint16_t>(insultCount));
-// If within safe uint16_t range
-// pendingInsultIndex = randomIndex(insultCount);
-// pendingInsultIndex = randomIndex(insultCount + 1);
+// ───────────────── Helpers: deck / history ───────
 
-// ─── Forward Declarations ─────────────────────────────────────────────
-static void startOperation(PendingAction action, uint32_t now);
-static void beginWorkFor(PendingAction action);
-static void pollOperation(uint32_t now);
-static void renderInsultAtIndex(uint16_t index, PendingAction action,
-                                RenderReason reason);
-
-static void initDeck();
-static void shuffleDeck();
-// static uint16_t drawFromDeck();
-static void appendToHistory(uint16_t index);
-
-// ─── State Entry Functions ────────────────────────────────────────────
-static void enterBoot() {
-  ledShowBoot(); // Blue
-  currentState = ApplicationState::Boot;
-  stateEnteredAt = millis();
-}
-
-static void enterIdle() {
-  ledShowIdle(); // Green
-  currentState = ApplicationState::Idle;
-  stateEnteredAt = millis();
-}
-
-static void enterUpdating() {
-  ledShowUpdating(); // Yellow
-  currentState = ApplicationState::Updating;
-  stateEnteredAt = millis();
-}
-
-// ─── Sleep ────────────────────────────────────────────────────────────
-static void enterSleep() {
-  ledOff();
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP_S * US_PER_S);
-  esp_deep_sleep_start();
-}
-
-// ─── Render ───────────────────────────────────────────────────────────
-static void renderInsultAtIndex(uint16_t index, PendingAction action,
-                                RenderReason reason) {
-  if (insultCount == 0) {
-    Serial.println("No insults to print");
-    return;
-  }
-
-  if (index >= insultCount) {
-    Serial.println("Invalid index");
-    return;
-  }
-
-  Serial.print("Insult #");
-  Serial.print(index);
-  Serial.print(": ");
-  Serial.println(insults[index]);
-
-  lastRenderedInsultIndex = index;
-  lastRenderedReason = reason;
-  lastRenderedAction = action;
-}
-
-static void renderTitleScreen() {
-  Serial.println("Brown Bear Creative Presents!");
-  Serial.println("Vicious Mocker-er");
-  Serial.println("The Bard's Assistant");
-}
-
-// ─── Deck + History Helpers ───────────────────────────────────────────
 static void initDeck() {
-  for (size_t index = 0; index < insultCount; index++) {
-    deck[index] = static_cast<uint16_t>(index);
+  // Fill with 0,1,2,...,N-1
+  for (size_t i = 0; i < insultCount; ++i) {
+    deck[i] = static_cast<uint16_t>(i);
   }
-  shuffleDeck();
+
+  // Fisher–Yates shuffle
+  for (size_t i = insultCount - 1; i > 0; --i) {
+    const long r = random(0, static_cast<long>(i + 1)); // 0..i
+    const uint16_t tmp = deck[i];
+    deck[i] = deck[r];
+    deck[r] = tmp;
+  }
+
   deckPosition = 0;
 }
 
-static void shuffleDeck() {
-  if (insultCount <= 1)
-    return;
-
-  for (size_t index = insultCount - 1; index > 0; index--) {
-    const size_t swapIndex = static_cast<size_t>(randomIndex(index + 1));
-    const uint16_t tmp = deck[index];
-    deck[index] = deck[swapIndex];
-    deck[swapIndex] = tmp;
-  }
-}
-
 static uint16_t drawFromDeck() {
-  if (insultCount == 0)
+  if (insultCount == 0) {
     return 0;
+  }
 
   if (deckPosition >= insultCount) {
-    // shuffle and reset position
-    shuffleDeck();
-    deckPosition = 0;
+    // All insults used; reshuffle for a fresh “deck”
+    initDeck();
   }
 
-  //   // get drawn card from deck position drawnCard = deck[deckPosition]
-  const uint16_t drawn = deck[deckPosition];
+  const uint16_t idx = deck[deckPosition];
   deckPosition++;
-  return drawn;
+  return idx;
 }
 
 static void appendToHistory(uint16_t index) {
-  if (HISTORY_CAP == 0) // false;
+  if (HISTORY_CAP == 0) {
     return;
+  }
 
   if (historySize < HISTORY_CAP) {
     history[historySize] = index;
@@ -202,70 +114,193 @@ static void appendToHistory(uint16_t index) {
     return;
   }
 
-  // If we ever outgrow, we can turn this into a ring buffer.
-  // For now (HISTORY_CAP == insultCount), we’ll just clamp.
+  // For now, just clamp at full; we can convert to a ring buffer later.
   historyPosition = historySize - 1;
 }
 
-// ─── Operation Mocking ────────────────────────────────────────────────
+// ───────────────── State Entry ───────────────────
+
+static void enterBoot() {
+  ledShowBoot();
+  currentState = ApplicationState::Boot;
+  stateEnteredAt = millis();
+}
+
+static void enterIdle() {
+  ledShowIdle();
+  currentState = ApplicationState::Idle;
+  stateEnteredAt = millis();
+}
+
+static void enterUpdating() {
+  ledShowUpdating();
+  currentState = ApplicationState::Updating;
+  stateEnteredAt = millis();
+}
+
+// ───────────────── Power / Sleep ─────────────────
+
+static void enterSleep() {
+  ledOff();
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP_S * US_PER_S);
+  esp_deep_sleep_start();
+}
+
+// ───────────────── Rendering (Serial stub) ───────
+
+static void renderLogo() {
+  Serial.println(F(" /$$      /$$                     /$$                      "
+                   "              "));
+  Serial.println(F("| $$$    /$$$                    | $$                      "
+                   "              "));
+  Serial.println(F("| $$$$  /$$$$  /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   "
+                   "/$$$$$$  /$$   /$$"));
+  Serial.println(F("| $$ $$/$$ $$ /$$__  $$ /$$_____/| $$  /$$/ /$$__  $$ "
+                   "/$$__  $$| $$  | $$"));
+  Serial.println(F("| $$  $$$| $$| $$  \\ $$| $$      | $$$$$$/ | $$$$$$$$| $$ "
+                   " \\__/| $$  | $$"));
+  Serial.println(F("| $$\\  $ | $$| $$  | $$| $$      | $$_  $$ | $$_____/| $$ "
+                   "     | $$  | $$"));
+  Serial.println(F("| $$ \\/  | $$|  $$$$$$/|  $$$$$$$| $$ \\  $$|  $$$$$$$| "
+                   "$$      |  $$$$$$$"));
+  Serial.println(F("|__/     |__/ \\______/  \\_______/|__/  \\__/ "
+                   "\\_______/|__/       \\____  $$"));
+  Serial.println(F("                                                           "
+                   "     /$$  | $$"));
+  Serial.println(F("                                                           "
+                   "    |  $$$$$$/"));
+  Serial.println(F("                                                           "
+                   "     \\______/ "));
+}
+
+static void renderTitleScreen() {
+  Serial.println();
+  Serial.println(F("Brown Bear Creative presents..."));
+  Serial.println(F("The Bard's Assistant"));
+  Serial.println();
+  renderLogo();
+  Serial.println();
+}
+
+// In the future this will draw to E-Ink; for now it’s just Serial.
+static void renderInsultAtIndex(uint16_t index, PendingAction action,
+                                RenderReason reason) {
+  if (insultCount == 0) {
+    Serial.println(F("[WARN] No insults available."));
+    return;
+  }
+
+  if (index >= insultCount) {
+    Serial.print(F("[WARN] Invalid insult index: "));
+    Serial.println(index);
+    return;
+  }
+
+  const char *line = insults[index];
+
+  Serial.println(F("────────────────────────────"));
+  switch (reason) {
+  case RenderReason::Boot:
+    Serial.println(F("[Boot]"));
+    break;
+  case RenderReason::OperationStart:
+    Serial.println(F("[Starting]"));
+    break;
+  case RenderReason::OperationComplete:
+    Serial.println(F("[Done]"));
+    break;
+  case RenderReason::UserTap: // reserved for e-ink UX later
+    Serial.println(F("[Tap]"));
+    break;
+  }
+
+  switch (action) {
+  case PendingAction::Random:
+    Serial.println(F("(Random)"));
+    break;
+  case PendingAction::Next:
+    Serial.println(F("(Next)"));
+    break;
+  case PendingAction::Prev:
+    Serial.println(F("(Previous)"));
+    break;
+  case PendingAction::None:
+    break;
+  }
+
+  Serial.println(line);
+  Serial.println(F("────────────────────────────"));
+}
+
+// ───────────────── Work Orchestration ────────────
+
+// Decide what work to do for the requested action.
+// Only sets operationPhase = Waiting when there is actual work.
 static void beginWorkFor(PendingAction action) {
+  operationIsNewInsult = false;
+
   if (action == PendingAction::Random) {
     pendingInsultIndex = drawFromDeck();
+    operationIsNewInsult = true;
     operationPhase = OperationPhase::Waiting;
     return;
   }
 
   if (action == PendingAction::Prev) {
     if (historySize == 0) {
-      pendingInsultIndex = currentInsultIndex;
-      operationPhase = OperationPhase::Idle;
+      Serial.println(F("[Prev] No history yet."));
+      return;
+    }
+    if (historyPosition == 0) {
+      Serial.println(F("[Prev] Already at oldest entry."));
       return;
     }
 
-    if (historyPosition > 0) {
-      pendingInsultIndex = history[historyPosition - 1];
-      operationPhase = OperationPhase::Waiting;
-      return;
-    }
-
-    // Already at earliest entry
-    pendingInsultIndex = history[0];
-    operationPhase = OperationPhase::Idle;
-    return;
-  }
-
-  if (action == PendingAction::Next) {
-    // If user previously went “back”, Next should move forward in history if
-    // possible.
-    if (historySize > 0 && (historyPosition + 1) < historySize) {
-      pendingInsultIndex = history[historyPosition + 1];
-      operationPhase = OperationPhase::Waiting;
-      return;
-    }
-
-    // Otherwise, Next means “new”
-    // pendingInsultIndex =
-    // Deck();
+    historyPosition--; // move back one
+    pendingInsultIndex = history[historyPosition];
     operationPhase = OperationPhase::Waiting;
     return;
   }
 
-  operationPhase = OperationPhase::Idle;
+  if (action == PendingAction::Next) {
+    // If we’re not at the end of history, walk forward.
+    if (historySize > 0 && historyPosition < historySize - 1) {
+      historyPosition++;
+      pendingInsultIndex = history[historyPosition];
+      operationPhase = OperationPhase::Waiting;
+      return;
+    }
+
+    // Otherwise, Next = “new insult from deck”
+    pendingInsultIndex = drawFromDeck();
+    operationIsNewInsult = true;
+    operationPhase = OperationPhase::Waiting;
+    return;
+  }
+
+  // No work for PendingAction::None here.
 }
 
+// Called when we want to start doing “work” (Random/Next/Prev)
 static void startOperation(PendingAction action, uint32_t now) {
   pendingAction = action;
+  operationPhase = OperationPhase::Idle; // will flip to Waiting if work exists
+  operationIsNewInsult = false;
   operationStartedAt = now;
+
   enterUpdating();
   beginWorkFor(action);
+
+  // If beginWorkFor didn’t set Waiting, there was nothing to do.
+  if (operationPhase != OperationPhase::Waiting) {
+    pendingAction = PendingAction::None;
+    enterIdle(); // bounce straight back
+  }
 }
 
-// Called every loop while Updating
+// Called every loop while in Updating
 static void pollOperation(uint32_t now) {
   if (operationPhase != OperationPhase::Waiting) {
-    // Nothing to do → go idle
-    pendingAction = PendingAction::None;
-    enterIdle();
     return;
   }
 
@@ -273,149 +308,148 @@ static void pollOperation(uint32_t now) {
     return;
   }
 
-  // “Work finished” → apply result
   const PendingAction completedAction = pendingAction;
-
-  // Update indices + history cursor rules
-
   currentInsultIndex = pendingInsultIndex;
 
-  // Render on completion
+  // Maintain history semantics
+  if (completedAction == PendingAction::Random) {
+    // Always new
+    appendToHistory(currentInsultIndex);
+  } else if (completedAction == PendingAction::Next) {
+    if (operationIsNewInsult) {
+      // New entry at the end
+      appendToHistory(currentInsultIndex);
+    } else {
+      // Pure forward navigation within existing history
+      // historyPosition already moved in beginWorkFor
+    }
+  } else if (completedAction == PendingAction::Prev) {
+    // Pure backward navigation; historyPosition already moved
+  }
+
+  // Render result
   renderInsultAtIndex(currentInsultIndex, completedAction,
                       RenderReason::OperationComplete);
 
-  // Clear operation state
+  // Reset operation state
   pendingAction = PendingAction::None;
   operationPhase = OperationPhase::Idle;
+  operationIsNewInsult = false;
 
   enterIdle();
 }
 
-// ─── Button Event Handler  ────────────────────────────────────────────
+// ───────────────── Button Handling ───────────────
+
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
-  if (event == ButtonEvent::None)
+  if (event == ButtonEvent::None) {
     return;
+  }
 
-  switch (buttonId) {
-  case ButtonId::Sleep: {
+  // Sleep button is special; it’s allowed in any state.
+  if (buttonId == ButtonId::Sleep) {
     if (event == ButtonEvent::HoldStart) {
-      Serial.println("Sleep held: entering sleep (currently disabled)");
+      Serial.println(F("[Sleep] Hold detected (sleep currently disabled)."));
       // enterSleep();
     }
-    break;
+    return;
   }
 
-  case ButtonId::Random: {
-    if (event == ButtonEvent::Tap) {
-      Serial.println("Random tapped");
-      if (currentState == ApplicationState::Idle) {
-        startOperation(PendingAction::Random, now);
-      }
+  // For Random/Next/Prev we only start work from Idle.
+  if (currentState != ApplicationState::Idle) {
+    return;
+  }
+
+  if (event == ButtonEvent::Tap) {
+    switch (buttonId) {
+    case ButtonId::Random:
+      Serial.println(F("[Random] Tap"));
+      startOperation(PendingAction::Random, now);
+      break;
+    case ButtonId::Next:
+      Serial.println(F("[Next] Tap"));
+      startOperation(PendingAction::Next, now);
+      break;
+    case ButtonId::Prev:
+      Serial.println(F("[Prev] Tap"));
+      startOperation(PendingAction::Prev, now);
+      break;
+    default:
+      break;
     }
-    break;
-  }
-
-  case ButtonId::Next: {
-    if (event == ButtonEvent::Tap) {
-      Serial.println("Next tapped");
-      if (currentState == ApplicationState::Idle) {
-        startOperation(PendingAction::Next, now);
-      }
-    }
-    break;
-  }
-
-  case ButtonId::Prev: {
-    if (event == ButtonEvent::Tap) {
-      Serial.println("Prev tapped");
-      if (currentState == ApplicationState::Idle) {
-        startOperation(PendingAction::Prev, now);
-      }
-    }
-    break;
-  }
-
-  default:
-    break;
   }
 }
+
+// ───────────────── Arduino Lifecycle ─────────────
 
 void setup() {
   Serial.begin(115200);
   delay(50);
-  Serial.println("Booting...");
+  Serial.println();
+  Serial.println(F("Booting Bard's Assistant..."));
 
-  // Seed RNG (ESP32 hardware RNG)
-  randomSeed(static_cast<uint32_t>(esp_random()));
+  // Seed RNG for deck shuffling
+  randomSeed(esp_random());
 
   ledInit();
+  initDeck();
 
   buttonInit(sleepButton, PIN_SLEEP_BUTTON);
   buttonInit(randomButton, PIN_RANDOM_BUTTON);
   buttonInit(nextButton, PIN_NEXT_BUTTON);
   buttonInit(prevButton, PIN_PREV_BUTTON);
 
-  currentState = INITIAL_STATE;
-  pendingAction = INITIAL_PENDING_ACTION_STATE;
-  operationPhase = OperationPhase::Idle;
-
-  initDeck();
-
-  // Optional: show one insult at boot (counts as “used”)
-  // if (PRINT_INSULT_ON_BOOT && insultCount > 0) {
-  //   currentInsultIndex = drawFromDeck();
-  //   appendToHistory(currentInsultIndex);
-  //   renderInsultAtIndex(currentInsultIndex, PendingAction::None,
-  //                       RenderReason::Boot);
-  // }
-
-  // I think i'd like to print Something like Vicious Mocker-er Device on
-  // boot. Or Bard's Assistant. Or something cool.
-  renderTitleScreen();
+  historySize = 0;
+  historyPosition = 0;
 
   enterBoot();
+  renderTitleScreen();
+
+  if (PRINT_INSULT_ON_BOOT && insultCount > 0) {
+    currentInsultIndex = drawFromDeck();
+    appendToHistory(currentInsultIndex);
+    renderInsultAtIndex(currentInsultIndex, PendingAction::Random,
+                        RenderReason::Boot);
+    // After boot splash + first insult, sit in Idle.
+    enterIdle();
+  }
 }
 
 void loop() {
   const uint32_t now = millis();
 
+  // Poll buttons
   const ButtonEvent sleepEvent = updateButton(sleepButton, now);
-  if (sleepEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Sleep, sleepEvent, now);
-  }
-
   const ButtonEvent randomEvent = updateButton(randomButton, now);
-  if (randomEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Random, randomEvent, now);
-  }
-
   const ButtonEvent nextEvent = updateButton(nextButton, now);
-  if (nextEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Next, nextEvent, now);
-  }
-
   const ButtonEvent prevEvent = updateButton(prevButton, now);
-  if (prevEvent != ButtonEvent::None) {
-    handleButtonEvent(ButtonId::Prev, prevEvent, now);
-  }
 
+  if (sleepEvent != ButtonEvent::None)
+    handleButtonEvent(ButtonId::Sleep, sleepEvent, now);
+  if (randomEvent != ButtonEvent::None)
+    handleButtonEvent(ButtonId::Random, randomEvent, now);
+  if (nextEvent != ButtonEvent::None)
+    handleButtonEvent(ButtonId::Next, nextEvent, now);
+  if (prevEvent != ButtonEvent::None)
+    handleButtonEvent(ButtonId::Prev, prevEvent, now);
+
+  // High-level app state machine
   switch (currentState) {
   case ApplicationState::Boot:
-    if (now - stateEnteredAt >= 2000) {
+    // If we *didn't* print an insult on boot, fall into Idle after a short
+    // delay.
+    if (!PRINT_INSULT_ON_BOOT && (now - stateEnteredAt >= 2000)) {
       enterIdle();
     }
     break;
 
   case ApplicationState::Idle:
-    // Nothing to do here now — button handler starts operations.
+    // Nothing time-based; we only move because of button events.
     break;
 
   case ApplicationState::Updating:
     pollOperation(now);
-    break;
-
-  default:
     break;
   }
 }
