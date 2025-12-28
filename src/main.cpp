@@ -87,7 +87,11 @@ static void enterUpdating() {
  */
 static void enterSleep() {
   ledOff();
-  esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0);
+  // Log error if
+  esp_err_t sleepResponse = esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0);
+  if (sleepResponse != ESP_OK) {
+    Serial.printf("EXT0 wake config failed: %d\n", sleepResponse);
+  }
   rtc_gpio_pullup_en(WAKEUP_GPIO);
   rtc_gpio_pulldown_dis(WAKEUP_GPIO);
   Serial.flush();
