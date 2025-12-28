@@ -173,11 +173,7 @@ void setup() {
 
   enterBoot();
 
-  const bool printedOnBoot = insultsInit(PRINT_INSULT_ON_BOOT);
-  if (printedOnBoot) {
-    // If the module already showed the initial experience, drop into Idle now.
-    enterIdle();
-  }
+  insultsInit(PRINT_INSULT_ON_BOOT);
 }
 
 /**
@@ -210,7 +206,7 @@ void loop() {
   case ApplicationState::Boot:
     // If we *didn't* print an insult on boot, fall into Idle after a short
     // delay.
-    if (!PRINT_INSULT_ON_BOOT && (now - stateEnteredAt >= 2000)) {
+    if (now - stateEnteredAt >= 2000) {
       enterIdle();
     }
     break;
