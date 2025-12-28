@@ -31,8 +31,9 @@ static void setColor(uint8_t r, uint8_t g, uint8_t b) {
 /**
  * @brief Initialize the NeoPixel LED and leave it off.
  *
- * Sets up the NeoPixel driver, applies the configured brightness (LED_BRIGHTNESS),
- * clears any color data, and updates the LED so the pixel is off after initialization.
+ * Sets up the NeoPixel driver, applies the configured brightness
+ * (LED_BRIGHTNESS), clears any color data, and updates the LED so the pixel is
+ * off after initialization.
  */
 void ledInit() {
   led.begin();
@@ -48,6 +49,15 @@ void ledInit() {
  */
 void ledShowBoot() {
   setColor(0, 0, 255); // Blue
+}
+
+/**
+ * @brief Set the indicator LED to magenta to indicate the entering sleep state.
+ *
+ * Updates the LED color to RGB(180, 0, 255) and applies the change.
+ */
+void ledShowSleep() {
+  setColor(180, 0, 255); // magenta
 }
 
 /**
