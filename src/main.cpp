@@ -87,16 +87,24 @@ static void enterUpdating() {
  */
 static void enterSleep() {
   ledOff();
-  // Log error if
-  esp_err_t sleepResponse = esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0);
-  if (sleepResponse != ESP_OK) {
-    Serial.printf("EXT0 wake config failed: %d\n", sleepResponse);
+  esp_err_t wakeResponse = esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0);
+  if (wakeResponse != ESP_OK) {
+    Serial.printf("EXT0 wake config failed: %d\n", wakeResponse);
+    Serial.flush();
+    // Abort sleep to avoid unrecoverable state
+    return;
   }
   rtc_gpio_pullup_en(WAKEUP_GPIO);
   rtc_gpio_pulldown_dis(WAKEUP_GPIO);
   Serial.flush();
   delay(10);
-  esp_deep_sleep_start();
+  esp_err_t sleepResponse = esp_deep_sleep_start();
+  if (sleepResponse != ESP_OK) {
+    Serial.printf("EXT0 wake config failed: %d\n", sleepResponse);
+    Serial.flush();
+    // Abort sleep to avoid unrecoverable state
+    return;
+  }
 }
 
 // ───────────────── Work Orchestration ────────────
