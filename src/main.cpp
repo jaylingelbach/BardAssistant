@@ -181,9 +181,8 @@ void setup() {
  * state.
  *
  * Polls all four buttons, dispatches their events to the unified button
- * handler, and advances the high-level state machine. In Boot state, if no
- * insult was printed on boot and at least two seconds have passed since
- * entering the state, transitions to Idle. In Updating state, progresses the
+ * handler, and advances the high-level state machine. In Boot state,
+ * transitions to Idle after two seconds. In Updating state, progresses the
  * ongoing operation by calling insultsPoll. Idle state has no time-driven
  * behavior.
  */

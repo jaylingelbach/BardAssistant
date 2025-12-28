@@ -184,12 +184,8 @@ static void appendToHistory(uint16_t index) {
     historySize++;
   }
 
-  // Snap cursor to newest.
-  if (historySize > 0) {
-    historyPosition = historySize - 1;
-  } else {
-    historyPosition = 0;
-  }
+  // Snap cursor to newest entry.
+  historyPosition = historySize - 1;
 }
 
 /**
