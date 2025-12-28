@@ -158,6 +158,14 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     if (event == ButtonEvent::Tap) {
       // optional: tap does nothing or cancels pending sleep
       sleepArmed = false;
+      // Restore LED to current state
+      if (currentState == ApplicationState::Idle) {
+        ledShowIdle();
+      } else if (currentState == ApplicationState::Boot) {
+        ledShowBoot();
+      } else if (currentState == ApplicationState::Updating) {
+        ledShowUpdating();
+      }
       return;
     }
   }
