@@ -203,7 +203,6 @@ void loop() {
   // High-level app state machine
   switch (currentState) {
   case ApplicationState::Boot:
-    // If we *didn't* print an insult on boot, fall into Idle after a short
     // delay.
     if (now - stateEnteredAt >= 2000) {
       enterIdle();
