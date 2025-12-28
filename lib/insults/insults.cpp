@@ -4,7 +4,7 @@
 
 // private to insults - note: no static not in insults.h
 enum class RenderReason { Boot, OperationStart, OperationComplete, UserTap };
-enum class OperationPhase { Idle, Waiting, Done };
+enum class OperationPhase { Idle, Waiting };
 
 static PendingAction pendingAction = PendingAction::None;
 static OperationPhase operationPhase = OperationPhase::Idle;
@@ -33,11 +33,18 @@ static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 static uint16_t deck[insultCount] = {0};
 static size_t deckPosition = 0;
 
-// History: sequence of actually displayed insults
+// History: sequence of actually displayed insults (ring buffer)
+//
+// We store a fixed-size rolling window of the most recent HISTORY_CAP entries.
+// - historyHead: where the next write goes (wraps around)
+// - historySize: how many valid entries exist (0..HISTORY_CAP)
+// - historyPosition: logical cursor for browsing (0 = oldest, size-1 = newest)
 static constexpr size_t HISTORY_CAP = insultCount;
 static uint16_t history[HISTORY_CAP] = {0};
+
+static size_t historyHead = 0;     // write index (next append)
 static size_t historySize = 0;     // how many are valid
-static size_t historyPosition = 0; // cursor into history
+static size_t historyPosition = 0; // logical cursor (oldest..newest)
 
 // Current index being shown
 static uint16_t currentInsultIndex = 0;
@@ -94,6 +101,61 @@ static uint16_t drawFromDeck() {
 }
 
 /**
+ * @brief Wrap a size_t index into the range [0, mod-1].
+ *
+ * @param index Index that may be outside the range.
+ * @param mod Modulus (buffer capacity). If mod is 0, returns 0.
+ * @return Wrapped index within the buffer.
+ */
+static size_t wrapIndex(size_t index, size_t mod) {
+  if (mod == 0) {
+    return 0;
+  }
+  return index % mod;
+}
+
+/**
+ * @brief Compute the physical array index of the oldest entry in the ring.
+ *
+ * When not full, the oldest entry is at (historyHead - historySize) wrapped.
+ * When full, this points at the element that will be overwritten next.
+ *
+ * @return Physical index into `history[]` of the oldest entry.
+ */
+static size_t historyOldestPhysicalIndex() {
+  if (HISTORY_CAP == 0) {
+    return 0;
+  }
+
+  // (historyHead + CAP - historySize) % CAP
+  return wrapIndex(historyHead + HISTORY_CAP - historySize, HISTORY_CAP);
+}
+
+/**
+ * @brief Get a stored history value by logical position (0..historySize-1).
+ *
+ * Logical position 0 means "oldest", and historySize-1 means "newest".
+ *
+ * @param logicalPos Logical position into history (0..historySize-1).
+ * @param outIndex Output insult index if present.
+ * @return true if found; false if out of range or empty.
+ */
+static bool historyGetAtLogical(size_t logicalPos, uint16_t &outIndex) {
+  if (HISTORY_CAP == 0 || historySize == 0) {
+    return false;
+  }
+
+  if (logicalPos >= historySize) {
+    return false;
+  }
+
+  const size_t oldest = historyOldestPhysicalIndex();
+  const size_t physical = wrapIndex(oldest + logicalPos, HISTORY_CAP);
+  outIndex = history[physical];
+  return true;
+}
+
+/**
  * @brief Appends an insult index to the displayed-history buffer.
  *
  * Adds the provided insult index to history and advances the history cursor to
@@ -102,24 +164,27 @@ static uint16_t drawFromDeck() {
  * @param index Index of the insult to append (expected to be a valid index into
  * the insults array).
  *
- * If HISTORY_CAP is zero the function is a no-op. If the history is already at
- * capacity the function does not add the new index and instead clamps the
- * history cursor to the most recent entry.
+ * Ring-buffer behavior:
+ * - If history is not full, append grows historySize.
+ * - If history is full, the oldest entry is overwritten.
  */
 static void appendToHistory(uint16_t index) {
   if (HISTORY_CAP == 0) {
     return;
   }
 
+  // Write at the head (overwrite if full).
+  history[historyHead] = index;
+
+  // Advance head.
+  historyHead = wrapIndex(historyHead + 1, HISTORY_CAP);
+
+  // Grow size until full.
   if (historySize < HISTORY_CAP) {
-    history[historySize] = index;
     historySize++;
-    historyPosition = historySize - 1;
-    return;
   }
 
-  // For now, just clamp at full; we can convert to a ring buffer later.
-  Serial.println(F("[WARN] History full; oldest entries will be lost."));
+  // Snap cursor to newest entry.
   historyPosition = historySize - 1;
 }
 
@@ -273,17 +338,32 @@ static bool beginWorkFor(PendingAction action) {
       return false;
     }
 
-    historyPosition--; // move back one
-    pendingInsultIndex = history[historyPosition];
+    historyPosition--; // move back one (logical)
+    if (!historyGetAtLogical(historyPosition, pendingInsultIndex)) {
+      Serial.println(F("[Prev] History read failed."));
+      return false;
+    }
+
     operationPhase = OperationPhase::Waiting;
     return true;
   }
 
   if (action == PendingAction::Next) {
+    if (historySize == 0) {
+      // No history yet: treat Next as new insult.
+      pendingInsultIndex = drawFromDeck();
+      operationIsNewInsult = true;
+      operationPhase = OperationPhase::Waiting;
+      return true;
+    }
+
     // If we’re not at the end of history, walk forward.
-    if (historySize > 0 && historyPosition < historySize - 1) {
-      historyPosition++;
-      pendingInsultIndex = history[historyPosition];
+    if (historyPosition < historySize - 1) {
+      historyPosition++; // logical
+      if (!historyGetAtLogical(historyPosition, pendingInsultIndex)) {
+        Serial.println(F("[Next] History read failed."));
+        return false;
+      }
       operationPhase = OperationPhase::Waiting;
       return true;
     }
@@ -301,6 +381,7 @@ static bool beginWorkFor(PendingAction action) {
 
 bool insultsInit(bool printInsultOnBoot) {
   initDeck();
+  historyHead = 0;
   historySize = 0;
   historyPosition = 0;
 
@@ -329,9 +410,6 @@ bool insultsStartOperation(PendingAction action, uint32_t now) {
     operationIsNewInsult = false;
     return false;
   }
-
-  // Render “starting” view for the pending insult.
-  renderInsultAtIndex(pendingInsultIndex, action, RenderReason::OperationStart);
   return true;
 }
 
