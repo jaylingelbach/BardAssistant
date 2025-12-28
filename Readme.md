@@ -27,10 +27,10 @@ Current setup:
   - 1x NeoPixel RGB LED
   - Data pin: `GPIO 21`
 - **Buttons** (tactile switches to GND, using `INPUT_PULLUP` in code):
-  - Sleep: `GPIO 6`
   - Random: `GPIO 4`
   - Next: `GPIO 5`
-  - Prev: `GPIO 7`
+  - Prev: `GPIO 6`
+  - Sleep: `GPIO 7`
 
 Planned display (not wired/used yet):
 
@@ -190,8 +190,7 @@ Hit `Ctrl + C` to exit.
   - Released → HIGH
   - Pressed → LOW
 
-- Long-press on Sleep is **debounced and recognized**, but deep sleep is not
-  enabled yet (call to `enterSleep()` is still commented).
+- Long-press on Sleep is **debounced and recognized**.
 - State machine and insult logic are conceptually separate:
   - `main.cpp` handles:
     - Board setup
@@ -201,6 +200,21 @@ Hit `Ctrl + C` to exit.
 - Insult/deck/history logic lives in `lib/insults/`
 
 ---
+
+## Sleep / Wake Behavior
+
+### Entering Sleep
+
+1. **Hold** the Sleep button to arm sleep mode (LED turns magenta).
+2. **Release** the button to enter deep sleep.
+
+This "hold to sleep, release to confirm" gesture prevents accidental sleep entry.
+
+### Waking Up
+
+1. **Tap** or **press** the Sleep button while asleep — the pin goes LOW and triggers a wake.
+2. The ESP32-S3 boots from reset and runs `setup()` again.
+3. Optionally, wake reason can be detected via `esp_sleep_get_wakeup_cause()`.
 
 ## Setup (Fresh Clone)
 
@@ -221,21 +235,3 @@ pio run -e esp32-s3-devkitm-1 -t upload
 # Monitor
 pio device monitor -p /dev/cu.usbmodem1101 -b 115200
 ```
-
-So the flow becomes:
-
-Hold sleep button → you decide “ok, go to sleep”
-
-Wait until release → then actually enter deep sleep
-
-This feels natural: “hold to sleep, let go, it sleeps.”
-
-4. Waking behavior
-
-When asleep:
-
-Tap/press the Sleep button → pin goes LOW → wake triggers
-
-The ESP boots like from reset and runs setup() again
-
-You can detect “wake reason was GPIO” later if you want (optional)
