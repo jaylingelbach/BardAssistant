@@ -8,6 +8,7 @@ void ledInit();
 
 // Semantic LED states
 void ledShowBoot();
+void ledShowSleep();
 void ledShowIdle();
 void ledShowUpdating();
 

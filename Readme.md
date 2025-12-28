@@ -221,3 +221,21 @@ pio run -e esp32-s3-devkitm-1 -t upload
 # Monitor
 pio device monitor -p /dev/cu.usbmodem1101 -b 115200
 ```
+
+So the flow becomes:
+
+Hold sleep button → you decide “ok, go to sleep”
+
+Wait until release → then actually enter deep sleep
+
+This feels natural: “hold to sleep, let go, it sleeps.”
+
+4. Waking behavior
+
+When asleep:
+
+Tap/press the Sleep button → pin goes LOW → wake triggers
+
+The ESP boots like from reset and runs setup() again
+
+You can detect “wake reason was GPIO” later if you want (optional)
