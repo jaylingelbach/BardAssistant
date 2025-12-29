@@ -10,7 +10,7 @@
 // ───────────────── Logging ───────────────────────
 
 // Set to 0 to silence app logs (sleep/random/next/prev messages).
-#define ENABLE_APP_LOGS = 1;
+#define ENABLE_APP_LOGS 1
 
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
@@ -40,9 +40,6 @@ static constexpr bool PRINT_INSULT_ON_BOOT = true;
 // EXT0 wake requires an RTC-capable GPIO.
 // Using the same physical Sleep button for both sleep + wake.
 static constexpr gpio_num_t WAKEUP_GPIO = GPIO_NUM_7;
-
-// NVS namespace used to store a small "slept" flag across deep sleep.
-static constexpr const char *NVS_NS = "bards";
 
 // ───────────────── App State ─────────────────────
 
