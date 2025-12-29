@@ -6,16 +6,22 @@
 enum class PendingAction { None = 0, Random, Next, Prev };
 
 /**
- * @brief Initialize the insults module and render the boot/title UI.
+ * @brief Initialize the insults module and render the boot/wake UI.
  *
- * Initializes deck/history state and prints the title screen. If
- * `printInsultOnBoot` is true and at least one insult exists, also prints an
+ * On cold boot, initializes deck/history state and prints the title screen.
+ * If `printInsultOnBoot` is true and at least one insult exists, also prints an
  * initial insult.
  *
- * @param printInsultOnBoot Whether to print an insult immediately at boot.
- * @return true if an insult was printed on boot; false otherwise.
+ * On wake-from-sleep, attempts to restore and render the last shown insult from
+ * RTC-persisted state. If the stored state is invalid or empty, it draws a new
+ * insult and seeds history.
+ *
+ * @param printInsultOnBoot Whether to print an insult immediately on cold boot.
+ * @param wokeFromSleep True if the caller determined this boot followed deep
+ * sleep.
+ * @return true if an insult was rendered during init; false otherwise.
  */
-bool insultsInit(bool printInsultOnBoot);
+bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep);
 
 /**
  * @brief Start a mocked “operation” (Random/Next/Prev).
@@ -40,5 +46,12 @@ bool insultsStartOperation(PendingAction action, uint32_t now);
  * @return true when the operation completes; false otherwise.
  */
 bool insultsPoll(uint32_t now);
+
+/**
+ * @brief Persist current insult + history to NVS so we can restore after sleep.
+ *
+ * Call this right before entering deep sleep.
+ */
+void insultsPersistForSleep();
 
 #endif // INSULTS_H
