@@ -112,9 +112,9 @@ static void enterUpdating() {
 }
 
 /**
- * @brief reset the led state.
+ * @brief Restore the LED pattern for the current application state.
  *
- * Resets the LED pattern.
+ * * Re-applies the LED pattern corresponding to the current state.
  */
 static void restoreLedForState() {
   switch (currentState) {
@@ -152,7 +152,10 @@ static void enterSleep() {
   ledOff();
 
   // Configure wake on Sleep button press (LOW).
-  esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0 /* LOW */);
+  esp_err_t err = esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0 /* LOW */);
+  if (err != ESP_OK) {
+    Serial.printf("EXT0 wake config failed: %d\n", err);
+  }
 
   // Keep the wake pin at the inactive level while asleep.
   // (Pull-up enabled since inactive is HIGH, pull-down disabled.)
@@ -308,6 +311,7 @@ void setup() {
 
   // After EXT0 deep-sleep wake, the wake pin may be latched as RTC IO.
   // Deinit it so we can use it as a normal GPIO with INPUT_PULLUP.
+  // On cold boot this is a no-op (returns error, which we ignore)
   rtc_gpio_deinit(WAKEUP_GPIO);
 
   buttonInit(sleepButton, PIN_SLEEP_BUTTON);
