@@ -9,7 +9,7 @@
 // ───────────────── Logging ───────────────────────
 
 // Set to 0 to silence app logs (sleep/random/next/prev messages).
-static constexpr uint8_t ENABLE_APP_LOGS = 1;
+#define ENABLE_APP_LOGS = 1;
 
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
