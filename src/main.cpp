@@ -2,6 +2,7 @@
 #include "driver/rtc_io.h"
 #include "insults.h"
 #include "led.h"
+#include "persist_keys.h"
 #include <Arduino.h>
 #include <Preferences.h>
 #include <esp_sleep.h>
@@ -20,7 +21,6 @@
 #endif
 
 // ───────────────── Configuration ─────────────────
-
 static Button sleepButton;
 static Button randomButton;
 static Button nextButton;

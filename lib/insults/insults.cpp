@@ -1,4 +1,5 @@
 #include "insults.h"
+#include "persist_keys.h"
 #include <Arduino.h>
 #include <Preferences.h>
 
@@ -16,7 +17,6 @@ enum class OperationPhase { Idle, Waiting };
 
 // Non-volatile storage (NVS) namespace + magic marker for saved-state
 // validation.
-static constexpr const char *NVS_NS = "bards";
 static constexpr uint32_t NVS_MAGIC = 0xBADC0FFE;
 
 // Simulated “work” duration for operations (Random/Next/Prev).
@@ -38,8 +38,8 @@ static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 // That’s fine for “fast resume” style state; we still persist to NVS for
 // reliability across deeper resets / edge cases.
 
-static RTC_DATA_ATTR uint16_t deck[insultCount] = {0};
-static RTC_DATA_ATTR size_t deckPosition = 0;
+static uint16_t deck[insultCount] = {0};
+static size_t deckPosition = 0;
 
 static constexpr size_t HISTORY_CAP = insultCount;
 static RTC_DATA_ATTR uint16_t history[HISTORY_CAP] = {0};
