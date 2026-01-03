@@ -21,8 +21,8 @@ static bool isInList(int8_t value, const std::array<int8_t, 4> &list) {
     if (value == item) {
       return true;
     }
-    return false;
   }
+  return false;
 }
 
 bool displayValidateConfig(const DisplayConfig &config) {
