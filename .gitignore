@@ -3,3 +3,7 @@
 .DS_Store
 # deps
 node_modules/
+
+# Editor / language server caches
+.cache/
+compile_commands.json
