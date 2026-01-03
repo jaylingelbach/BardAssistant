@@ -1,7 +1,7 @@
+#include "display.h"
 #include <GxEPD2_BW.h>
 #include <array>
 #include <cstdint>
-#include <display.h>
 #include <epd/GxEPD2_213_B74.h>
 
 static bool displayReady = false;
