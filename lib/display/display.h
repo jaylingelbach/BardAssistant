@@ -13,7 +13,7 @@ struct DisplayPins {
   int8_t rst = 8;
   int8_t dc = 9;
   int8_t cs = 10;
-  int8_t busy = 11; // -1 means not connected / ignored
+  int8_t busy = 11;
 
   int8_t mosi = 12;
   int8_t sck = 13;
