@@ -426,8 +426,7 @@ static bool beginWorkFor(PendingAction action) {
  * - Always rebuilds the randomized deck.
  * - On cold boot: resets history, renders title, and optionally prints an
  * insult.
- * - On wake-from-sleep: attempts to restore from NVS and render the last
- * insult.
+ * - On wake-from-sleep: restore state, but do not render automatically.
  *
  * @param printInsultOnBoot If true, prints an initial insult on cold boot.
  * @param wokeFromSleep If true, attempts NVS restore and renders [Wake] output.
@@ -455,11 +454,11 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
     return false;
   }
 
-  // Wake path: restore last displayed insult/history if possible.
-  uint16_t restoredIndex = 0;
-  if (loadInsultsStateFromNvs(restoredIndex)) {
-    renderInsultAtIndex(restoredIndex, PendingAction::None, RenderReason::Wake);
-    return true;
+  // Wake from deep sleep: restore state, but don't render to avoid flash
+  uint16_t unusedRestoredIndex = 0;
+  if (loadInsultsStateFromNvs(unusedRestoredIndex)) {
+    Serial.println("[Wake] restored insult state");
+    return false; // nothing rendered
   }
 
   // Fallback: no saved state; draw one and seed history so Next/Prev behave.
@@ -467,15 +466,14 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
     return false;
   }
 
-  currentInsultIndex = drawFromDeck();
   historyHead = 0;
   historySize = 0;
   historyPosition = 0;
+  currentInsultIndex = drawFromDeck();
   appendToHistory(currentInsultIndex);
 
-  renderInsultAtIndex(currentInsultIndex, PendingAction::None,
-                      RenderReason::Wake);
-  return true;
+  Serial.println("[Wake] no saved state; seeded first insult");
+  return false;
 }
 
 /**
@@ -538,4 +536,16 @@ bool insultsPoll(uint32_t now) {
   operationIsNewInsult = false;
 
   return true;
+}
+
+bool insultsHasAny() { return insultCount > 0; }
+
+uint16_t insultsGetCurrentIndex() { return currentInsultIndex; }
+
+const char *insultsGetCurrentText() {
+  if (insultCount == 0)
+    return "No insults";
+  if (currentInsultIndex >= insultCount)
+    return "Invalid insult";
+  return insults[currentInsultIndex];
 }

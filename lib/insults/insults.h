@@ -1,7 +1,7 @@
 #ifndef INSULTS_H
 #define INSULTS_H
 
-#include <stdint.h>
+#include <cstdint>
 
 enum class PendingAction { None = 0, Random, Next, Prev };
 
@@ -12,9 +12,7 @@ enum class PendingAction { None = 0, Random, Next, Prev };
  * If `printInsultOnBoot` is true and at least one insult exists, also prints an
  * initial insult.
  *
- * On wake-from-sleep, attempts to restore and render the last shown insult from
- * RTC-persisted state. If the stored state is invalid or empty, it draws a new
- * insult and seeds history.
+ * On wake-from-sleep, restore state but don’t render automatically on wake.
  *
  * @param printInsultOnBoot Whether to print an insult immediately on cold boot.
  * @param wokeFromSleep True if the caller determined this boot followed deep
@@ -53,5 +51,11 @@ bool insultsPoll(uint32_t now);
  * Call this right before entering deep sleep.
  */
 void insultsPersistForSleep();
+
+const char *insultsGetCurrentText();
+
+uint16_t insultsGetCurrentIndex();
+
+bool insultsHasAny();
 
 #endif // INSULTS_H

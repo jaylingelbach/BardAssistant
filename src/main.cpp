@@ -1,11 +1,13 @@
-#include "button.h"
 #include "driver/rtc_io.h"
-#include "insults.h"
-#include "led.h"
-#include "persist_keys.h"
 #include <Arduino.h>
 #include <Preferences.h>
 #include <esp_sleep.h>
+
+#include "button.h"
+#include "display.h"
+#include "insults.h"
+#include "led.h"
+#include "persist_keys.h"
 
 // ───────────────── Logging ───────────────────────
 
@@ -21,6 +23,8 @@
 #endif
 
 // ───────────────── Configuration ─────────────────
+
+// Buttons
 static Button sleepButton;
 static Button randomButton;
 static Button nextButton;
@@ -34,12 +38,17 @@ static constexpr uint8_t PIN_SLEEP_BUTTON = 7;
 // Boot splash duration (Boot LED pattern)
 static constexpr uint32_t LED_BOOT_DURATION_MS = 2000;
 
-// Toggle this later when you want boot-insult behavior on screen too.
+// If true, on cold boot we immediately show an insult (after init).
+// Wake-from-sleep always shows the last insult regardless of this flag.
 static constexpr bool PRINT_INSULT_ON_BOOT = true;
 
 // EXT0 wake requires an RTC-capable GPIO.
 // Using the same physical Sleep button for both sleep + wake.
 static constexpr gpio_num_t WAKEUP_GPIO = GPIO_NUM_7;
+
+// Display configuration (pins/rotation/default mode live in DisplayConfig
+// defaults)
+static DisplayConfig displayConfig{};
 
 // ───────────────── App State ─────────────────────
 
@@ -114,7 +123,7 @@ static void enterUpdating() {
 /**
  * @brief Restore the LED pattern for the current application state.
  *
- * * Re-applies the LED pattern corresponding to the current state.
+ * Re-applies the LED pattern corresponding to the current state.
  */
 static void restoreLedForState() {
   switch (currentState) {
@@ -131,18 +140,34 @@ static void restoreLedForState() {
 }
 
 /**
+ * @brief Called exactly once when an insult operation completes.
+ *
+ * This is the "source of truth" for rendering after button-driven actions:
+ * when the operation completes, the insults module has updated its internal
+ * state (current insult + history pointer), so we render whatever is current.
+ */
+static void onOperationCompleted() {
+  if (insultsHasAny()) {
+    displayRenderInsult(insultsGetCurrentText());
+  }
+  enterIdle();
+}
+
+/**
  * @brief Enter deep sleep and configure wake via the Sleep button (EXT0).
  *
- * This configures EXT0 wake on the Sleep button GPIO.
- * EXT0 wake is *level-based* (not edge-based): the chip wakes when the RTC GPIO
+ * EXT0 wake is level-based (not edge-based): the chip wakes when the RTC GPIO
  * is held at the configured logic level.
  *
  * With the button wired to GND and the pin using a pull-up, the “pressed” level
- * is LOW, so we wake on LOW. This means wake happens immediately on press.
+ * is LOW, so we wake on LOW (wake happens immediately on press).
  *
- * Before sleeping:
- * - Persist the insults module state so we can restore it on wake.
- * - Store an NVS "slept" flag so setup() can treat the next boot as
+ * New sleep behavior (chosen UX):
+ * - Persist insult state so we can restore and re-render the last insult on
+ * wake.
+ * - Blank the e-ink screen so the device looks "off" while sleeping.
+ * - Hibernate the display driver to minimize power while asleep.
+ * - Set an NVS "slept" flag so setup() can classify the next boot as
  * wake-from-sleep.
  *
  * Note: deep sleep never returns; the device restarts from setup() on wake.
@@ -165,6 +190,12 @@ static void enterSleep() {
   // Persist app/module state for restore after wake.
   insultsPersistForSleep();
 
+  // Make the device look "off" while sleeping.
+  // (E-ink holds the last image with no power, so we must blank it BEFORE
+  // sleep.)
+  displayRenderBlankScreen();
+  displaySleep(DisplaySleepMode::Hibernate);
+
   // Mark intent-to-sleep in NVS so next boot is treated as "wake".
   {
     Preferences prefs;
@@ -178,7 +209,7 @@ static void enterSleep() {
   Serial.flush();
   delay(50);
 
-  esp_deep_sleep_start(); // returns void
+  esp_deep_sleep_start(); // never returns
 }
 
 // ───────────────── Work Orchestration ────────────
@@ -248,23 +279,28 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
         enterUpdating();
       }
       break;
+
     case ButtonId::Next:
       APP_LOGLN("[Next] Tap");
       if (insultsStartOperation(PendingAction::Next, now)) {
         enterUpdating();
       }
       break;
+
     case ButtonId::Prev:
       APP_LOGLN("[Prev] Tap");
       if (insultsStartOperation(PendingAction::Prev, now)) {
         enterUpdating();
       }
       break;
+
     default:
       break;
     }
   }
 }
+
+// ───────────────── Arduino lifecycle ─────────────
 
 /**
  * @brief Initialize hardware, application state, and modules for device
@@ -273,10 +309,16 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
  * - Reads an NVS "slept" flag to classify this boot as wake-from-deep-sleep.
  * - Sets a brief ignore window to suppress accidental input immediately after
  * boot/wake.
- * - Initializes LEDs and buttons.
+ * - Initializes LEDs, buttons, and the e-ink display.
  * - If waking from EXT0 deep sleep, deinitializes the wake GPIO from RTC IO
  * mode so it can be used as a normal digital input with INPUT_PULLUP again.
  * - Enters Boot state (boot LED splash) and initializes the insults module.
+ *
+ * Rendering policy (chosen UX):
+ * - On wake-from-sleep: re-render the last insult immediately (screen was
+ * blanked before sleep).
+ * - On cold boot: optionally render an insult immediately if
+ * PRINT_INSULT_ON_BOOT is true.
  */
 void setup() {
   Serial.begin(115200);
@@ -291,7 +333,7 @@ void setup() {
 
       // IMPORTANT: do NOT clear here.
       // We clear later (after boot splash) so monitor reconnect/reset can't
-      // hide the wake.
+      // hide the wake classification.
       needsSleepFlagClear = wokeFromSleep;
 
       prefs.end();
@@ -311,7 +353,7 @@ void setup() {
 
   // After EXT0 deep-sleep wake, the wake pin may be latched as RTC IO.
   // Deinit it so we can use it as a normal GPIO with INPUT_PULLUP.
-  // On cold boot this is a no-op (returns error, which we ignore)
+  // On cold boot this is a no-op (returns error, which we ignore).
   rtc_gpio_deinit(WAKEUP_GPIO);
 
   buttonInit(sleepButton, PIN_SLEEP_BUTTON);
@@ -321,7 +363,23 @@ void setup() {
 
   enterBoot();
 
+  if (!displayInit(displayConfig)) {
+    Serial.println(F("Display init failed"));
+  }
+
+  // Initialize insults state (restores from NVS on wake).
   insultsInit(PRINT_INSULT_ON_BOOT, wokeFromSleep);
+
+  // Render policy:
+  // - Wake: show last insult immediately (screen was blanked before sleep).
+  // - Cold boot: show an insult only if PRINT_INSULT_ON_BOOT is enabled.
+  if (insultsHasAny()) {
+    if (wokeFromSleep) {
+      displayRenderInsult(insultsGetCurrentText());
+    } else if (PRINT_INSULT_ON_BOOT) {
+      displayRenderInsult(insultsGetCurrentText());
+    }
+  }
 }
 
 /**
@@ -332,7 +390,7 @@ void setup() {
  * - Boot: holds the boot LED splash for a short duration, then enters Idle.
  * - Idle: waits for button-driven actions.
  * - Updating: advances the active insult operation via insultsPoll() until
- * done.
+ * done. When it completes, we render the current insult and return to Idle.
  */
 void loop() {
   const uint32_t now = millis();
@@ -361,7 +419,7 @@ void loop() {
 
   case ApplicationState::Updating:
     if (insultsPoll(now)) {
-      enterIdle();
+      onOperationCompleted();
     }
     break;
   }

@@ -29,6 +29,10 @@ struct DisplayConfig {
 bool displayValidateConfig(const DisplayConfig &config);
 bool displayInit(const DisplayConfig &config);
 
+bool displayRenderBlankScreen();
+bool displayRenderInsult(const char *text);
+bool displaySleep(DisplaySleepMode mode);
+
 // ─── Helpers ────────────────────────────────────────────────────
 constexpr uint8_t toRotationValue(DisplayRotation rotation) {
   return static_cast<uint8_t>(rotation);
