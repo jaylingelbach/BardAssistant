@@ -194,8 +194,9 @@ static void drawWrappedText(const char *text, int16_t left, int16_t top,
 static void sanitizeForDisplay(const char *src, char *dst, size_t dstSize) {
   size_t s = 0, d = 0;
   while (src[s] != '\0' && d < dstSize - 1) {
-    if ((uint8_t)src[s] == 0xe2 && (uint8_t)src[s+1] == 0x80 &&
-        ((uint8_t)src[s+2] == 0x99 || (uint8_t)src[s+2] == 0x98)) {
+    if ((uint8_t)src[s] == 0xe2 && src[s + 1] != '\0' &&
+        (uint8_t)src[s + 1] == 0x80 && src[s + 2] != '\0' &&
+        ((uint8_t)src[s + 2] == 0x99 || (uint8_t)src[s + 2] == 0x98)) {
       dst[d++] = '`';
       s += 3;
     } else if (src[s] == '\'') {
