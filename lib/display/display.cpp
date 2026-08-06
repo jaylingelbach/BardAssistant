@@ -291,7 +291,7 @@ bool displayInit(const DisplayConfig &config) {
                                 SPISettings(4000000, MSBFIRST, SPI_MODE0));
 
   // 6) Initialize the display driver
-  // init(baud, initial_reset, reset_duration, pulldown_busy)
+  // init(baud, initial_reset, reset_duration, pulldown_rst_mode)
   displayDriver->init(115200, true, 2, useBusy);
 
   // 7) Apply rotation + baseline window mode

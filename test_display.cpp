@@ -21,8 +21,6 @@ void setup() {
   delay(1500);
   Serial.println("GxEPD2 + HSPI test");
 
-  pinMode(EPD_BUSY, INPUT_PULLUP);
-
   hspi.begin(EINK_SCK, EINK_MISO, EINK_MOSI, -1);
   display.epd2.selectSPI(hspi, SPISettings(4000000, MSBFIRST, SPI_MODE0));
 
