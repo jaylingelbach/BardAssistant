@@ -24,6 +24,7 @@ struct DisplayConfig {
   DisplayPins pins{};
   DisplayRotation rotation = DisplayRotation::R1;
   DisplayMode modeDefault = DisplayMode::FullRefresh;
+  bool pulldownRstMode = true; // B74 requires pulldown RST sequence
 };
 // ─── API ────────────────────────────────────────────────────────
 bool displayValidateConfig(const DisplayConfig &config);
