@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <array>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <epd/GxEPD2_213_B74.h>
 
