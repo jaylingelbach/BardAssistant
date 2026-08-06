@@ -191,6 +191,23 @@ static void drawWrappedText(const char *text, int16_t left, int16_t top,
   flushLine();
 }
 
+static void sanitizeForDisplay(const char *src, char *dst, size_t dstSize) {
+  size_t s = 0, d = 0;
+  while (src[s] != '\0' && d < dstSize - 1) {
+    if ((uint8_t)src[s] == 0xe2 && (uint8_t)src[s+1] == 0x80 &&
+        ((uint8_t)src[s+2] == 0x99 || (uint8_t)src[s+2] == 0x98)) {
+      dst[d++] = '`';
+      s += 3;
+    } else if (src[s] == '\'') {
+      dst[d++] = '`';
+      s++;
+    } else {
+      dst[d++] = src[s++];
+    }
+  }
+  dst[d] = '\0';
+}
+
 // if this returns true, thats bad.
 static bool isInList(int8_t value, const std::array<int8_t, 4> &list) {
   for (int8_t item : list) {
@@ -333,6 +350,10 @@ bool displayRenderInsult(const char *text) {
     return false;
   if (text == nullptr)
     text = "(null)";
+
+  char sanitized[256];
+  sanitizeForDisplay(text, sanitized, sizeof(sanitized));
+  text = sanitized;
 
   // Use runtime width/height (respects rotation)
   const int16_t screenW = static_cast<int16_t>(displayDriver->width());
