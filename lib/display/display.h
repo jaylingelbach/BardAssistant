@@ -22,7 +22,7 @@ struct DisplayPins {
 
 struct DisplayConfig {
   DisplayPins pins{};
-  DisplayRotation rotation = DisplayRotation::R1;
+  DisplayRotation rotation = DisplayRotation::R3;
   DisplayMode modeDefault = DisplayMode::FullRefresh;
   bool pulldownRstMode = true; // B74 requires pulldown RST sequence
 };
