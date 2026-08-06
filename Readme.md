@@ -9,6 +9,7 @@ Right now it:
   - **Blue** – Booting
   - **Green** – Idle (ready for button presses)
   - **Yellow** – Updating (pretending to “do work”)
+  - **Magenta ** – Updating
 - Prints insults and status info over **Serial** (`115200` baud).
 
 Planned:
@@ -235,3 +236,7 @@ pio run -e esp32-s3-devkitm-1 -t upload
 # Monitor
 pio device monitor -p /dev/cu.usbmodem1101 -b 115200
 ```
+
+## Current display panel being used
+
+- GxEPD2_213_B74
