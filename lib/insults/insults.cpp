@@ -1,7 +1,9 @@
 #include "insults.h"
 #include "persist_keys.h"
 #include <Arduino.h>
+#include <LittleFS.h>
 #include <Preferences.h>
+#include <string>
 #include <vector>
 // Internal-only enums (not exposed in insults.h)
 enum class RenderReason {
@@ -30,12 +32,13 @@ static constexpr uint32_t MOCK_WORK_MS = 800;
 //     "Oh look, both your weapons are tiny!",
 // };
 
-std::vector<std::string> insults = {
-    "You fight like a dairy farmer.",
-    "You have the manners of a troll.",
-    "I’ve spoken with sewer rats more polite than you.",
-    "Oh look, both your weapons are tiny!",
-};
+// std::vector<std::string> insults = {
+//     "You fight like a dairy farmer.",
+//     "You have the manners of a troll.",
+//     "I’ve spoken with sewer rats more polite than you.",
+//     "Oh look, both your weapons are tiny!",
+// };
+std::vector<std::string> insults;
 
 // static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 
@@ -77,6 +80,24 @@ static uint16_t pendingInsultIndex = 0;
 
 // ───────────────── Utilities ─────────────────
 
+static std::vector<std::string> readDeckLineByLine(const char *path) {
+  File file = LittleFS.open(path, "r");
+  if (!file) {
+    Serial.println("[readDeckLineByLine] Failed to open file");
+    return {};
+  }
+  std::vector<std::string> lines;
+  while (file.available()) {
+    String line = file.readStringUntil('\n');
+    line.trim();
+    if (line.length() == 0)
+      continue;
+    lines.push_back(line.c_str());
+  }
+  file.close();
+  return lines;
+}
+
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
  * position.
@@ -86,6 +107,9 @@ static uint16_t pendingInsultIndex = 0;
  */
 static void initDeck() {
   deck.resize(insults.size());
+  if (insults.empty()) {
+    return;
+  }
   for (size_t i = 0; i < insults.size(); ++i) {
     deck[i] = static_cast<uint16_t>(i);
   }
@@ -444,6 +468,7 @@ static bool beginWorkFor(PendingAction action) {
  * @return true if an insult was rendered immediately; false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
+  insults = readDeckLineByLine("/insults.txt");
   initDeck();
 
   if (!wokeFromSleep) {

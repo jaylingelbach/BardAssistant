@@ -7,3 +7,18 @@ node_modules/
 # Editor / language server caches
 .cache/
 compile_commands.json
+
+
+# =========================
+# KiCad
+# =========================
+
+# KiCad lock files
+*.lck
+
+# KiCad backup files
+*.bak
+
+# Temporary/backup files
+~*
+*.tmp
