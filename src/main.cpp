@@ -326,8 +326,9 @@ void setup() {
   delay(50);
 
   if (!LittleFS.begin(true)) {
-    Serial.println("An Error has occurred while mounting LittleFS");
-    return;
+    Serial.println("LittleFS mount failed — restarting");
+    Serial.flush();
+    ESP.restart();
   }
 
   bool wokeFromSleep = false;
