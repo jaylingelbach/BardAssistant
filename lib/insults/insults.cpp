@@ -342,7 +342,7 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
     return false;
   }
 
-  // Validate saved metadata against current compiled-in sizes.
+  // Validate saved metadata against current deck size.
   if (insults.size() == 0) {
     return false;
   }
@@ -354,6 +354,17 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
 
   if (!curValid || !sizeValid || !headValid || !posValid) {
     return false;
+  }
+
+  // Validate every active history entry against the current deck size.
+  // If insults.txt changed since last sleep, stale indices could be out of
+  // range.
+  const size_t oldest = wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
+  for (size_t i = 0; i < savedSize; i++) {
+    const size_t physical = wrapIndex(oldest + i, HISTORY_CAP);
+    if (history[physical] >= insults.size()) {
+      return false;
+    }
   }
 
   historyHead = savedHead;
