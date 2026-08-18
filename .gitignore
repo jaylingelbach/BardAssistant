@@ -20,6 +20,7 @@ compile_commands.json
 *.bak
 KiCad/BardsAssistant/BardsAssistant-backups/
 KiCad/BardsAssistant/ERC.json
+**/*.kicad_prl
 
 # Temporary/backup files
 ~*
