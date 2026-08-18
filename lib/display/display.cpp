@@ -239,6 +239,40 @@ static bool textFitsInBounds(const char *text, int16_t maxWidth,
 
     if (lineBuf[0] != '\0')
       flushLine();
+
+    // Word wider than maxWidth: hard-break it across lines, same as
+    // drawWrappedText, so the line count matches the actual render.
+    if (measureTextWidth(word, textSize) > static_cast<uint16_t>(maxWidth)) {
+      const size_t wordLen = std::strlen(word);
+      size_t startIndex = 0;
+      while (startIndex < wordLen && !overflowed) {
+        char segment[160];
+        segment[0] = '\0';
+        size_t endIndex = startIndex;
+        while (endIndex < wordLen) {
+          const size_t segLen = endIndex - startIndex + 1;
+          if (segLen >= sizeof(segment))
+            break;
+          std::memcpy(segment, &word[startIndex], segLen);
+          segment[segLen] = '\0';
+          if (measureTextWidth(segment, textSize) >
+              static_cast<uint16_t>(maxWidth)) {
+            if (segLen == 1)
+              return;
+            segment[segLen - 1] = '\0';
+            break;
+          }
+          endIndex++;
+        }
+        cursorY = static_cast<int16_t>(cursorY + lineHeight);
+        if (cursorY > maxHeight)
+          overflowed = true;
+        startIndex += std::strlen(segment);
+      }
+      lineBuf[0] = '\0';
+      return;
+    }
+
     std::snprintf(lineBuf, sizeof(lineBuf), "%s", word);
   };
 
