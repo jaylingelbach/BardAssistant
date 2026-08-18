@@ -19,6 +19,7 @@ compile_commands.json
 # KiCad backup files
 *.bak
 KiCad/BardsAssistant/BardsAssistant-backups/
+KiCad/BardsAssistant/ERC.json
 
 # Temporary/backup files
 ~*
