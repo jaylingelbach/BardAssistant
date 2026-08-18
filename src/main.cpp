@@ -330,17 +330,6 @@ void setup() {
     return;
   }
 
-  File file = LittleFS.open("/insults.txt");
-  if (!file) {
-    Serial.println("Failed to open file for reading");
-  } else {
-    Serial.println("File Content:");
-    while (file.available()) {
-      Serial.write(file.read());
-    }
-    file.close();
-  }
-
   bool wokeFromSleep = false;
   {
   Preferences prefs;
