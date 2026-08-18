@@ -1,0 +1,893 @@
+{
+    "$schema": "https://schemas.kicad.org/erc.v1.json",
+    "coordinate_units": "mils",
+    "date": "2026-08-17T14:27:45-0500",
+    "kicad_version": "9.0.7",
+    "sheets": [
+        {
+            "path": "/",
+            "uuid_path": "/fe923a2d-3535-4d7b-b457-acbae8a52840",
+            "violations": [
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol J2 Pin 5 [VGH, Passive, Line]",
+                            "pos": {
+                                "x": 38.0,
+                                "y": 68.5
+                            },
+                            "uuid": "dfa5d8ad-0582-4ec9-885e-24074aa13a85"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'BS'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 71.5
+                            },
+                            "uuid": "fe3d4580-1c3e-454e-be87-76f76155cc15"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol J2 Pin 6 [TSCL, Passive, Line]",
+                            "pos": {
+                                "x": 38.0,
+                                "y": 69.5
+                            },
+                            "uuid": "78204eae-acd0-48ed-b63a-b032ecd81976"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P24'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 72.5
+                            },
+                            "uuid": "cfe765dc-9ad8-41cb-b434-7b42f524267e"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol J2 Pin 7 [TSDA, Passive, Line]",
+                            "pos": {
+                                "x": 38.0,
+                                "y": 70.5
+                            },
+                            "uuid": "f23bda34-f0ef-47c7-adf1-c2d28893fa60"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P17'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 73.5
+                            },
+                            "uuid": "d1abe888-46b4-41fa-8af5-567936347a67"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P25'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 74.5
+                            },
+                            "uuid": "7f1eac18-93e2-4b8c-8b2f-07941cd1c1e2"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P CE0'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 75.5
+                            },
+                            "uuid": "002373c9-8787-425a-807e-ac3671f42d05"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P SCK'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 76.5
+                            },
+                            "uuid": "7d99c3ad-77e0-4904-be52-3e17706e5872"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Label not connected to anything",
+                    "items": [
+                        {
+                            "description": "Label 'P MOSI'",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 77.5
+                            },
+                            "uuid": "ed28f371-4ed2-4741-b114-39c7e03acdfe"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "label_dangling"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 5 [IO1, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 42.0
+                            },
+                            "uuid": "f5cef7c5-652d-4c7c-be46-8ce538cb40f2"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 6 [IO2, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 43.0
+                            },
+                            "uuid": "e29855af-808d-4fd4-a900-87faf37b318c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 12 [IO8, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 49.0
+                            },
+                            "uuid": "9889f36d-3ed1-4401-98a7-d29f9000510d"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 13 [IO9, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 50.0
+                            },
+                            "uuid": "996255c8-a808-4a75-90f9-af9c1e5a1e78"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 14 [IO10, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 51.0
+                            },
+                            "uuid": "61c1598b-3136-4f4a-b85a-039dfcdcceea"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 15 [IO11, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 52.0
+                            },
+                            "uuid": "b78fc7d3-0da7-4d0b-af63-797cb5c6e293"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 16 [IO12, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 53.0
+                            },
+                            "uuid": "87a23910-9101-4417-b519-6947d7381988"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 17 [IO13, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 54.0
+                            },
+                            "uuid": "3da3cd59-8d5b-458a-a08c-429da8f9a744"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 18 [IO14, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 55.0
+                            },
+                            "uuid": "56841171-6729-4733-a870-fd302ba04e63"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 21 [IO17, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 58.0
+                            },
+                            "uuid": "5a5bf9be-79b2-4666-bd38-59d45805b0a9"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 22 [IO18, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 59.0
+                            },
+                            "uuid": "ef07397b-f41a-4b35-88d6-df53e378989a"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 38 [IO42, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 38.0
+                            },
+                            "uuid": "e821c7ca-fb48-4af8-ba2a-5f6dbf7d153a"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 39 [TXD0, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 39.0
+                            },
+                            "uuid": "5f1978b4-a681-45e1-837e-24bdc220694e"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 40 [RXD0, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 40.0
+                            },
+                            "uuid": "73317878-337a-47e0-8924-b501f06070c3"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol J2 Pin 24 [VCOM, Passive, Line]",
+                            "pos": {
+                                "x": 38.0,
+                                "y": 87.5
+                            },
+                            "uuid": "c0c43287-d1c0-4250-81fc-23a7886cf55b"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 25 [IO21, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 62.0
+                            },
+                            "uuid": "701cc1f6-c664-4b15-a5a7-affa98270510"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 27 [IO47, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 64.0
+                            },
+                            "uuid": "032c1895-b4b1-4afa-b4b6-3a044bcc56e3"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 29 [IO34, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 66.0
+                            },
+                            "uuid": "8473e473-fbbf-4d0f-ada7-db2fd0c0e4ec"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 30 [IO48, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 67.0
+                            },
+                            "uuid": "bc121e16-a53f-4800-a297-49c3f07d1596"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 31 [IO35, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 68.0
+                            },
+                            "uuid": "b6827d5f-26f5-448e-b454-85d196b682a0"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 32 [IO36, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 69.0
+                            },
+                            "uuid": "ced5e943-5537-402c-a92d-96d9b94ac6bb"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 33 [IO37, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 70.0
+                            },
+                            "uuid": "4fcf616e-f2d4-41b2-b300-d148722bb9ca"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 34 [IO38, Passive, Line]",
+                            "pos": {
+                                "x": 73.5,
+                                "y": 71.0
+                            },
+                            "uuid": "c2e50ba4-d7bd-474b-aee0-6c852b5e5ec9"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 66 [GND_25, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 66.0
+                            },
+                            "uuid": "7788bd7a-d3c1-48ea-ad89-b1f8d82ed215"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 67 [GND_26, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 67.0
+                            },
+                            "uuid": "2354421b-e747-400e-8a5d-faf3df036717"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 68 [GND_27, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 68.0
+                            },
+                            "uuid": "dac4c6e0-3675-4c6e-b044-016a7baf5cab"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 69 [GND_28, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 69.0
+                            },
+                            "uuid": "9aca045f-6266-400a-9db0-29b9b7f0c50c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 70 [GND_29, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 70.0
+                            },
+                            "uuid": "38b3859e-3466-4315-9cd3-73f25608c799"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 71 [GND_30, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 71.0
+                            },
+                            "uuid": "52617b24-8bc3-449a-b458-c42dbc5eba2a"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 72 [GND_31, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 72.0
+                            },
+                            "uuid": "b18f3581-d27f-4ce3-95ad-b90fd8b9212c"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Pin not connected",
+                    "items": [
+                        {
+                            "description": "Symbol IC1 Pin 73 [GND_32, Passive, Line]",
+                            "pos": {
+                                "x": 86.5,
+                                "y": 73.0
+                            },
+                            "uuid": "da3905b1-1989-4148-9c9a-c2c6fc73d6b7"
+                        }
+                    ],
+                    "severity": "error",
+                    "type": "pin_not_connected"
+                },
+                {
+                    "description": "Unconnected \"no connection\" flag",
+                    "items": [
+                        {
+                            "description": "No Connect",
+                            "pos": {
+                                "x": -43.5,
+                                "y": 3.5
+                            },
+                            "uuid": "ec138309-d5e5-4599-b5da-ea678704314d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "no_connect_dangling"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 2.50 mils",
+                            "pos": {
+                                "x": 30.0,
+                                "y": 42.5
+                            },
+                            "uuid": "af0a067f-d98d-4665-92e9-a981f73b1ce9"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 2.50 mils",
+                            "pos": {
+                                "x": 30.0,
+                                "y": 44.5
+                            },
+                            "uuid": "d80ea2dd-a5f6-4d2b-af5f-76191d16356c"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 5.00 mils",
+                            "pos": {
+                                "x": 40.5,
+                                "y": 37.0
+                            },
+                            "uuid": "a3191bd4-28d1-44ac-89e3-8b94831ddabe"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 3.00 mils",
+                            "pos": {
+                                "x": 28.5,
+                                "y": 52.0
+                            },
+                            "uuid": "70182e90-aedb-4f9f-a4f5-def3fb100bf3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 3.00 mils",
+                            "pos": {
+                                "x": 28.5,
+                                "y": 53.0
+                            },
+                            "uuid": "9e2d1f26-d863-4ced-8c62-c11adf119835"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 3.00 mils",
+                            "pos": {
+                                "x": 35.5,
+                                "y": 52.0
+                            },
+                            "uuid": "fab5cca5-3ab5-43c6-ab4a-6a80b11051e5"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 3.00 mils",
+                            "pos": {
+                                "x": 35.5,
+                                "y": 53.0
+                            },
+                            "uuid": "c746410a-a669-45af-ba24-f1d095b71e99"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 5.00 mils",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 64.5
+                            },
+                            "uuid": "847567c1-9c23-4341-80ea-d7a9d9f99972"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 5.00 mils",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 65.5
+                            },
+                            "uuid": "f3751f67-5702-4a5a-8311-92a20ae93bd7"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 5.00 mils",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 69.5
+                            },
+                            "uuid": "2b6c0c76-2c5f-44c9-b2c8-8c768c510d68"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 5.00 mils",
+                            "pos": {
+                                "x": 33.0,
+                                "y": 70.5
+                            },
+                            "uuid": "b4b6f700-f766-4036-ab3e-306de7aca491"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 2.00 mils",
+                            "pos": {
+                                "x": 75.5,
+                                "y": 41.0
+                            },
+                            "uuid": "2a3cde61-abe8-442f-b816-0f85edc2d50f"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 2.50 mils",
+                            "pos": {
+                                "x": 71.0,
+                                "y": 56.0
+                            },
+                            "uuid": "d7f19ba0-072f-4b79-87cd-836e7afb042a"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Horizontal Wire, length 2.50 mils",
+                            "pos": {
+                                "x": 71.0,
+                                "y": 57.0
+                            },
+                            "uuid": "81f0224f-2e5e-4bfe-82aa-b5ee0167882d"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                },
+                {
+                    "description": "Both GND and USB_GND are attached to the same items; GND will be used in the netlist",
+                    "items": [
+                        {
+                            "description": "Symbol #PWR03 Pin 1 [Power input, Line]",
+                            "pos": {
+                                "x": 23.5,
+                                "y": 53.0
+                            },
+                            "uuid": "7b7cff2a-533f-41da-84c5-37166d1a35bc"
+                        },
+                        {
+                            "description": "Label 'USB_GND'",
+                            "pos": {
+                                "x": 31.0,
+                                "y": 97.0
+                            },
+                            "uuid": "13a20fd2-a3ec-4c62-beca-1e7b451e9676"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "multiple_net_names"
+                },
+                {
+                    "description": "Unconnected wire endpoint",
+                    "items": [
+                        {
+                            "description": "Vertical Wire, length 2.00 mils",
+                            "pos": {
+                                "x": 27.0,
+                                "y": 108.5
+                            },
+                            "uuid": "4fad2c86-7268-4776-8a66-b13614e14ea3"
+                        }
+                    ],
+                    "severity": "warning",
+                    "type": "unconnected_wire_endpoint"
+                }
+            ]
+        }
+    ],
+    "source": "BardsAssistant.kicad_sch"
+}

@@ -1,0 +1,178 @@
+(footprint "LED_XL-3227RGB-RF"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "RGB LED 3.2x2.7mm http://www.avagotech.com/docs/AV02-0610EN")
+	(tags "LED 3227")
+	(property "Reference" "REF**"
+		(at 0 -2.3 0)
+		(layer "F.SilkS")
+		(uuid "8c456d90-ea6e-45fa-becc-59ac652e6b46")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "LED_XL-3227RGB-RF"
+		(at 0 2.45 0)
+		(layer "F.Fab")
+		(uuid "84933db8-bd3b-4983-9bfd-23f3e53d085f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5c0062c6-3680-4d1b-9e15-42c46a7804fd")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "1c110efd-cdff-4461-bb25-bfaab2ca1979")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -2.3 -1.5)
+		(end 2.25 1.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "259dac3c-e570-460f-887f-fe413b42700b")
+	)
+	(fp_poly
+		(pts
+			(xy 0.05 -0.1) (xy -0.1 0) (xy 0.05 0.05)
+		)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill yes)
+		(layer "F.SilkS")
+		(uuid "804a956c-4360-40e1-a351-c6b5dc5ae23a")
+	)
+	(fp_line
+		(start -2.55 -1.65)
+		(end -2.55 1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "d1fafc38-28dc-4956-806a-e2235c48c580")
+	)
+	(fp_line
+		(start -2.55 1.65)
+		(end 2.5 1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1b09af4e-39e2-4bc8-93b2-d67f71c531a0")
+	)
+	(fp_line
+		(start 2.5 -1.65)
+		(end -2.55 -1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "0bec5969-0540-4e7b-949c-19b5dd28ccc1")
+	)
+	(fp_line
+		(start 2.5 1.65)
+		(end 2.5 -1.65)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c9cdd34a-6e4a-4ac3-80b2-b735ac3db3ff")
+	)
+	(fp_rect
+		(start -1.6 -1.35)
+		(end 1.6 1.35)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "31c5d8be-e119-4837-a5b1-2c14c9e36788")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -2.3 0)
+		(layer "F.Fab")
+		(uuid "aafc57ff-bfeb-4da5-a774-32c7698cf2dd")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -1.35 -0.8 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "72f8691c-d964-42a5-8481-7c982b8e7b16")
+	)
+	(pad "2" smd rect
+		(at -1.35 0.8 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "92ae95d9-b9e8-48a9-9152-ea6697008a69")
+	)
+	(pad "3" smd rect
+		(at 1.35 -0.8 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "43aa4e47-49e6-4985-a0fd-9cf8f0de24c3")
+	)
+	(pad "4" smd rect
+		(at 1.35 0.8 180)
+		(size 1.5 1)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "bcb90df1-ddea-4b8f-99e9-fcab272833a7")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/LED_SMD.3dshapes/LED_RGB_1210.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)
