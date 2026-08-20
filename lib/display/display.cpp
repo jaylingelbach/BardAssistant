@@ -191,6 +191,120 @@ static void drawWrappedText(const char *text, int16_t left, int16_t top,
   flushLine();
 }
 
+static bool textFitsInBounds(const char *text, int16_t maxWidth,
+                             int16_t maxHeight, uint8_t textSize) {
+  if (displayDriver == nullptr || text == nullptr)
+    return false;
+
+  const int16_t lineHeight = static_cast<int16_t>(8 * textSize + 2);
+  int16_t cursorY = 0;
+
+  char lineBuf[160];
+  char wordBuf[80];
+  lineBuf[0] = '\0';
+
+  const char *cursor = text;
+
+  auto linesFull = [&]() -> bool {
+    return cursorY + lineHeight > maxHeight;
+  };
+
+  bool overflowed = false;
+
+  auto flushLine = [&]() {
+    if (lineBuf[0] == '\0')
+      return;
+    cursorY = static_cast<int16_t>(cursorY + lineHeight);
+    lineBuf[0] = '\0';
+    if (cursorY > maxHeight)
+      overflowed = true;
+  };
+
+  auto appendWord = [&](const char *word) {
+    if (word == nullptr || word[0] == '\0')
+      return;
+
+    char candidate[160];
+    if (lineBuf[0] == '\0') {
+      std::snprintf(candidate, sizeof(candidate), "%s", word);
+    } else {
+      std::snprintf(candidate, sizeof(candidate), "%s %s", lineBuf, word);
+    }
+
+    if (measureTextWidth(candidate, textSize) <=
+        static_cast<uint16_t>(maxWidth)) {
+      std::snprintf(lineBuf, sizeof(lineBuf), "%s", candidate);
+      return;
+    }
+
+    if (lineBuf[0] != '\0')
+      flushLine();
+
+    // Word wider than maxWidth: hard-break it across lines, same as
+    // drawWrappedText, so the line count matches the actual render.
+    if (measureTextWidth(word, textSize) > static_cast<uint16_t>(maxWidth)) {
+      const size_t wordLen = std::strlen(word);
+      size_t startIndex = 0;
+      while (startIndex < wordLen && !overflowed) {
+        char segment[160];
+        segment[0] = '\0';
+        size_t endIndex = startIndex;
+        while (endIndex < wordLen) {
+          const size_t segLen = endIndex - startIndex + 1;
+          if (segLen >= sizeof(segment))
+            break;
+          std::memcpy(segment, &word[startIndex], segLen);
+          segment[segLen] = '\0';
+          if (measureTextWidth(segment, textSize) >
+              static_cast<uint16_t>(maxWidth)) {
+            if (segLen == 1)
+              return;
+            segment[segLen - 1] = '\0';
+            break;
+          }
+          endIndex++;
+        }
+        cursorY = static_cast<int16_t>(cursorY + lineHeight);
+        if (cursorY > maxHeight)
+          overflowed = true;
+        startIndex += std::strlen(segment);
+      }
+      lineBuf[0] = '\0';
+      return;
+    }
+
+    std::snprintf(lineBuf, sizeof(lineBuf), "%s", word);
+  };
+
+  while (*cursor != '\0' && !overflowed) {
+    if (*cursor == '\n') {
+      flushLine();
+      cursor++;
+      continue;
+    }
+    while (*cursor == ' ')
+      cursor++;
+    if (*cursor == '\0')
+      break;
+
+    size_t wordLen = 0;
+    while (cursor[wordLen] != '\0' && cursor[wordLen] != ' ' &&
+           cursor[wordLen] != '\n') {
+      if (wordLen + 1 >= sizeof(wordBuf))
+        break;
+      wordLen++;
+    }
+    std::memcpy(wordBuf, cursor, wordLen);
+    wordBuf[wordLen] = '\0';
+
+    appendWord(wordBuf);
+    cursor += wordLen;
+  }
+
+  flushLine();
+  return !overflowed;
+}
+
 static void sanitizeForDisplay(const char *src, char *dst, size_t dstSize) {
   size_t s = 0, d = 0;
   while (src[s] != '\0' && d < dstSize - 1) {
@@ -362,18 +476,17 @@ bool displayRenderInsult(const char *text) {
 
   const int16_t margin = 8;
 
-  // Simple layout:
-  // - optional small header line
-  // - insult body wrapped below
   const uint8_t headerSize = 1;
-  const uint8_t bodySize = 2;
-
   const int16_t headerY = margin;
   const int16_t headerHeight = static_cast<int16_t>(8 * headerSize + 2);
 
   const int16_t bodyTop = static_cast<int16_t>(headerY + headerHeight + 6);
   const int16_t bodyHeight = static_cast<int16_t>(screenH - bodyTop - margin);
   const int16_t bodyWidth = static_cast<int16_t>(screenW - 2 * margin);
+
+  // Two-pass: prefer size 2, fall back to size 1 if text overflows.
+  const uint8_t bodySize =
+      textFitsInBounds(text, bodyWidth, bodyHeight, 2) ? 2 : 1;
 
   displayDriver->setFullWindow();
   displayDriver->firstPage();

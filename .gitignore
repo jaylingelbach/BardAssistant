@@ -1,9 +1,27 @@
 .pio/
 .vscode/
-.DS_Store
+**/.DS_Store
 # deps
 node_modules/
 
 # Editor / language server caches
 .cache/
 compile_commands.json
+
+
+# =========================
+# KiCad
+# =========================
+
+# KiCad lock files
+*.lck
+
+# KiCad backup files
+*.bak
+KiCad/BardsAssistant/BardsAssistant-backups/
+KiCad/BardsAssistant/ERC.json
+**/*.kicad_prl
+
+# Temporary/backup files
+~*
+*.tmp

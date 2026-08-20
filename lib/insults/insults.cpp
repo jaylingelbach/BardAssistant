@@ -1,8 +1,10 @@
 #include "insults.h"
 #include "persist_keys.h"
 #include <Arduino.h>
+#include <LittleFS.h>
 #include <Preferences.h>
-
+#include <string>
+#include <vector>
 // Internal-only enums (not exposed in insults.h)
 enum class RenderReason {
   Boot,
@@ -23,14 +25,22 @@ static constexpr uint32_t NVS_MAGIC = 0xBADC0FFE;
 static constexpr uint32_t MOCK_WORK_MS = 800;
 
 // Source data (future: load from flash/SD/API)
-static const char *const insults[] = {
-    "You fight like a dairy farmer.",
-    "You have the manners of a troll.",
-    "I’ve spoken with sewer rats more polite than you.",
-    "Oh look, both your weapons are tiny!",
-};
+// static const char *const insults[] = {
+//     "You fight like a dairy farmer.",
+//     "You have the manners of a troll.",
+//     "I’ve spoken with sewer rats more polite than you.",
+//     "Oh look, both your weapons are tiny!",
+// };
 
-static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
+// std::vector<std::string> insults = {
+//     "You fight like a dairy farmer.",
+//     "You have the manners of a troll.",
+//     "I’ve spoken with sewer rats more polite than you.",
+//     "Oh look, both your weapons are tiny!",
+// };
+std::vector<std::string> insults;
+
+// static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 
 // ───────────────── Persistent State (RTC) ─────────────────
 //
@@ -38,10 +48,13 @@ static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
 // That’s fine for “fast resume” style state; we still persist to NVS for
 // reliability across deeper resets / edge cases.
 
-static uint16_t deck[insultCount] = {0};
+// static uint16_t deck[insultCount] = {0};
+static std::vector<uint16_t> deck;
+
 static size_t deckPosition = 0;
 
-static constexpr size_t HISTORY_CAP = insultCount;
+static constexpr size_t HISTORY_CAP = 50;
+
 static RTC_DATA_ATTR uint16_t history[HISTORY_CAP] = {0};
 
 static RTC_DATA_ATTR size_t historyHead =
@@ -67,6 +80,24 @@ static uint16_t pendingInsultIndex = 0;
 
 // ───────────────── Utilities ─────────────────
 
+static std::vector<std::string> readDeckLineByLine(const char *path) {
+  File file = LittleFS.open(path, "r");
+  if (!file) {
+    Serial.println("[readDeckLineByLine] Failed to open file");
+    return {};
+  }
+  std::vector<std::string> lines;
+  while (file.available()) {
+    String line = file.readStringUntil('\n');
+    line.trim();
+    if (line.length() == 0)
+      continue;
+    lines.push_back(line.c_str());
+  }
+  file.close();
+  return lines;
+}
+
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
  * position.
@@ -75,11 +106,15 @@ static uint16_t pendingInsultIndex = 0;
  * pattern.
  */
 static void initDeck() {
-  for (size_t i = 0; i < insultCount; ++i) {
+  deck.resize(insults.size());
+  if (insults.empty()) {
+    return;
+  }
+  for (size_t i = 0; i < insults.size(); ++i) {
     deck[i] = static_cast<uint16_t>(i);
   }
 
-  for (size_t i = insultCount - 1; i > 0; --i) {
+  for (size_t i = insults.size() - 1; i > 0; --i) {
     const long r = random(0, static_cast<long>(i + 1)); // 0..i
     const uint16_t tmp = deck[i];
     deck[i] = deck[r];
@@ -95,11 +130,11 @@ static void initDeck() {
  * If the deck is exhausted, it is reshuffled automatically.
  */
 static uint16_t drawFromDeck() {
-  if (insultCount == 0) {
+  if (insults.size() == 0) {
     return 0;
   }
 
-  if (deckPosition >= insultCount) {
+  if (deckPosition >= insults.size()) {
     initDeck();
   }
 
@@ -217,18 +252,18 @@ static void renderTitleScreen() {
  */
 static void renderInsultAtIndex(uint16_t index, PendingAction action,
                                 RenderReason reason) {
-  if (insultCount == 0) {
+  if (insults.size() == 0) {
     Serial.println(F("[WARN] No insults available."));
     return;
   }
 
-  if (index >= insultCount) {
+  if (index >= insults.size()) {
     Serial.print(F("[WARN] Invalid insult index: "));
     Serial.println(index);
     return;
   }
 
-  const char *line = insults[index];
+  const char *line = insults[index].c_str();
 
   Serial.println(F("────────────────────────────"));
   switch (reason) {
@@ -307,18 +342,29 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
     return false;
   }
 
-  // Validate saved metadata against current compiled-in sizes.
-  if (insultCount == 0) {
+  // Validate saved metadata against current deck size.
+  if (insults.size() == 0) {
     return false;
   }
 
-  const bool curValid = (savedCur < insultCount);
+  const bool curValid = (savedCur < insults.size());
   const bool sizeValid = (savedSize <= HISTORY_CAP);
   const bool headValid = (savedHead < HISTORY_CAP);
   const bool posValid = (savedPos <= (savedSize == 0 ? 0 : (savedSize - 1)));
 
   if (!curValid || !sizeValid || !headValid || !posValid) {
     return false;
+  }
+
+  // Validate every active history entry against the current deck size.
+  // If insults.txt changed since last sleep, stale indices could be out of
+  // range.
+  const size_t oldest = wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
+  for (size_t i = 0; i < savedSize; i++) {
+    const size_t physical = wrapIndex(oldest + i, HISTORY_CAP);
+    if (history[physical] >= insults.size()) {
+      return false;
+    }
   }
 
   historyHead = savedHead;
@@ -433,6 +479,7 @@ static bool beginWorkFor(PendingAction action) {
  * @return true if an insult was rendered immediately; false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
+  insults = readDeckLineByLine("/insults.txt");
   initDeck();
 
   if (!wokeFromSleep) {
@@ -443,7 +490,7 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
 
     renderTitleScreen();
 
-    if (printInsultOnBoot && insultCount > 0) {
+    if (printInsultOnBoot && insults.size() > 0) {
       currentInsultIndex = drawFromDeck();
       appendToHistory(currentInsultIndex);
       renderInsultAtIndex(currentInsultIndex, PendingAction::Random,
@@ -462,7 +509,7 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
   }
 
   // Fallback: no saved state; draw one and seed history so Next/Prev behave.
-  if (insultCount == 0) {
+  if (insults.size() == 0) {
     return false;
   }
 
@@ -538,14 +585,14 @@ bool insultsPoll(uint32_t now) {
   return true;
 }
 
-bool insultsHasAny() { return insultCount > 0; }
+bool insultsHasAny() { return insults.size() > 0; }
 
 uint16_t insultsGetCurrentIndex() { return currentInsultIndex; }
 
 const char *insultsGetCurrentText() {
-  if (insultCount == 0)
+  if (insults.size() == 0)
     return "No insults";
-  if (currentInsultIndex >= insultCount)
+  if (currentInsultIndex >= insults.size())
     return "Invalid insult";
-  return insults[currentInsultIndex];
+  return insults[currentInsultIndex].c_str();
 }

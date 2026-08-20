@@ -1,5 +1,6 @@
 #include "driver/rtc_io.h"
 #include <Arduino.h>
+#include <LittleFS.h>
 #include <Preferences.h>
 #include <esp_sleep.h>
 
@@ -324,62 +325,68 @@ void setup() {
   Serial.begin(115200);
   delay(50);
 
+  if (!LittleFS.begin(true)) {
+    Serial.println("LittleFS mount failed — restarting");
+    Serial.flush();
+    ESP.restart();
+  }
+
   bool wokeFromSleep = false;
   {
-    Preferences prefs;
-    if (prefs.begin(NVS_NS, false)) {
-      const uint8_t slept = prefs.getUChar("slept", 0);
-      wokeFromSleep = (slept == 1);
+  Preferences prefs;
+  if (prefs.begin(NVS_NS, false)) {
+    const uint8_t slept = prefs.getUChar("slept", 0);
+    wokeFromSleep = (slept == 1);
 
-      // IMPORTANT: do NOT clear here.
-      // We clear later (after boot splash) so monitor reconnect/reset can't
-      // hide the wake classification.
-      needsSleepFlagClear = wokeFromSleep;
+    // IMPORTANT: do NOT clear here.
+    // We clear later (after boot splash) so monitor reconnect/reset can't
+    // hide the wake classification.
+    needsSleepFlagClear = wokeFromSleep;
 
-      prefs.end();
-    }
+    prefs.end();
   }
+}
 
-  Serial.println();
-  Serial.println(F("Booting Bard's Assistant..."));
+Serial.println();
+Serial.println(F("Booting Bard's Assistant..."));
 
-  // Seed RNG for deck shuffling
-  randomSeed(esp_random());
+// Seed RNG for deck shuffling
+randomSeed(esp_random());
 
-  // Ignore intent events briefly after boot/wake.
-  ignoreInputUntil = millis() + 200;
+// Ignore intent events briefly after boot/wake.
+ignoreInputUntil = millis() + 200;
 
-  ledInit();
+ledInit();
 
-  // After EXT0 deep-sleep wake, the wake pin may be latched as RTC IO.
-  // Deinit it so we can use it as a normal GPIO with INPUT_PULLUP.
-  // On cold boot this is a no-op (returns error, which we ignore).
-  rtc_gpio_deinit(WAKEUP_GPIO);
+// After EXT0 deep-sleep wake, the wake pin may be latched as RTC IO.
+// Deinit it so we can use it as a normal GPIO with INPUT_PULLUP.
+// On cold boot this is a no-op (returns error, which we ignore).
+rtc_gpio_deinit(WAKEUP_GPIO);
 
-  buttonInit(sleepButton, PIN_SLEEP_BUTTON);
-  buttonInit(randomButton, PIN_RANDOM_BUTTON);
-  buttonInit(nextButton, PIN_NEXT_BUTTON);
-  buttonInit(prevButton, PIN_PREV_BUTTON);
+buttonInit(sleepButton, PIN_SLEEP_BUTTON);
+buttonInit(randomButton, PIN_RANDOM_BUTTON);
+buttonInit(nextButton, PIN_NEXT_BUTTON);
+buttonInit(prevButton, PIN_PREV_BUTTON);
 
-  enterBoot();
+enterBoot();
 
-  if (!displayInit(displayConfig)) {
-    Serial.println(F("Display init failed"));
+if (!displayInit(displayConfig)) {
+  Serial.println(F("Display init failed"));
+}
+
+// Initialize insults state (restores from NVS on wake).
+insultsInit(PRINT_INSULT_ON_BOOT, wokeFromSleep);
+
+// Render policy:
+// - Wake: show last insult immediately (screen was blanked before sleep).
+// - Cold boot: show an insult only if PRINT_INSULT_ON_BOOT is enabled.
+if (insultsHasAny()) {
+  if (wokeFromSleep) {
+    displayRenderInsult(insultsGetCurrentText());
+  } else if (PRINT_INSULT_ON_BOOT) {
+    displayRenderInsult(insultsGetCurrentText());
   }
-
-  // Initialize insults state (restores from NVS on wake).
-  insultsInit(PRINT_INSULT_ON_BOOT, wokeFromSleep);
-
-  // Render policy:
-  // - Wake: show last insult immediately (screen was blanked before sleep).
-  // - Cold boot: show an insult only if PRINT_INSULT_ON_BOOT is enabled.
-  if (insultsHasAny()) {
-    if (wokeFromSleep) {
-      displayRenderInsult(insultsGetCurrentText());
-    } else if (PRINT_INSULT_ON_BOOT) {
-      displayRenderInsult(insultsGetCurrentText());
-    }
-  }
+}
 }
 
 /**
