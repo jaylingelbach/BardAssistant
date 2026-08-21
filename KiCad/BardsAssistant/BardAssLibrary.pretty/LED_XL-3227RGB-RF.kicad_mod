@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "9.0")
 	(layer "F.Cu")
-	(descr "XinLight XL-3227RGB-RF RGB LED 3.2x2.7mm")
+	(descr "RGB LED 3.2x2.7mm http://www.avagotech.com/docs/AV02-0610EN")
 	(tags "LED 3227")
 	(property "Reference" "REF**"
 		(at 0 -2.3 0)
