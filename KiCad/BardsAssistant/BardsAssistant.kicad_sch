@@ -6868,131 +6868,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:+3.3V"
-			(power)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "#PWR"
-				(at 0 -3.81 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Value" "+3.3V"
-				(at 0 3.556 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "global power"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "+3.3V_0_1"
-				(polyline
-					(pts
-						(xy -0.762 1.27) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 2.54) (xy 0.762 1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 0) (xy 0 2.54)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "+3.3V_1_1"
-				(pin power_in line
-					(at 0 0 90)
-					(length 0)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "power:+3V3"
 			(power)
 			(pin_numbers
@@ -7409,17 +7284,6 @@
 		)
 		(uuid "5ff09db5-f108-47ec-a251-eb8914ac2458")
 	)
-	(text "MINI-1 Data sheet"
-		(exclude_from_sim no)
-		(at 167.132 165.1 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(href "https://docs.sparkfun.com/SparkFun_Thing_Plus_ESP32-S3/assets/component_documentation/esp32-s3-mini-1_mini-1u_datasheet_en.pdf")
-		)
-		(uuid "7a36782a-85c4-4251-953e-3c6be60ea9cc")
-	)
 	(text "Linear battery charge management controller "
 		(exclude_from_sim no)
 		(at 243.84 49.784 0)
@@ -7542,12 +7406,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2aa5ac67-9418-4d57-973a-8fc9fce49d0b")
-	)
-	(junction
-		(at 198.12 20.32)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2e22aa4c-ac18-4da5-aad3-9402a4038c3f")
 	)
 	(junction
 		(at 137.16 86.36)
@@ -7706,6 +7564,12 @@
 		(uuid "8e96fb13-67cc-413c-a11e-e931ec631a83")
 	)
 	(junction
+		(at 229.87 140.97)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "97f55fa2-0d43-4dcb-9a49-354746962f81")
+	)
+	(junction
 		(at 228.6 30.48)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -7766,12 +7630,6 @@
 		(uuid "b05670f9-c8a4-472c-9b12-eb0f95ce1992")
 	)
 	(junction
-		(at 30.48 166.37)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b675ef66-288d-4a45-9ccc-56d24b40b826")
-	)
-	(junction
 		(at 142.24 111.76)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -7814,12 +7672,6 @@
 		(uuid "c25fb745-21fd-44cc-ab5e-73cbf886066a")
 	)
 	(junction
-		(at 229.87 140.97)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c3c1ed3e-643c-464c-ab43-60d50c29f449")
-	)
-	(junction
 		(at 66.04 173.99)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -7854,6 +7706,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e0df8017-7689-47d5-853f-d45d941dbae4")
+	)
+	(junction
+		(at 30.48 166.37)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e953bab1-e884-4cac-80c7-69744a1975da")
 	)
 	(junction
 		(at 46.99 34.29)
@@ -7942,10 +7800,6 @@
 		(uuid "4c8a8048-e4a5-4b12-bf6a-e9819c756661")
 	)
 	(no_connect
-		(at 184.15 152.4)
-		(uuid "57e47bfb-221e-46b9-a531-0b30de5228f7")
-	)
-	(no_connect
 		(at 90.17 130.81)
 		(uuid "58dae3fe-2a8d-4635-8707-d9413897b9a8")
 	)
@@ -7978,12 +7832,12 @@
 		(uuid "89bc8c6d-27af-4003-bbaa-85971ad61112")
 	)
 	(no_connect
-		(at 184.15 134.62)
-		(uuid "b03e5702-0763-45e7-b9eb-2655e4ee2c57")
+		(at 185.42 78.74)
+		(uuid "8ae1f530-672c-4bbb-9276-c95e45fe3b7c")
 	)
 	(no_connect
-		(at 184.15 149.86)
-		(uuid "b2cf17e2-0896-4aa4-aec7-2043ffaeb967")
+		(at 184.15 134.62)
+		(uuid "b03e5702-0763-45e7-b9eb-2655e4ee2c57")
 	)
 	(no_connect
 		(at 151.13 139.7)
@@ -7996,6 +7850,10 @@
 	(no_connect
 		(at 151.13 147.32)
 		(uuid "c35bb824-d932-4d7c-893b-ebb243dd384f")
+	)
+	(no_connect
+		(at 185.42 81.28)
+		(uuid "cb7be005-e340-4162-9667-b82b1d8e48e1")
 	)
 	(no_connect
 		(at 60.96 95.25)
@@ -8070,6 +7928,16 @@
 			(type default)
 		)
 		(uuid "02987703-4ce5-42d8-87ea-a551d00335ec")
+	)
+	(wire
+		(pts
+			(xy 185.42 129.54) (xy 184.15 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0388a344-450d-42dd-bad8-5730860e9202")
 	)
 	(wire
 		(pts
@@ -8303,6 +8171,16 @@
 	)
 	(wire
 		(pts
+			(xy 30.48 161.29) (xy 30.48 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "11422016-c049-427d-8f0c-fa55dd92700a")
+	)
+	(wire
+		(pts
 			(xy 31.75 172.72) (xy 31.75 175.26)
 		)
 		(stroke
@@ -8373,7 +8251,7 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 129.54) (xy 186.69 151.13)
+			(xy 186.69 127) (xy 186.69 148.59)
 		)
 		(stroke
 			(width 0)
@@ -8563,6 +8441,16 @@
 	)
 	(wire
 		(pts
+			(xy 226.06 142.24) (xy 229.87 142.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "290c1daf-3091-4adc-aa37-b087ce8a8c82")
+	)
+	(wire
+		(pts
 			(xy 264.16 20.32) (xy 274.32 20.32)
 		)
 		(stroke
@@ -8570,16 +8458,6 @@
 			(type default)
 		)
 		(uuid "296bef07-913b-4719-b9d4-8047619823d8")
-	)
-	(wire
-		(pts
-			(xy 30.48 161.29) (xy 30.48 166.37)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2a48e6b5-28c1-45ef-a5e7-cbb6ffa5772b")
 	)
 	(wire
 		(pts
@@ -8753,6 +8631,16 @@
 	)
 	(wire
 		(pts
+			(xy 189.23 149.86) (xy 189.23 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3eb79516-5114-44ce-9543-e683556cdd9d")
+	)
+	(wire
+		(pts
 			(xy 184.15 71.12) (xy 187.96 71.12)
 		)
 		(stroke
@@ -8843,16 +8731,6 @@
 	)
 	(wire
 		(pts
-			(xy 229.87 140.97) (xy 229.87 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "46499b51-00af-406e-a288-e45ad298096c")
-	)
-	(wire
-		(pts
 			(xy 43.18 27.94) (xy 50.8 27.94)
 		)
 		(stroke
@@ -8883,7 +8761,7 @@
 	)
 	(wire
 		(pts
-			(xy 187.96 20.32) (xy 198.12 20.32)
+			(xy 187.96 20.32) (xy 204.47 20.32)
 		)
 		(stroke
 			(width 0)
@@ -9153,16 +9031,6 @@
 	)
 	(wire
 		(pts
-			(xy 30.48 166.37) (xy 36.83 166.37)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "55b6bf6e-b3ce-45e7-98e9-ba45ed553e5f")
-	)
-	(wire
-		(pts
 			(xy 151.13 99.06) (xy 142.24 99.06)
 		)
 		(stroke
@@ -9333,6 +9201,16 @@
 	)
 	(wire
 		(pts
+			(xy 229.87 142.24) (xy 229.87 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "69fc0e6d-d1b2-4ac5-a2f0-fece870f32f3")
+	)
+	(wire
+		(pts
 			(xy 62.23 83.82) (xy 63.5 83.82)
 		)
 		(stroke
@@ -9383,16 +9261,6 @@
 	)
 	(wire
 		(pts
-			(xy 229.87 142.24) (xy 226.06 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6c04b75b-09cd-4dc8-a5b3-c021433bb9db")
-	)
-	(wire
-		(pts
 			(xy 208.28 20.32) (xy 208.28 25.4)
 		)
 		(stroke
@@ -9400,6 +9268,16 @@
 			(type default)
 		)
 		(uuid "6c17e17f-06a3-4190-bbfa-57d4b9089871")
+	)
+	(wire
+		(pts
+			(xy 30.48 166.37) (xy 36.83 166.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d75fb54-cbc9-428a-8ce1-431d121c61c7")
 	)
 	(wire
 		(pts
@@ -9883,16 +9761,6 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 20.32) (xy 204.47 20.32)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9603ab48-6ce9-44b0-913a-0fb76509281c")
-	)
-	(wire
-		(pts
 			(xy 191.77 119.38) (xy 184.15 119.38)
 		)
 		(stroke
@@ -9963,6 +9831,16 @@
 	)
 	(wire
 		(pts
+			(xy 184.15 152.4) (xy 187.96 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b06b169-86f4-4735-a756-821aa1f7678a")
+	)
+	(wire
+		(pts
 			(xy 129.54 86.36) (xy 128.27 86.36)
 		)
 		(stroke
@@ -10000,6 +9878,16 @@
 			(type default)
 		)
 		(uuid "9c7ff63a-c88c-4d6e-8826-c39ad100e681")
+	)
+	(wire
+		(pts
+			(xy 185.42 127) (xy 185.42 129.54)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e72de45-d770-4d03-94bf-eab3a6214742")
 	)
 	(wire
 		(pts
@@ -10073,7 +9961,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 129.54) (xy 186.69 129.54)
+			(xy 185.42 127) (xy 186.69 127)
 		)
 		(stroke
 			(width 0)
@@ -10283,6 +10171,16 @@
 	)
 	(wire
 		(pts
+			(xy 187.96 162.56) (xy 187.96 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b5adf223-8784-4bfa-8e6d-dc2d9cb15bca")
+	)
+	(wire
+		(pts
 			(xy 74.93 163.83) (xy 81.28 163.83)
 		)
 		(stroke
@@ -10423,6 +10321,16 @@
 	)
 	(wire
 		(pts
+			(xy 187.96 162.56) (xy 196.85 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c329a0c0-5593-43f3-93ab-dcf8a4ced093")
+	)
+	(wire
+		(pts
 			(xy 17.78 172.72) (xy 31.75 172.72)
 		)
 		(stroke
@@ -10453,13 +10361,13 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 19.05) (xy 198.12 20.32)
+			(xy 184.15 149.86) (xy 189.23 149.86)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c652afe4-6d1b-47fe-8e53-ed9bfb741d69")
+		(uuid "c6273ec1-374b-47b5-a44c-c78e4fc00d31")
 	)
 	(wire
 		(pts
@@ -10480,6 +10388,16 @@
 			(type default)
 		)
 		(uuid "c764a24a-aeaa-4848-9c71-dad14b4986fe")
+	)
+	(wire
+		(pts
+			(xy 229.87 139.7) (xy 229.87 140.97)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ca1a37e9-a65a-4222-87d1-481d6d1b031b")
 	)
 	(wire
 		(pts
@@ -10660,16 +10578,6 @@
 			(type default)
 		)
 		(uuid "d7b529e6-33a1-442e-a6f6-849eb95fc886")
-	)
-	(wire
-		(pts
-			(xy 189.23 162.56) (xy 196.85 162.56)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d88d7b0b-66fa-46a9-936a-08429f05bd8f")
 	)
 	(wire
 		(pts
@@ -11003,7 +10911,7 @@
 	)
 	(wire
 		(pts
-			(xy 186.69 151.13) (xy 193.04 151.13)
+			(xy 186.69 148.59) (xy 193.04 148.59)
 		)
 		(stroke
 			(width 0)
@@ -11251,16 +11159,6 @@
 		)
 		(uuid "42e4cda5-2dba-48be-9b9a-58bd35a388c8")
 	)
-	(label "TP8"
-		(at 185.42 78.74 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4508845d-61fc-40c7-bd77-a40a52571b6d")
-	)
 	(label "USB_5V"
 		(at 187.96 20.32 0)
 		(effects
@@ -11491,16 +11389,6 @@
 		)
 		(uuid "d1abe888-46b4-41fa-8af5-567936347a67")
 	)
-	(label "TP9"
-		(at 189.23 162.56 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e28ec30a-c423-48d1-a142-306c78b3e66e")
-	)
 	(label "PREVGL"
 		(at 31.75 186.69 180)
 		(effects
@@ -11520,26 +11408,6 @@
 			(justify left bottom)
 		)
 		(uuid "e581ca64-0956-48a8-a5a0-70a56d0d403c")
-	)
-	(label "TP9"
-		(at 185.42 81.28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e5a5dd0f-b969-4314-aba5-ca42010f8064")
-	)
-	(label "TP8"
-		(at 189.23 157.48 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e686d83e-6099-41d7-9897-3e4ce661ed91")
 	)
 	(label "MOSI"
 		(at 77.47 161.29 0)
@@ -11570,28 +11438,6 @@
 			(justify left bottom)
 		)
 		(uuid "f106834d-a198-4d29-b773-64288d2bd3ff")
-	)
-	(global_label "VDD33"
-		(shape input)
-		(at 30.48 161.29 90)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "1f750083-d6ef-49a5-83f0-462a6aa9786c")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 30.48 152.2572 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -11778,15 +11624,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5307781"
-			(at 66.04 64.77 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "JK-SMD0805-100-6"
 			(at 66.04 64.77 90)
 			(effects
@@ -11842,6 +11679,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 66.04 64.77 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5307781"
 			(at 66.04 64.77 90)
 			(effects
 				(font
@@ -12060,16 +11906,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 123.19 80.01 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KB8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -12106,6 +11943,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 123.19 80.01 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -12332,7 +12178,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2797213"
+		(property "Status" "Locked"
 			(at 95.25 156.21 0)
 			(effects
 				(font
@@ -12341,16 +12187,7 @@
 				(hide yes)
 			)
 		)
-		(property "Status" ""
-			(at 95.25 156.21 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Notes" "Verify against data sheet"
+		(property "Notes" ""
 			(at 95.25 156.21 0)
 			(effects
 				(font
@@ -12378,6 +12215,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 95.25 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C2797213"
 			(at 95.25 156.21 0)
 			(effects
 				(font
@@ -12635,15 +12481,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2913206"
-			(at 184.15 68.58 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Notes" ""
 			(at 184.15 68.58 0)
 			(effects
@@ -12672,6 +12509,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 184.15 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C2913206"
 			(at 184.15 68.58 0)
 			(effects
 				(font
@@ -12988,15 +12834,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 220.98 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 220.98 76.2 0)
 			(effects
@@ -13025,6 +12862,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 220.98 76.2 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 220.98 76.2 0)
 			(effects
 				(font
@@ -13106,15 +12952,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C7519"
-			(at 71.12 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "USBLC6-2SC6"
 			(at 71.12 102.87 0)
 			(effects
@@ -13161,6 +12998,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 71.12 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C7519"
 			(at 71.12 102.87 0)
 			(effects
 				(font
@@ -13331,15 +13177,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C22936"
-			(at 45.72 134.62 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 45.72 134.62 0)
 			(effects
@@ -13377,6 +13214,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 45.72 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C22936"
 			(at 45.72 134.62 0)
 			(effects
 				(font
@@ -13537,15 +13383,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5143397"
-			(at 45.72 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 45.72 80.01 0)
 			(effects
@@ -13583,6 +13420,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 45.72 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C5143397"
 			(at 45.72 80.01 0)
 			(effects
 				(font
@@ -13853,15 +13699,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25076"
-			(at 43.18 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 43.18 31.75 0)
 			(effects
@@ -13899,6 +13736,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 43.18 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25076"
 			(at 43.18 31.75 0)
 			(effects
 				(font
@@ -14105,15 +13951,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25117"
-			(at 223.52 30.48 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF4700TCE"
 			(at 223.52 30.48 90)
 			(effects
@@ -14160,6 +13997,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 223.52 30.48 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25117"
 			(at 223.52 30.48 90)
 			(effects
 				(font
@@ -14300,15 +14146,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C19702"
-			(at 264.16 24.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "CL10A106KP8NNNC"
 			(at 264.16 24.13 0)
 			(effects
@@ -14355,6 +14192,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 264.16 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C19702"
 			(at 264.16 24.13 0)
 			(effects
 				(font
@@ -14450,15 +14296,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15127"
-			(at 171.45 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 171.45 31.75 0)
 			(effects
@@ -14496,6 +14333,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 171.45 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C15127"
 			(at 171.45 31.75 0)
 			(effects
 				(font
@@ -14592,15 +14438,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C22936"
-			(at 45.72 124.46 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 45.72 124.46 0)
 			(effects
@@ -14638,6 +14475,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 45.72 124.46 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C22936"
 			(at 45.72 124.46 0)
 			(effects
 				(font
@@ -14713,15 +14559,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25117"
-			(at 223.52 25.4 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF4700TCE"
 			(at 223.52 25.4 90)
 			(effects
@@ -14768,6 +14605,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 223.52 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25117"
 			(at 223.52 25.4 90)
 			(effects
 				(font
@@ -14870,15 +14716,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 220.98 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 220.98 99.06 0)
 			(effects
@@ -14907,6 +14744,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 220.98 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 220.98 99.06 0)
 			(effects
 				(font
@@ -15009,16 +14855,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 73.66 133.35 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -15037,6 +14874,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 73.66 133.35 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -15065,7 +14911,7 @@
 		(at 196.85 157.48 270)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -15133,16 +14979,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
-			(at 196.85 157.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Status" ""
+		(property "Status" "Locked"
 			(at 196.85 157.48 0)
 			(effects
 				(font
@@ -15227,15 +15064,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C77336"
-			(at 31.75 179.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "MBR0530"
 			(at 31.75 179.07 90)
 			(effects
@@ -15282,6 +15110,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 31.75 179.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C77336"
 			(at 31.75 179.07 90)
 			(effects
 				(font
@@ -15372,12 +15209,78 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 229.87 139.7 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "4273111b-9533-4d10-b685-51fdb433d4bb")
+		(property "Reference" "#PWR08"
+			(at 229.87 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 229.87 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 229.87 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 229.87 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 229.87 139.7 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cf731e6b-343b-47c0-ad84-c23d23b9777c")
+		)
+		(instances
+			(project ""
+				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
+					(reference "#PWR08")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 193.04 67.31 270)
 		(mirror x)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "43962a63-0a3b-43e2-a6be-ef6c10d160c8")
@@ -15454,6 +15357,15 @@
 				(hide yes)
 			)
 		)
+		(property "Status" "Locked"
+			(at 193.04 67.31 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "92624a40-64dc-485a-97fa-d19c2f7aa9a3")
 		)
@@ -15461,109 +15373,6 @@
 			(project ""
 				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
 					(reference "TP4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 198.12 19.05 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "443fd86c-7e60-460d-9994-33dd5b7a4bd5")
-		(property "Reference" "TP6"
-			(at 196.596 13.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 200.66 17.0179 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_2.0x2.0mm"
-			(at 203.2 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 203.2 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 198.12 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Notes" "Empty ~3.2v, nominal ~3.7, full ~4.2"
-			(at 198.12 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Height" ""
-			(at 198.12 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser Part Number" ""
-			(at 198.12 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser Price/Stock" ""
-			(at 198.12 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "c7467e3a-d71f-4337-98b4-e8ba3fccd1bb")
-		)
-		(instances
-			(project "BardsAssistant"
-				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
-					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -15687,15 +15496,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25905"
-			(at 66.04 72.39 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF5101TCE"
 			(at 66.04 72.39 90)
 			(effects
@@ -15742,6 +15542,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 66.04 72.39 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25905"
 			(at 66.04 72.39 90)
 			(effects
 				(font
@@ -15966,15 +15775,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C85840"
-			(at 76.2 64.77 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 76.2 64.77 0)
 			(effects
@@ -16012,6 +15812,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 76.2 64.77 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C85840"
 			(at 76.2 64.77 90)
 			(effects
 				(font
@@ -16171,15 +15980,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C424093"
-			(at 240.03 25.4 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 240.03 25.4 0)
 			(effects
@@ -16217,6 +16017,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 240.03 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C424093"
 			(at 240.03 25.4 0)
 			(effects
 				(font
@@ -16387,15 +16196,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C14663"
-			(at 135.89 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 135.89 31.75 0)
 			(effects
@@ -16405,7 +16205,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "Using 50V bc 10v is extended parts catalog for jlc"
+		(property "Notes" ""
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16433,6 +16233,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 135.89 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C14663"
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16528,7 +16337,7 @@
 		(at 173.99 25.4 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -16577,7 +16386,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "plugged SYS ≈ 4.7-5V,  unplugged SYS ≈ BAT"
+		(property "Notes" ""
 			(at 173.99 25.4 90)
 			(effects
 				(font
@@ -16605,6 +16414,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 173.99 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
 			(at 173.99 25.4 90)
 			(effects
 				(font
@@ -16706,15 +16524,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C96512"
-			(at 207.01 80.01 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "ESD9B3.3ST5G"
 			(at 207.01 80.01 90)
 			(effects
@@ -16734,6 +16543,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 207.01 80.01 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C96512"
 			(at 207.01 80.01 90)
 			(effects
 				(font
@@ -16877,15 +16695,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C19702"
-			(at 204.47 24.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "CL10A106KP8NNNC"
 			(at 204.47 24.13 0)
 			(effects
@@ -16940,6 +16749,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C19702"
+			(at 204.47 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "2f6e16aa-1b8e-4ce8-b582-6e9cccc4d80c")
 		)
@@ -16950,72 +16768,6 @@
 			(project "BardsAssistant"
 				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
 					(reference "C22")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3.3V")
-		(at 229.87 140.97 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "669c39f9-bfab-4c44-95ce-4864dd7de6a8")
-		(property "Reference" "#PWR08"
-			(at 229.87 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3V"
-			(at 229.616 137.16 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 229.87 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 229.87 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 229.87 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6b205320-7c91-4518-88e2-5251c9d95db2")
-		)
-		(instances
-			(project ""
-				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
-					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -17231,15 +16983,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 220.98 109.22 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 220.98 109.22 0)
 			(effects
@@ -17268,6 +17011,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 220.98 109.22 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 220.98 109.22 0)
 			(effects
 				(font
@@ -17485,16 +17237,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 220.98 69.85 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KB8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17531,6 +17274,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 220.98 69.85 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17639,15 +17391,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C469327"
-			(at 43.18 148.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "SI1308EDL-T1-GE3"
 			(at 43.18 148.59 0)
 			(effects
@@ -17667,6 +17410,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 43.18 148.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C469327"
 			(at 43.18 148.59 0)
 			(effects
 				(font
@@ -17772,16 +17524,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 181.61 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 181.61 90)
 			(effects
 				(font
@@ -17808,6 +17551,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1712"
+			(at 72.39 181.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a04c6fd3-67fc-4c23-8b5b-fda78a49281e")
 		)
@@ -17825,16 +17577,15 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 193.04 151.13 270)
+		(at 193.04 148.59 270)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "782bd8e7-56f4-4b09-a0c2-1b815404f717")
 		(property "Reference" "TP7"
-			(at 198.12 149.8599 90)
+			(at 197.612 149.606 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17843,7 +17594,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 198.12 152.3999 90)
+			(at 197.104 151.638 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17852,7 +17603,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_2.0x2.0mm"
-			(at 193.04 156.21 0)
+			(at 193.04 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17861,7 +17612,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 193.04 156.21 0)
+			(at 193.04 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17870,7 +17621,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 193.04 151.13 0)
+			(at 193.04 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17879,7 +17630,7 @@
 			)
 		)
 		(property "Manufacturer" ""
-			(at 193.04 151.13 0)
+			(at 193.04 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17888,7 +17639,7 @@
 			)
 		)
 		(property "MPN" ""
-			(at 193.04 151.13 0)
+			(at 193.04 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17896,17 +17647,8 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
-			(at 193.04 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Status" ""
-			(at 193.04 151.13 0)
+		(property "Status" "Locked"
+			(at 193.04 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -17915,7 +17657,7 @@
 			)
 		)
 		(property "Notes" ""
-			(at 193.04 151.13 0)
+			(at 193.04 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18015,15 +17757,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C23138"
-			(at 207.01 147.32 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0603WAF3300T5E"
 			(at 207.01 147.32 90)
 			(effects
@@ -18043,6 +17776,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 207.01 147.32 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C23138"
 			(at 207.01 147.32 90)
 			(effects
 				(font
@@ -18210,15 +17952,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 220.98 88.9 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 220.98 88.9 0)
 			(effects
@@ -18247,6 +17980,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 220.98 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 220.98 88.9 0)
 			(effects
 				(font
@@ -18331,16 +18073,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 163.83 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KB8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18377,6 +18110,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 163.83 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18474,15 +18216,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C157932"
-			(at 281.94 22.86 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 281.94 22.86 0)
 			(effects
@@ -18520,6 +18253,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 281.94 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C157932"
 			(at 281.94 22.86 0)
 			(effects
 				(font
@@ -18614,15 +18356,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C9941"
-			(at 60.96 19.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 60.96 19.05 0)
 			(effects
@@ -18660,6 +18393,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 60.96 19.05 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C9941"
 			(at 60.96 19.05 90)
 			(effects
 				(font
@@ -18763,15 +18505,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C23138"
-			(at 207.01 142.24 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0603WAF3300T5E"
 			(at 207.01 142.24 90)
 			(effects
@@ -18791,6 +18524,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 207.01 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C23138"
 			(at 207.01 142.24 90)
 			(effects
 				(font
@@ -18893,16 +18635,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 173.99 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -18921,6 +18654,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 173.99 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -19014,15 +18756,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C19702"
-			(at 80.01 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 80.01 31.75 0)
 			(effects
@@ -19060,6 +18793,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 80.01 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C19702"
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -19219,15 +18961,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C14663"
-			(at 43.18 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 43.18 36.83 0)
 			(effects
@@ -19237,7 +18970,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "X5R 50V bc 10V is extended parts catalog in jlc."
+		(property "Notes" ""
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -19265,6 +18998,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 43.18 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C14663"
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -19359,15 +19101,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C53663"
-			(at 39.37 166.37 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 39.37 166.37 0)
 			(effects
@@ -19405,6 +19138,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 39.37 166.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C53663"
 			(at 39.37 166.37 90)
 			(effects
 				(font
@@ -19483,15 +19225,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25744"
-			(at 191.77 83.82 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF1002TCE"
 			(at 191.77 83.82 90)
 			(effects
@@ -19538,6 +19271,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 191.77 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25744"
 			(at 191.77 83.82 90)
 			(effects
 				(font
@@ -19640,16 +19382,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 176.53 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19668,6 +19401,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 176.53 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19827,15 +19569,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C28060"
-			(at 60.96 33.02 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 60.96 33.02 0)
 			(effects
@@ -19845,7 +19578,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "Check footprint"
+		(property "Notes" ""
 			(at 60.96 33.02 0)
 			(effects
 				(font
@@ -19873,6 +19606,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 60.96 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C28060"
 			(at 60.96 33.02 0)
 			(effects
 				(font
@@ -19928,7 +19670,7 @@
 		(at 274.32 20.32 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "9c178cd6-ffdc-4479-bdb0-51cb4bc1a3d6")
@@ -19978,7 +19720,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "Empty ~3.2v, nominal ~3.7, full ~4.2"
+		(property "Notes" ""
 			(at 274.32 20.32 0)
 			(effects
 				(font
@@ -20006,6 +19748,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 274.32 20.32 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
 			(at 274.32 20.32 0)
 			(effects
 				(font
@@ -20163,7 +19914,7 @@
 		(at 81.28 63.5 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "a45e3a54-f79c-494c-8d27-2c71a01c0982")
@@ -20213,7 +19964,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "TP1 Expected 5V"
+		(property "Notes" ""
 			(at 81.28 63.5 0)
 			(effects
 				(font
@@ -20241,6 +19992,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 81.28 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
 			(at 81.28 63.5 0)
 			(effects
 				(font
@@ -20472,15 +20232,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C965844"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "XL-3227RGB-RF"
 			(at 220.98 142.24 0)
 			(effects
@@ -20500,6 +20251,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 220.98 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C965844"
 			(at 220.98 142.24 0)
 			(effects
 				(font
@@ -20584,15 +20344,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25744"
-			(at 133.35 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF1002TCE"
 			(at 133.35 80.01 0)
 			(effects
@@ -20639,6 +20390,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 133.35 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25744"
 			(at 133.35 80.01 0)
 			(effects
 				(font
@@ -20734,15 +20494,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2480"
-			(at 181.61 27.94 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 181.61 27.94 0)
 			(effects
@@ -20788,6 +20539,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C2480"
+			(at 181.61 27.94 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "77e536c9-40a4-408e-8576-f1372349b9f2")
 		)
@@ -20808,7 +20568,7 @@
 		(at 123.19 38.1 90)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "b48d7ff3-e032-4b53-995d-921c9de7a982")
@@ -20820,13 +20580,12 @@
 				)
 			)
 		)
-		(property "Value" "TestPoint"
+		(property "Value" "GND"
 			(at 119.888 35.56 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(hide yes)
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_2.0x2.0mm"
@@ -20856,7 +20615,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "Ground"
+		(property "Notes" ""
 			(at 123.19 38.1 90)
 			(effects
 				(font
@@ -20885,6 +20644,33 @@
 		)
 		(property "Mouser Price/Stock" ""
 			(at 123.19 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
+			(at 123.19 38.1 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" ""
+			(at 123.19 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" ""
+			(at 123.19 38.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -21050,15 +20836,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C23138"
-			(at 207.01 137.16 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0603WAF3300T5E"
 			(at 207.01 137.16 90)
 			(effects
@@ -21078,6 +20855,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 207.01 137.16 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C23138"
 			(at 207.01 137.16 90)
 			(effects
 				(font
@@ -21153,15 +20939,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25741"
-			(at 160.02 22.86 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF1003TCE"
 			(at 160.02 22.86 90)
 			(effects
@@ -21208,6 +20985,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 160.02 22.86 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25741"
 			(at 160.02 22.86 90)
 			(effects
 				(font
@@ -21353,15 +21139,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C77336"
-			(at 45.72 179.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "MBR0530"
 			(at 45.72 179.07 90)
 			(effects
@@ -21408,6 +21185,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 45.72 179.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C77336"
 			(at 45.72 179.07 90)
 			(effects
 				(font
@@ -21576,15 +21362,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C1779"
-			(at 21.59 166.37 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "CL21A475KAQNNNE"
 			(at 21.59 166.37 90)
 			(effects
@@ -21604,6 +21381,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 21.59 166.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1779"
 			(at 21.59 166.37 90)
 			(effects
 				(font
@@ -21745,15 +21531,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25744"
-			(at 25.4 148.59 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF1002TCE"
 			(at 25.4 148.59 90)
 			(effects
@@ -21800,6 +21577,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 25.4 148.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25744"
 			(at 25.4 148.59 90)
 			(effects
 				(font
@@ -22024,15 +21810,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C19702"
-			(at 88.9 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 88.9 31.75 0)
 			(effects
@@ -22070,6 +21847,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 88.9 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C19702"
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -22172,15 +21958,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2286"
-			(at 215.9 25.4 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 215.9 25.4 0)
 			(effects
@@ -22218,6 +21995,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 215.9 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C2286"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -22311,15 +22097,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C22936"
-			(at 45.72 129.54 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 45.72 129.54 0)
 			(effects
@@ -22357,6 +22134,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 45.72 129.54 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C22936"
 			(at 45.72 129.54 0)
 			(effects
 				(font
@@ -22459,15 +22245,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C1779"
-			(at 39.37 172.72 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "CL21A475KAQNNNE"
 			(at 39.37 172.72 90)
 			(effects
@@ -22487,6 +22264,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 39.37 172.72 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1779"
 			(at 39.37 172.72 90)
 			(effects
 				(font
@@ -22582,15 +22368,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C45783"
-			(at 124.46 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 124.46 31.75 0)
 			(effects
@@ -22628,6 +22405,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 124.46 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C45783"
 			(at 124.46 31.75 0)
 			(effects
 				(font
@@ -22787,15 +22573,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25905"
-			(at 255.27 25.4 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 255.27 25.4 0)
 			(effects
@@ -22833,6 +22610,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 255.27 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25905"
 			(at 255.27 25.4 90)
 			(effects
 				(font
@@ -23004,15 +22790,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 123.19 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 123.19 86.36 0)
 			(effects
@@ -23041,6 +22818,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 123.19 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 123.19 86.36 0)
 			(effects
 				(font
@@ -23143,15 +22929,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C2297"
-			(at 215.9 30.48 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 215.9 30.48 0)
 			(effects
@@ -23189,6 +22966,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 215.9 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C2297"
 			(at 215.9 30.48 0)
 			(effects
 				(font
@@ -23291,15 +23077,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C720477"
-			(at 220.98 119.38 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "TS-1088-AR02016"
 			(at 220.98 119.38 0)
 			(effects
@@ -23328,6 +23105,15 @@
 			)
 		)
 		(property "Notes" ""
+			(at 220.98 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C720477"
 			(at 220.98 119.38 0)
 			(effects
 				(font
@@ -23496,16 +23282,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 184.15 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23524,6 +23301,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 184.15 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23602,15 +23388,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C77336"
-			(at 17.78 179.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "MBR0530"
 			(at 17.78 179.07 90)
 			(effects
@@ -23657,6 +23434,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 17.78 179.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C77336"
 			(at 17.78 179.07 90)
 			(effects
 				(font
@@ -23759,16 +23545,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 171.45 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23787,6 +23564,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 171.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23815,7 +23601,7 @@
 		(at 196.85 162.56 270)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
@@ -23883,16 +23669,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
-			(at 196.85 162.56 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Status" ""
+		(property "Status" "Locked"
 			(at 196.85 162.56 0)
 			(effects
 				(font
@@ -24001,16 +23778,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 72.39 179.07 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -24029,6 +23797,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 72.39 179.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C1712"
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -24170,15 +23947,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25905"
-			(at 66.04 69.85 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF5101TCE"
 			(at 66.04 69.85 90)
 			(effects
@@ -24225,6 +23993,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 66.04 69.85 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25905"
 			(at 66.04 69.85 90)
 			(effects
 				(font
@@ -24327,16 +24104,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C15849"
-			(at 73.66 135.89 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "CL10A105KA8NNNC"
+		(property "MPN" "CL21B105KAFNFNE"
 			(at 73.66 135.89 90)
 			(effects
 				(font
@@ -24363,6 +24131,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC Part #" "C1712"
+			(at 73.66 135.89 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "eea8bb77-9e6a-4703-87b0-ab9656e4b847")
 		)
@@ -24373,6 +24150,72 @@
 			(project "BardsAssistant"
 				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
 					(reference "C12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 30.48 161.29 0)
+		(mirror y)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "f218fb09-41b0-4fb8-910f-319adeaa45cc")
+		(property "Reference" "#PWR023"
+			(at 30.48 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 30.48 156.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 30.48 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 30.48 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 30.48 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7820965d-e235-4780-937b-4b1c274b2e1d")
+		)
+		(instances
+			(project ""
+				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -24526,15 +24369,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C96512"
-			(at 137.16 90.17 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "ESD9B3.3ST5G"
 			(at 137.16 90.17 90)
 			(effects
@@ -24554,6 +24388,15 @@
 			)
 		)
 		(property "Status" "Locked"
+			(at 137.16 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C96512"
 			(at 137.16 90.17 90)
 			(effects
 				(font
@@ -24763,15 +24606,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C25744"
-			(at 210.82 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "MPN" "0402WGF1002TCE"
 			(at 210.82 69.85 0)
 			(effects
@@ -24818,6 +24652,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 210.82 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C25744"
 			(at 210.82 69.85 0)
 			(effects
 				(font
@@ -24911,15 +24754,6 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C19702"
-			(at 34.29 31.75 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
 		(property "Status" "Locked"
 			(at 34.29 31.75 0)
 			(effects
@@ -24957,6 +24791,15 @@
 			)
 		)
 		(property "Mouser Price/Stock" ""
+			(at 34.29 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C19702"
 			(at 34.29 31.75 0)
 			(effects
 				(font
