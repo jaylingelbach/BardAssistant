@@ -2,6 +2,8 @@
 #define INSULTS_H
 
 #include <cstdint>
+#include <string>
+#include <vector>
 
 enum class PendingAction { None = 0, Random, Next, Prev };
 
@@ -57,5 +59,7 @@ const char *insultsGetCurrentText();
 uint16_t insultsGetCurrentIndex();
 
 bool insultsHasAny();
+
+const std::vector<std::string> &insultsGetAll();
 
 #endif // INSULTS_H

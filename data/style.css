@@ -1,0 +1,162 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+nav {
+  width: 100%;
+  background: #0066cc;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+nav h1 {
+  color: white;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+nav > div:last-child {
+  display: flex;
+  gap: 30px;
+}
+
+main {
+  width: 100%;
+  max-width: 720px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  color: #0066cc;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px 24px;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style: none;
+}
+
+ol {
+  list-style: none;
+}
+
+li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+li:last-child {
+  border-bottom: none;
+}
+
+.btn-primary {
+  /* Layout & Sizing */
+  display: inline-block;
+  padding: 0.75rem 1.5rem; /* Scalable sizing relative to text */
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+
+  /* Colors & Borders */
+  color: #ffffff;
+
+  background-color: #0066cc;
+  border: none;
+  border-radius: 10px;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* Smooth transition for states */
+}
+
+.add-btn {
+  margin-bottom: 10px;
+}
+
+/* Hover state (mouse pointer enters) */
+.btn-primary:hover {
+  background-color: #0057ff;
+}
+
+/* Active state (when the button is clicked) */
+.btn-primary:active {
+  transform: scale(0.98); /* Slight click feedback effect */
+}
+
+/* Focus state (accessibility for keyboard navigation) */
+.btn-primary:focus-visible {
+  outline: 3px solid #94b9ff;
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  /* Layout & Sizing */
+  display: inline-block;
+  padding: 0.15rem 0.4rem; /* Scalable sizing relative to text */
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+
+  /* Colors & Borders */
+  color: #ffffff;
+
+  background-color: #0066cc;
+  border: none;
+  border-radius: 4px;
+
+  /* Interaction */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out; /* Smooth transition for states */
+}
+
+/* Hover state (mouse pointer enters) */
+.btn-secondary:hover {
+  background-color: #0057ff;
+}
+
+/* Active state (when the button is clicked) */
+.btn-secondary:active {
+  transform: scale(0.98); /* Slight click feedback effect */
+}
