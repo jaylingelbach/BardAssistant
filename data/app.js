@@ -18,7 +18,22 @@ async function showInsults() {
   <div class="card">
     <div class="card-header">
       <h2>Insults</h2>
-      <button class="btn-primary" id="addInsult">Add Insult</button>
+      <button class="btn-primary" id="addInsult" command="show-modal" commandfor="my-dialog">Add Insult</button>
+
+      <dialog id="addInsultDialog">
+      <h2>Add Insult</h2>
+
+      <form method="POST" id="addInsultForm">
+        <input
+          type="text"
+          id="insultText"
+          placeholder="Enter an insult..."
+        />
+
+        <button class="btn-secondary" type="button" id="cancelAddInsult">Cancel</button>
+        <button id="submitInsult" class="btn-secondary" type="submit">Add Insult</button>
+      </form>
+    </dialog>
     </div>
 
     <ul>
@@ -43,6 +58,9 @@ async function showInsults() {
   </div>
 `;
   const addInsultButton = document.getElementById('addInsult');
+  const addInsultDialog = document.getElementById('addInsultDialog');
+  const cancelAddInsult = document.getElementById('cancelAddInsult');
+  const submitInsultButton = document.getElementById('submitInsultButton');
 
   const buttons = document.querySelectorAll('[data-action]');
   buttons.forEach((button) => {
@@ -54,9 +72,18 @@ async function showInsults() {
     });
   });
 
-  addInsultButton.addEventListener('click', (event) => {
-    alert('Add Insult button clicked');
+  addInsultButton.addEventListener('click', () => {
+    addInsultDialog.showModal();
   });
+
+  cancelAddInsult.addEventListener('click', () => {
+    addInsultDialog.close();
+  });
+
+  submitInsultButton.addEventListener('submit', () => {});
+  async function submitInsult() {
+    
+  }
 }
 
 async function showHome() {

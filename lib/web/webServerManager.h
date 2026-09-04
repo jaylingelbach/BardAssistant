@@ -17,6 +17,7 @@ private:
   void handleRoot();
   void handleGetDeck();
   void handleNotFound();
+  void handleCreateDeckEntry();
   static String mimeTypeFor(const String &path);
 };
 #endif
