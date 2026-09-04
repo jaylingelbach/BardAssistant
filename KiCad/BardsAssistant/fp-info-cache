@@ -1,4 +1,4 @@
-27348676333206474
+27352271895167016
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -28,6 +28,13 @@ FPC-SMD_KH-FG0.5-H2.0-24PIN
 26
 26
 BardAssLibrary
+LED-SMD-SM1210RGB
+
+
+0
+4
+4
+BardAssLibrary
 LED_XL-3227RGB-RF
 RGB LED 3.2x2.7mm http://www.avagotech.com/docs/AV02-0610EN
 LED 3227
@@ -41,6 +48,13 @@ wirewound power shielded
 0
 2
 2
+BardAssLibrary
+Untitled
+
+
+0
+4
+4
 Battery
 BatteryClip_Keystone_54_D16-19mm
 Battery clip for batteries with a diameter between 16-19 mm: https://www.keyelco.com/product.cfm/product_id/826

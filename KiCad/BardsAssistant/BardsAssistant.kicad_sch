@@ -5,7 +5,7 @@
 	(uuid "fe923a2d-3535-4d7b-b457-acbae8a52840")
 	(paper "A4")
 	(title_block
-		(title "Bards Assistant V1")
+		(title "Bards Assistant V1.2")
 		(date "2026-08-13")
 		(rev "1.0")
 		(company "Brown Bear Creative")
@@ -973,6 +973,590 @@
 						)
 					)
 					(number "24"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "BARDSASS:LED_RGBA_SM1210RGB_BIVAR"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D1"
+				(at 0.254 12.192 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SM1210RGB"
+				(at 0.254 9.652 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "BardAssLibrary:LED_XL-3227RGB-RF"
+				(at 0.508 -12.446 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 -1.27 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "RGB LED, red/green/blue/anode"
+				(at 0.508 -11.176 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "LCSC" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Notes" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Height" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Mouser Part Number" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Mouser Price/Stock" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "MPN" "XL-3227RGB-RF"
+				(at -1.27 -12.192 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer" "XINGLIGHT"
+				(at -1.27 -12.192 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Status" "Locked"
+				(at 3.81 -11.938 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "LCSC Part #" "C965844"
+				(at 0 -11.43 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "LED RGB diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "LED* LED_SMD:* LED_THT:*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "LED_RGBA_SM1210RGB_BIVAR_0_0"
+				(text "R"
+					(at -1.905 3.81 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "G"
+					(at -1.905 -1.27 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(text "B"
+					(at -1.905 -6.35 0)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(symbol "LED_RGBA_SM1210RGB_BIVAR_0_1"
+				(polyline
+					(pts
+						(xy -1.27 6.35) (xy -1.27 3.81)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 6.35) (xy -1.27 3.81) (xy -1.27 3.81)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 5.08) (xy -2.54 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 5.08) (xy 1.27 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 1.27) (xy -1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 1.27) (xy -1.27 -1.27) (xy -1.27 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 0) (xy -2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -3.81) (xy -1.27 -6.35)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -5.08) (xy -2.54 -5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 -5.08) (xy 1.27 -5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 6.35) (xy 0.508 7.874) (xy -0.254 7.874) (xy 0.508 7.874) (xy 0.508 7.112)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 1.27) (xy 0.508 2.794) (xy -0.254 2.794) (xy 0.508 2.794) (xy 0.508 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 -3.81) (xy 0.508 -2.286) (xy -0.254 -2.286) (xy 0.508 -2.286) (xy 0.508 -3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 6.35) (xy 1.524 7.874) (xy 0.762 7.874) (xy 1.524 7.874) (xy 1.524 7.112)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.27) (xy 1.524 2.794) (xy 0.762 2.794) (xy 1.524 2.794) (xy 1.524 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -3.81) (xy 1.524 -2.286) (xy 0.762 -2.286) (xy 1.524 -2.286) (xy 1.524 -3.048)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 6.35) (xy 1.27 3.81) (xy -1.27 5.08) (xy 1.27 6.35)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start 1.27 6.35)
+					(end 1.27 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start 1.27 3.81)
+					(end 1.27 6.35)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start 1.27 1.27)
+					(end 1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy 2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start 1.27 -1.27)
+					(end 1.27 1.27)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 -3.81) (xy 1.27 -6.35) (xy -1.27 -5.08) (xy 1.27 -3.81)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 -5.08) (xy 2.032 -5.08) (xy 2.032 5.08) (xy 1.27 5.08)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.032 0)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(rectangle
+					(start 2.794 8.382)
+					(end -2.794 -7.62)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "LED_RGBA_SM1210RGB_BIVAR_1_1"
+				(pin passive line
+					(at -5.08 5.08 0)
+					(length 2.54)
+					(name "RK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "GK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -5.08 -5.08 0)
+					(length 2.54)
+					(name "BK"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 5.08 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3266,509 +3850,6 @@
 						)
 					)
 					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Device:LED_RGBA"
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "D"
-				(at 0 9.398 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "LED_RGBA"
-				(at 0 -8.89 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 -1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 -1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "RGB LED, red/green/blue/anode"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "LED RGB diode"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "LED* LED_SMD:* LED_THT:*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "LED_RGBA_0_0"
-				(text "R"
-					(at -1.905 3.81 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(text "G"
-					(at -1.905 -1.27 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(text "B"
-					(at -1.905 -6.35 0)
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(symbol "LED_RGBA_0_1"
-				(polyline
-					(pts
-						(xy -1.27 6.35) (xy -1.27 3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 6.35) (xy -1.27 3.81) (xy -1.27 3.81)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 5.08) (xy -2.54 5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 5.08) (xy 1.27 5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27) (xy -1.27 -1.27)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 0) (xy -2.54 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -3.81) (xy -1.27 -6.35)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -5.08) (xy -2.54 -5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.27 -5.08) (xy 1.27 -5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.016 6.35) (xy 0.508 7.874) (xy -0.254 7.874) (xy 0.508 7.874) (xy 0.508 7.112)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.016 1.27) (xy 0.508 2.794) (xy -0.254 2.794) (xy 0.508 2.794) (xy 0.508 2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.016 -3.81) (xy 0.508 -2.286) (xy -0.254 -2.286) (xy 0.508 -2.286) (xy 0.508 -3.048)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 6.35) (xy 1.524 7.874) (xy 0.762 7.874) (xy 1.524 7.874) (xy 1.524 7.112)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 1.27) (xy 1.524 2.794) (xy 0.762 2.794) (xy 1.524 2.794) (xy 1.524 2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -3.81) (xy 1.524 -2.286) (xy 0.762 -2.286) (xy 1.524 -2.286) (xy 1.524 -3.048)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 6.35) (xy 1.27 3.81) (xy -1.27 5.08) (xy 1.27 6.35)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 1.27 6.35)
-					(end 1.27 6.35)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 1.27 3.81)
-					(end 1.27 6.35)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 1.27 1.27)
-					(end 1.27 1.27)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy -1.27 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 2.54 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 1.27 -1.27)
-					(end 1.27 1.27)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -3.81) (xy 1.27 -6.35) (xy -1.27 -5.08) (xy 1.27 -3.81)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -5.08) (xy 2.032 -5.08) (xy 2.032 5.08) (xy 1.27 5.08)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(circle
-					(center 2.032 0)
-					(radius 0.254)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 2.794 8.382)
-					(end -2.794 -7.62)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "LED_RGBA_1_1"
-				(pin passive line
-					(at -5.08 5.08 0)
-					(length 2.54)
-					(name "RK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 0 0)
-					(length 2.54)
-					(name "GK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 2.54)
-					(name "BK"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 0 180)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -7284,6 +7365,18 @@
 		)
 		(uuid "5ff09db5-f108-47ec-a251-eb8914ac2458")
 	)
+	(text "0805 Components and smaller board size than V1.0. Same board size as 1.1, but mouser part numbers instead. 1.1 has smaller part sizes for jlcpcb assembly."
+		(exclude_from_sim no)
+		(at 149.352 -6.604 0)
+		(effects
+			(font
+				(size 3.81 3.81)
+				(thickness 0.762)
+				(bold yes)
+			)
+		)
+		(uuid "734cfb87-1a34-4004-b8e0-988afd2f8707")
+	)
 	(text "Linear battery charge management controller "
 		(exclude_from_sim no)
 		(at 243.84 49.784 0)
@@ -7562,12 +7655,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "8e96fb13-67cc-413c-a11e-e931ec631a83")
-	)
-	(junction
-		(at 229.87 140.97)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "97f55fa2-0d43-4dcb-9a49-354746962f81")
 	)
 	(junction
 		(at 228.6 30.48)
@@ -8541,6 +8628,16 @@
 	)
 	(wire
 		(pts
+			(xy 190.5 119.38) (xy 184.15 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "33683077-3ec2-467f-a31b-7f88d8580e55")
+	)
+	(wire
+		(pts
 			(xy 66.04 179.07) (xy 69.85 179.07)
 		)
 		(stroke
@@ -8588,6 +8685,16 @@
 			(type default)
 		)
 		(uuid "3896646e-f054-4879-8316-d1bfc840c882")
+	)
+	(wire
+		(pts
+			(xy 190.5 142.24) (xy 190.5 119.38)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ab3db7f-9210-4754-bec2-45171d4ec721")
 	)
 	(wire
 		(pts
@@ -8951,6 +9058,16 @@
 	)
 	(wire
 		(pts
+			(xy 184.15 121.92) (xy 191.77 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5138be0f-9797-42d6-91b4-ec119784b18a")
+	)
+	(wire
+		(pts
 			(xy 81.28 166.37) (xy 81.28 163.83)
 		)
 		(stroke
@@ -9201,7 +9318,7 @@
 	)
 	(wire
 		(pts
-			(xy 229.87 142.24) (xy 229.87 140.97)
+			(xy 229.87 139.7) (xy 229.87 142.24)
 		)
 		(stroke
 			(width 0)
@@ -9278,16 +9395,6 @@
 			(type default)
 		)
 		(uuid "6d75fb54-cbc9-428a-8ce1-431d121c61c7")
-	)
-	(wire
-		(pts
-			(xy 184.15 121.92) (xy 190.5 121.92)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6d83b539-04b2-4153-b7e0-2129c46e66b0")
 	)
 	(wire
 		(pts
@@ -9388,16 +9495,6 @@
 			(type default)
 		)
 		(uuid "73385830-fd5f-4851-848f-0facd93643fe")
-	)
-	(wire
-		(pts
-			(xy 229.87 140.97) (xy 232.41 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "739326c1-b13a-486a-997f-f6e396f837c5")
 	)
 	(wire
 		(pts
@@ -9601,26 +9698,6 @@
 	)
 	(wire
 		(pts
-			(xy 191.77 137.16) (xy 191.77 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "863f0f7a-25e2-4f08-ada0-d6858959f0f5")
-	)
-	(wire
-		(pts
-			(xy 190.5 121.92) (xy 190.5 142.24)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "86555e16-88a7-48b3-b05b-540de8e217c1")
-	)
-	(wire
-		(pts
 			(xy 41.91 172.72) (xy 45.72 172.72)
 		)
 		(stroke
@@ -9758,16 +9835,6 @@
 			(type default)
 		)
 		(uuid "942f8cad-7654-44ce-8f37-be7924fead51")
-	)
-	(wire
-		(pts
-			(xy 191.77 119.38) (xy 184.15 119.38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "960473c3-3ad1-45cf-bab6-8fcba28fff08")
 	)
 	(wire
 		(pts
@@ -10388,16 +10455,6 @@
 			(type default)
 		)
 		(uuid "c764a24a-aeaa-4848-9c71-dad14b4986fe")
-	)
-	(wire
-		(pts
-			(xy 229.87 139.7) (xy 229.87 140.97)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ca1a37e9-a65a-4222-87d1-481d6d1b031b")
 	)
 	(wire
 		(pts
@@ -11051,6 +11108,16 @@
 	)
 	(wire
 		(pts
+			(xy 191.77 121.92) (xy 191.77 137.16)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8eb59a4-a57c-4e08-a4f1-86479e417225")
+	)
+	(wire
+		(pts
 			(xy 60.96 102.87) (xy 66.04 102.87)
 		)
 		(stroke
@@ -11130,7 +11197,7 @@
 		(uuid "35b17d12-c8db-4db2-9b4c-544b1f69a411")
 	)
 	(label "D+"
-		(at 63.5 83.82 0)
+		(at 68.58 83.82 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11170,7 +11237,7 @@
 		(uuid "4a1f8fa1-4e66-4e6d-b05a-6ec7d3908f2e")
 	)
 	(label "D-"
-		(at 63.5 78.74 0)
+		(at 68.58 78.74 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11870,7 +11937,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 123.19 80.01 0)
 			(effects
 				(font
@@ -11906,7 +11973,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -11915,7 +11982,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -11924,7 +11991,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -11951,7 +12018,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 123.19 80.01 90)
 			(effects
 				(font
@@ -12499,7 +12566,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "356-ESP32-S3-MINI1N8"
 			(at 184.15 68.58 0)
 			(effects
 				(font
@@ -13132,7 +13199,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 45.72 134.62 0)
 			(effects
 				(font
@@ -13168,7 +13235,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF100KT5E"
+		(property "MPN" "0805W8F100KT5E"
 			(at 45.72 134.62 0)
 			(effects
 				(font
@@ -13222,7 +13289,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C22936"
+		(property "LCSC Part #" "C25271"
 			(at 45.72 134.62 0)
 			(effects
 				(font
@@ -13654,7 +13721,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 43.18 31.75 0)
 			(effects
 				(font
@@ -13690,7 +13757,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1000TCE"
+		(property "MPN" "0805W8F1000T5E"
 			(at 43.18 31.75 0)
 			(effects
 				(font
@@ -13744,7 +13811,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25076"
+		(property "LCSC Part #" "C17408"
 			(at 43.18 31.75 0)
 			(effects
 				(font
@@ -13924,7 +13991,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 223.52 30.48 0)
 			(effects
 				(font
@@ -13951,7 +14018,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF4700TCE"
+		(property "MPN" "0805W8F4700T5E"
 			(at 223.52 30.48 90)
 			(effects
 				(font
@@ -14005,7 +14072,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25117"
+		(property "LCSC Part #" "C17710"
 			(at 223.52 30.48 90)
 			(effects
 				(font
@@ -14146,7 +14213,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL10A106KP8NNNC"
+		(property "MPN" "CL21B106KOYNNWE"
 			(at 264.16 24.13 0)
 			(effects
 				(font
@@ -14182,7 +14249,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "187-CL21B106KOYNNWE"
 			(at 264.16 24.13 0)
 			(effects
 				(font
@@ -14200,7 +14267,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C19702"
+		(property "LCSC Part #" ""
 			(at 264.16 24.13 0)
 			(effects
 				(font
@@ -14393,7 +14460,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 45.72 124.46 0)
 			(effects
 				(font
@@ -14429,7 +14496,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF100KT5E"
+		(property "MPN" "0805W8F100KT5E"
 			(at 45.72 124.46 0)
 			(effects
 				(font
@@ -14483,7 +14550,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C22936"
+		(property "LCSC Part #" "C25271"
 			(at 45.72 124.46 0)
 			(effects
 				(font
@@ -14532,7 +14599,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 223.52 25.4 0)
 			(effects
 				(font
@@ -14559,7 +14626,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF4700TCE"
+		(property "MPN" "0805W8F4700T5E"
 			(at 223.52 25.4 90)
 			(effects
 				(font
@@ -14613,7 +14680,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25117"
+		(property "LCSC Part #" "C17710"
 			(at 223.52 25.4 90)
 			(effects
 				(font
@@ -14837,7 +14904,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -14855,7 +14922,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -14864,7 +14931,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -14882,7 +14949,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 73.66 133.35 90)
 			(effects
 				(font
@@ -14912,7 +14979,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3da5d030-89cc-4d44-ac4b-03c63ddf2482")
@@ -15281,7 +15348,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(uuid "43962a63-0a3b-43e2-a6be-ef6c10d160c8")
 		(property "Reference" "TP4"
@@ -15469,7 +15536,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 66.04 72.39 0)
 			(effects
 				(font
@@ -15496,7 +15563,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF5101TCE"
+		(property "MPN" "0805W8F5101T5E"
 			(at 66.04 72.39 90)
 			(effects
 				(font
@@ -15550,7 +15617,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25905"
+		(property "LCSC Part #" "C27834"
 			(at 66.04 72.39 90)
 			(effects
 				(font
@@ -16151,7 +16218,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16178,7 +16245,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Yaego"
+		(property "Manufacturer" "Yageo"
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16187,7 +16254,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CC0603KRX7R9BB104"
+		(property "MPN" "CC0805KRX7R8BB104"
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16223,7 +16290,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KRX7R8BB104"
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16241,7 +16308,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C14663"
+		(property "LCSC Part #" ""
 			(at 135.89 31.75 0)
 			(effects
 				(font
@@ -16338,7 +16405,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5ef493e5-9341-4ba1-a9fa-11f053545696")
@@ -16506,7 +16573,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "863-ESD9B3.3ST5G"
 			(at 207.01 80.01 90)
 			(effects
 				(font
@@ -16551,7 +16618,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C96512"
+		(property "LCSC Part #" ""
 			(at 207.01 80.01 90)
 			(effects
 				(font
@@ -16695,7 +16762,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL10A106KP8NNNC"
+		(property "MPN" "CL21B106KOYNNWE"
 			(at 204.47 24.13 0)
 			(effects
 				(font
@@ -16731,7 +16798,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "187-CL21B106KOYNNWE"
 			(at 204.47 24.13 0)
 			(effects
 				(font
@@ -16749,7 +16816,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C19702"
+		(property "LCSC Part #" ""
 			(at 204.47 24.13 0)
 			(effects
 				(font
@@ -17201,7 +17268,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 220.98 69.85 0)
 			(effects
 				(font
@@ -17237,7 +17304,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17246,7 +17313,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17255,7 +17322,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17282,7 +17349,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 220.98 69.85 90)
 			(effects
 				(font
@@ -17506,7 +17573,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 181.61 90)
 			(effects
 				(font
@@ -17524,7 +17591,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 181.61 90)
 			(effects
 				(font
@@ -17533,7 +17600,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 181.61 90)
 			(effects
 				(font
@@ -17551,7 +17618,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 181.61 90)
 			(effects
 				(font
@@ -17581,7 +17648,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(uuid "782bd8e7-56f4-4b09-a0c2-1b815404f717")
 		(property "Reference" "TP7"
@@ -17703,7 +17770,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 207.01 147.32 0)
 			(effects
 				(font
@@ -17757,7 +17824,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF3300T5E"
+		(property "MPN" "0805W8F3300T5E"
 			(at 207.01 147.32 90)
 			(effects
 				(font
@@ -17784,7 +17851,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C23138"
+		(property "LCSC Part #" "C17630"
 			(at 207.01 147.32 90)
 			(effects
 				(font
@@ -18037,7 +18104,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 72.39 163.83 0)
 			(effects
 				(font
@@ -18073,7 +18140,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18082,7 +18149,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18091,7 +18158,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18118,7 +18185,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 163.83 90)
 			(effects
 				(font
@@ -18451,7 +18518,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 207.01 142.24 0)
 			(effects
 				(font
@@ -18505,7 +18572,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF3300T5E"
+		(property "MPN" "0805W8F3300T5E"
 			(at 207.01 142.24 90)
 			(effects
 				(font
@@ -18532,7 +18599,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C23138"
+		(property "LCSC Part #" "C17630"
 			(at 207.01 142.24 90)
 			(effects
 				(font
@@ -18617,7 +18684,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -18635,7 +18702,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -18644,7 +18711,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -18662,7 +18729,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 173.99 90)
 			(effects
 				(font
@@ -18711,7 +18778,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -18747,7 +18814,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL10A106KP8NNNC"
+		(property "MPN" "CL21B106KOYNNWE"
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -18765,7 +18832,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "X5R 10V"
+		(property "Notes" ""
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -18783,7 +18850,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "187-CL21B106KOYNNWE"
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -18801,7 +18868,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C19702"
+		(property "LCSC Part #" ""
 			(at 80.01 31.75 0)
 			(effects
 				(font
@@ -18892,6 +18959,154 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R_Small_US")
+		(at 66.04 83.82 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8d51a6c7-b02a-42ca-a161-23374358b99f")
+		(property "Reference" "R19"
+			(at 62.738 85.344 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "22R"
+			(at 69.596 85.09 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RT0805BRE0722RL"
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" ""
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "603-RT0805BRE0722RL"
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" ""
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" ""
+			(at 66.04 83.82 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Notes" ""
+			(at 66.04 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "801df280-f767-495a-a38a-2834fac57459")
+		)
+		(pin "1"
+			(uuid "6114540d-94d2-40f8-9567-292602a7fe14")
+		)
+		(instances
+			(project "BardsAssistant"
+				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
+					(reference "R19")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C_Small")
 		(at 43.18 36.83 180)
 		(unit 1)
@@ -18916,7 +19131,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -18943,7 +19158,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "YAGEO"
+		(property "Manufacturer" "Yageo"
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -18952,7 +19167,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CC0603KRX7R9BB104"
+		(property "MPN" "CC0805KRX7R8BB104"
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -18988,7 +19203,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KRX7R8BB104"
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -19006,7 +19221,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C14663"
+		(property "LCSC Part #" ""
 			(at 43.18 36.83 0)
 			(effects
 				(font
@@ -19198,7 +19413,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 191.77 83.82 0)
 			(effects
 				(font
@@ -19225,7 +19440,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1002TCE"
+		(property "MPN" "0805W8F1002T5E"
 			(at 191.77 83.82 90)
 			(effects
 				(font
@@ -19279,7 +19494,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25744"
+		(property "LCSC Part #" "C17414"
 			(at 191.77 83.82 90)
 			(effects
 				(font
@@ -19364,7 +19579,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19382,7 +19597,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19391,7 +19606,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19409,7 +19624,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 176.53 90)
 			(effects
 				(font
@@ -19623,6 +19838,15 @@
 				(hide yes)
 			)
 		)
+		(property "LCSC" ""
+			(at 60.96 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "dbf0b948-b4a1-4680-8225-691b34d8ab75")
 		)
@@ -19671,7 +19895,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(uuid "9c178cd6-ffdc-4479-bdb0-51cb4bc1a3d6")
 		(property "Reference" "TP2"
@@ -19915,7 +20139,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(uuid "a45e3a54-f79c-494c-8d27-2c71a01c0982")
 		(property "Reference" "TP1"
@@ -20154,142 +20378,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:LED_RGBA")
-		(at 220.98 142.24 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "a9facad9-7bb4-4fa8-baf1-13a4a520f76e")
-		(property "Reference" "D1"
-			(at 221.234 130.048 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "XL-3227RGB-RF"
-			(at 221.234 132.588 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "BardAssLibrary:LED_XL-3227RGB-RF"
-			(at 220.98 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 220.98 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "RGB LED, red/green/blue/anode"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Height" ""
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser Part Number" ""
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Mouser Price/Stock" ""
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "MPN" "XL-3227RGB-RF"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Manufacturer" "XINGLIGHT"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Status" "Locked"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC Part #" "C965844"
-			(at 220.98 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "312c6096-aafd-41e5-a856-3d128659fd14")
-		)
-		(pin "2"
-			(uuid "9f4822f8-ecc3-4921-85f6-37ea20049f17")
-		)
-		(pin "3"
-			(uuid "c49de7b7-9ce5-4bf2-9526-3638a86cc294")
-		)
-		(pin "4"
-			(uuid "8fcf7519-5504-45d8-8e3d-71bb901e4b82")
-		)
-		(instances
-			(project ""
-				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
-					(reference "D1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R_Small_US")
 		(at 133.35 80.01 0)
 		(mirror y)
@@ -20317,7 +20405,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 133.35 80.01 0)
 			(effects
 				(font
@@ -20344,7 +20432,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1002TCE"
+		(property "MPN" "0805W8F1002T5E"
 			(at 133.35 80.01 0)
 			(effects
 				(font
@@ -20398,7 +20486,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25744"
+		(property "LCSC Part #" "C17414"
 			(at 133.35 80.01 0)
 			(effects
 				(font
@@ -20569,7 +20657,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(uuid "b48d7ff3-e032-4b53-995d-921c9de7a982")
 		(property "Reference" "TP5"
@@ -20758,6 +20846,154 @@
 	)
 	(symbol
 		(lib_id "Device:R_Small_US")
+		(at 66.04 78.74 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b74b14b5-0e7f-45e6-b7a5-db355aca34d6")
+		(property "Reference" "R18"
+			(at 62.738 80.264 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "22R"
+			(at 69.596 80.01 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 66.04 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 66.04 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor, small US symbol"
+			(at 66.04 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "RT0805BRE0722RL"
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" ""
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "603-RT0805BRE0722RL"
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" ""
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" ""
+			(at 66.04 78.74 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 66.04 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Notes" ""
+			(at 66.04 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "f9672bba-c720-4808-9234-80b817fecc3b")
+		)
+		(pin "1"
+			(uuid "06220c42-5212-4e28-88a4-884c0b000c50")
+		)
+		(instances
+			(project "BardsAssistant"
+				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
+					(reference "R18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small_US")
 		(at 207.01 137.16 270)
 		(mirror x)
 		(unit 1)
@@ -20782,7 +21018,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 207.01 137.16 0)
 			(effects
 				(font
@@ -20836,7 +21072,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF3300T5E"
+		(property "MPN" "0805W8F3300T5E"
 			(at 207.01 137.16 90)
 			(effects
 				(font
@@ -20863,7 +21099,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C23138"
+		(property "LCSC Part #" "C17630"
 			(at 207.01 137.16 90)
 			(effects
 				(font
@@ -20912,7 +21148,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 160.02 22.86 0)
 			(effects
 				(font
@@ -20939,7 +21175,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1003TCE"
+		(property "MPN" "0805W8F1003T5E"
 			(at 160.02 22.86 90)
 			(effects
 				(font
@@ -20993,7 +21229,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25741"
+		(property "LCSC Part #" "C149504"
 			(at 160.02 22.86 90)
 			(effects
 				(font
@@ -21344,7 +21580,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KKX7R8BB475"
 			(at 21.59 166.37 90)
 			(effects
 				(font
@@ -21362,7 +21598,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21A475KAQNNNE"
+		(property "MPN" "CC0805KKX7R8BB475"
 			(at 21.59 166.37 90)
 			(effects
 				(font
@@ -21371,7 +21607,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 21.59 166.37 90)
 			(effects
 				(font
@@ -21389,7 +21625,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1779"
+		(property "LCSC Part #" ""
 			(at 21.59 166.37 90)
 			(effects
 				(font
@@ -21504,7 +21740,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 25.4 148.59 0)
 			(effects
 				(font
@@ -21531,7 +21767,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1002TCE"
+		(property "MPN" "0805W8F1002T5E"
 			(at 25.4 148.59 90)
 			(effects
 				(font
@@ -21585,7 +21821,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25744"
+		(property "LCSC Part #" "C17414"
 			(at 25.4 148.59 90)
 			(effects
 				(font
@@ -21765,7 +22001,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -21801,7 +22037,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL10A106KP8NNNC"
+		(property "MPN" "CL21B106KOYNNWE"
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -21819,7 +22055,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "X5R 10V"
+		(property "Notes" ""
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -21837,7 +22073,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "187-CL21B106KOYNNWE"
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -21855,7 +22091,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C19702"
+		(property "LCSC Part #" ""
 			(at 88.9 31.75 0)
 			(effects
 				(font
@@ -21904,7 +22140,7 @@
 				)
 			)
 		)
-		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
+		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -21913,7 +22149,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
+		(property "Datasheet" "https://www.we-online.com/catalog/datasheet/150080SS75000.pdf"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -21940,7 +22176,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Hubei KENTO Elec"
+		(property "Manufacturer" "Wurth Elektronik"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -21949,7 +22185,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "KT-0603R"
+		(property "MPN" "150080SS75000"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -21985,7 +22221,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "710-150080SS75000"
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -22004,6 +22240,15 @@
 			)
 		)
 		(property "LCSC Part #" "C2286"
+			(at 215.9 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
 			(at 215.9 25.4 0)
 			(effects
 				(font
@@ -22052,7 +22297,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 45.72 129.54 0)
 			(effects
 				(font
@@ -22088,7 +22333,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0603WAF100KT5E"
+		(property "MPN" "0805W8F100KT5E"
 			(at 45.72 129.54 0)
 			(effects
 				(font
@@ -22142,7 +22387,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C22936"
+		(property "LCSC Part #" "C25271"
 			(at 45.72 129.54 0)
 			(effects
 				(font
@@ -22227,7 +22472,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KKX7R8BB475"
 			(at 39.37 172.72 90)
 			(effects
 				(font
@@ -22245,7 +22490,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21A475KAQNNNE"
+		(property "MPN" "CC0805KKX7R8BB475"
 			(at 39.37 172.72 90)
 			(effects
 				(font
@@ -22254,7 +22499,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 39.37 172.72 90)
 			(effects
 				(font
@@ -22272,7 +22517,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1779"
+		(property "LCSC Part #" ""
 			(at 39.37 172.72 90)
 			(effects
 				(font
@@ -22350,7 +22595,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 124.46 31.75 0)
 			(effects
 				(font
@@ -22359,7 +22604,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21A226MAQNNNE"
+		(property "MPN" "CC0805MFX5R8BB226"
 			(at 124.46 31.75 0)
 			(effects
 				(font
@@ -22395,7 +22640,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC0805MFX5R8BB22"
 			(at 124.46 31.75 0)
 			(effects
 				(font
@@ -22413,7 +22658,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C45783"
+		(property "LCSC Part #" ""
 			(at 124.46 31.75 0)
 			(effects
 				(font
@@ -22504,6 +22749,161 @@
 		)
 	)
 	(symbol
+		(lib_id "BARDSASS:LED_RGBA_SM1210RGB_BIVAR")
+		(at 220.98 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d2009760-d00e-420e-bbf5-a14c81717235")
+		(property "Reference" "D1"
+			(at 220.98 128.27 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "SM1210RGB"
+			(at 220.98 130.81 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "BardAssLibrary:LED_XL-3227RGB-RF"
+			(at 221.488 154.686 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 220.98 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "RGB LED, red/green/blue/anode"
+			(at 221.488 153.416 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" ""
+			(at 220.98 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Notes" ""
+			(at 220.98 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" ""
+			(at 220.98 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "749-SM1210RGB "
+			(at 220.726 151.384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" ""
+			(at 220.98 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "XL-3227RGB-RF"
+			(at 219.71 154.432 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "XINGLIGHT"
+			(at 219.71 154.432 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Status" "Locked"
+			(at 224.79 154.178 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC Part #" "C965844"
+			(at 220.98 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "4"
+			(uuid "c44b7b54-02f8-43e9-bdb9-07f843fdd30d")
+		)
+		(pin "3"
+			(uuid "73ef2369-2454-415c-bc42-20c3e8290b90")
+		)
+		(pin "2"
+			(uuid "f10d4077-7717-4e38-8de8-ff02e3344e37")
+		)
+		(pin "1"
+			(uuid "c16625fb-acff-4969-b529-088f2801096b")
+		)
+		(instances
+			(project ""
+				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
+					(reference "D1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R_Small_US")
 		(at 255.27 25.4 90)
 		(unit 1)
@@ -22520,7 +22920,7 @@
 				)
 			)
 		)
-		(property "Value" "5K"
+		(property "Value" "5K1"
 			(at 255.27 23.622 90)
 			(effects
 				(font
@@ -22528,7 +22928,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 255.27 25.4 0)
 			(effects
 				(font
@@ -22564,7 +22964,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF5101TCE"
+		(property "MPN" "0805W8F5101T5E"
 			(at 255.27 25.4 0)
 			(effects
 				(font
@@ -22618,7 +23018,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25905"
+		(property "LCSC Part #" "C27834"
 			(at 255.27 25.4 90)
 			(effects
 				(font
@@ -22637,73 +23037,6 @@
 			(project "BardsAssistant"
 				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
 					(reference "R10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:PWR_FLAG")
-		(at 232.41 140.97 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d69da71d-192c-4ef1-95f5-2a377ade35de")
-		(property "Reference" "#FLG02"
-			(at 234.315 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "PWR_FLAG"
-			(at 236.22 140.9699 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 232.41 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 232.41 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Special symbol for telling ERC where power comes from"
-			(at 232.41 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "86d6486a-ab78-4fcd-879a-e2b222a16c8f")
-		)
-		(instances
-			(project ""
-				(path "/fe923a2d-3535-4d7b-b457-acbae8a52840"
-					(reference "#FLG02")
 					(unit 1)
 				)
 			)
@@ -23264,7 +23597,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23282,7 +23615,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23291,7 +23624,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23309,7 +23642,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 184.15 90)
 			(effects
 				(font
@@ -23527,7 +23860,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23545,7 +23878,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23554,7 +23887,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23572,7 +23905,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 171.45 90)
 			(effects
 				(font
@@ -23602,7 +23935,7 @@
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
-		(on_board yes)
+		(on_board no)
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e50b0dd4-2400-450f-8072-dff8995aab6f")
@@ -23760,7 +24093,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -23778,7 +24111,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -23787,7 +24120,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -23805,7 +24138,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 72.39 179.07 90)
 			(effects
 				(font
@@ -23920,7 +24253,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 66.04 69.85 0)
 			(effects
 				(font
@@ -23947,7 +24280,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF5101TCE"
+		(property "MPN" "0805W8F5101T5E"
 			(at 66.04 69.85 90)
 			(effects
 				(font
@@ -24001,7 +24334,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25905"
+		(property "LCSC Part #" "C27834"
 			(at 66.04 69.85 90)
 			(effects
 				(font
@@ -24086,7 +24419,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "603-CC805KFX7R8BB105"
 			(at 73.66 135.89 90)
 			(effects
 				(font
@@ -24104,7 +24437,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL21B105KAFNFNE"
+		(property "MPN" "CC0805KFX7R8BB105"
 			(at 73.66 135.89 90)
 			(effects
 				(font
@@ -24113,7 +24446,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "Samsung"
+		(property "Manufacturer" "Yageo"
 			(at 73.66 135.89 90)
 			(effects
 				(font
@@ -24131,7 +24464,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C1712"
+		(property "LCSC Part #" ""
 			(at 73.66 135.89 90)
 			(effects
 				(font
@@ -24351,7 +24684,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "863-ESD9B3.3ST5G"
 			(at 137.16 90.17 90)
 			(effects
 				(font
@@ -24396,7 +24729,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C96512"
+		(property "LCSC Part #" ""
 			(at 137.16 90.17 90)
 			(effects
 				(font
@@ -24579,7 +24912,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 210.82 69.85 0)
 			(effects
 				(font
@@ -24606,7 +24939,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "0402WGF1002TCE"
+		(property "MPN" "0805W8F1002T5E"
 			(at 210.82 69.85 0)
 			(effects
 				(font
@@ -24660,7 +24993,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C25744"
+		(property "LCSC Part #" "C17414"
 			(at 210.82 69.85 0)
 			(effects
 				(font
@@ -24709,7 +25042,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 34.29 31.75 0)
 			(effects
 				(font
@@ -24745,7 +25078,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "CL10A106KP8NNNC"
+		(property "MPN" "CL21B106KOYNNWE"
 			(at 34.29 31.75 0)
 			(effects
 				(font
@@ -24763,7 +25096,7 @@
 				(hide yes)
 			)
 		)
-		(property "Notes" "X5R 10V"
+		(property "Notes" ""
 			(at 34.29 31.75 0)
 			(effects
 				(font
@@ -24781,7 +25114,7 @@
 				(hide yes)
 			)
 		)
-		(property "Mouser Part Number" ""
+		(property "Mouser Part Number" "187-CL21B106KOYNNWE"
 			(at 34.29 31.75 0)
 			(effects
 				(font
@@ -24799,7 +25132,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC Part #" "C19702"
+		(property "LCSC Part #" ""
 			(at 34.29 31.75 0)
 			(effects
 				(font
