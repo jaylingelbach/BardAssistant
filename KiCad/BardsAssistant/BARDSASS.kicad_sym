@@ -1501,7 +1501,7 @@
 				)
 			)
 		)
-		(property "Footprint" "BardAssLibrary:LED_XL-3227RGB-RF"
+		(property "Footprint" "BardAssLibrary:LED-SMD-SM1210RGB"
 			(at 0.508 -12.446 0)
 			(effects
 				(font
@@ -1573,7 +1573,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "XL-3227RGB-RF"
+		(property "MPN" "SM1210RGB"
 			(at -1.27 -12.192 0)
 			(effects
 				(font
@@ -1582,7 +1582,7 @@
 				(hide yes)
 			)
 		)
-		(property "Manufacturer" "XINGLIGHT"
+		(property "Manufacturer" "Bivar"
 			(at -1.27 -12.192 0)
 			(effects
 				(font
