@@ -98,6 +98,8 @@ static std::vector<std::string> readDeckLineByLine(const char *path) {
   return lines;
 }
 
+const std::vector<std::string> &insultsGetAll() { return insults; }
+
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
  * position.
@@ -359,7 +361,8 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
   // Validate every active history entry against the current deck size.
   // If insults.txt changed since last sleep, stale indices could be out of
   // range.
-  const size_t oldest = wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
+  const size_t oldest =
+      wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
   for (size_t i = 0; i < savedSize; i++) {
     const size_t physical = wrapIndex(oldest + i, HISTORY_CAP);
     if (history[physical] >= insults.size()) {
