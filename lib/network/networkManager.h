@@ -8,5 +8,5 @@ enum class SetupModeResult { SUCCESS, SETUP_FAILED };
 SetupModeResult setupWiFi();
 DisconnectModeResult disconnectWiFi();
 WebModeResult enterWebMode();
-
+void exitWebMode();
 #endif

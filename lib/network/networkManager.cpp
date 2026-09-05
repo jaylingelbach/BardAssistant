@@ -3,6 +3,8 @@
 #include <WiFi.h>
 #include <WiFiManager.h>
 
+bool isMdnsRunning = false;
+
 SetupModeResult setupWiFi() {
   WiFi.mode(WIFI_STA);
 
@@ -49,7 +51,7 @@ WebModeResult enterWebMode() {
 
   WiFi.begin();
 
-  const unsigned long timeout = 15000;
+  const unsigned long timeout = 5000;
   unsigned long startTime = millis();
 
   while (WiFi.status() != WL_CONNECTED && millis() - startTime < timeout) {
@@ -75,6 +77,7 @@ WebModeResult enterWebMode() {
       return WebModeResult::MDNS_FAILED; // can print to user to use the localip
                                          // in main.
     }
+    isMdnsRunning = true;
     Serial.println("Visit BardAssistant.local to view decks");
     return WebModeResult::SUCCESS; // SUCCESS includes MDNS bc it's the enter
                                    // web mode's overall success, if Wifi
@@ -84,5 +87,13 @@ WebModeResult enterWebMode() {
     Serial.println("Failed to connect to WiFi.");
     WiFi.disconnect();
     return WebModeResult::CONNECTION_FAILED;
+  }
+}
+
+void exitWebMode() {
+  disconnectWiFi();
+  if (isMdnsRunning) {
+    MDNS.end();
+    isMdnsRunning = false;
   }
 }

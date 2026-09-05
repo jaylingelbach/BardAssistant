@@ -131,6 +131,35 @@ li:last-child {
 }
 
 .btn-secondary {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  color: #0066cc;
+  background-color: transparent;
+  border: 2px solid #0066cc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary:hover {
+  background-color: #0066cc;
+  color: #ffffff;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary:focus-visible {
+  outline: 3px solid #94b9ff;
+  outline-offset: 2px;
+}
+
+.btn-small {
   /* Layout & Sizing */
   display: inline-block;
   padding: 0.15rem 0.4rem; /* Scalable sizing relative to text */
@@ -152,25 +181,58 @@ li:last-child {
 }
 
 /* Hover state (mouse pointer enters) */
-.btn-secondary:hover {
+.btn-small:hover {
   background-color: #0057ff;
 }
 
 /* Active state (when the button is clicked) */
-.btn-secondary:active {
+.btn-small:active {
   transform: scale(0.98); /* Slight click feedback effect */
 }
 
-input {
-  margin: 0.4rem 0;
+input[type='text'] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s ease;
+  margin: 0.5rem 0 1rem;
+}
+
+input[type='text']:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
 }
 
 dialog {
-  padding: 24px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 32px;
   border: none;
-  border-radius: 10px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  width: min(420px, 90vw);
+}
+
+dialog h2 {
+  font-size: 1.2rem;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+dialog .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
 }

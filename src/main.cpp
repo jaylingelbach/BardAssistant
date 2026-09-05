@@ -393,6 +393,8 @@ void setup() {
     }
   }
 
+  // TEMP FOR DEVELOPMENT. I WANT THIS TO CONNECT AND SPIN UP WHILE I CODE. WILL
+  // BE MOVED TO BUTTON GESTURES.
   WebModeResult webRes = enterWebMode();
   if (webRes == WebModeResult::SUCCESS) {
     Serial.println("[WebModeResult]: SUCCESS!!!");

@@ -4,6 +4,13 @@
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
+static void sendError(WebServer &server, int code, const char *message) {
+  String body = "{\"error\":\"";
+  body += message;
+  body += "\"}";
+  server.send(code, "application/json", body);
+}
+
 String WebServerManager::mimeTypeFor(const String &path) {
   if (path.endsWith(".html"))
     return "text/html";
@@ -29,12 +36,12 @@ void WebServerManager::handleRoot() {
 void WebServerManager::handleNotFound() {
   const String path = server.uri();
   if (!LittleFS.exists(path)) {
-    server.send(404, "text/plain", "Not found");
+    sendError(server, 404, "Not found");
     return;
   }
   File file = LittleFS.open(path, "r");
   if (!file) {
-    server.send(404, "text/plain", "Not found");
+    sendError(server, 404, "Not found");
     return;
   }
   server.streamFile(file, mimeTypeFor(path));
@@ -43,7 +50,7 @@ void WebServerManager::handleNotFound() {
 
 void WebServerManager::handleCreateDeckEntry() {
   if (!server.hasArg("id")) {
-    server.send(400, "text/plain", "Missing 'id' parameter");
+    sendError(server, 400, "Missing 'id' parameter");
     return;
   }
 
@@ -53,24 +60,22 @@ void WebServerManager::handleCreateDeckEntry() {
     String body = server.arg("plain");
 
     if (body.length() == 0) {
-      server.send(400, "text/plain", "Bad Request: No body found");
+      sendError(server, 400, "Missing request body");
       return;
     }
 
-    Serial.println("Received body: " + body);
-    JsonDocument docCreateEntry;
-    DeserializationError error = deserializeJson(docCreateEntry, body);
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, body);
     if (error) {
-      Serial.print("deserializeJson() failed: ");
-      Serial.println(error.f_str());
-      server.send(500, "text/plain", "Deserialization of JSON failed");
+      sendError(server, 400, "Invalid JSON");
       return;
     }
-    String response;
-    server.send(200, "application/json", docCreateEntry["text"]);
+
+    const String text = doc["text"].as<String>();
+    Serial.println("[POST /api/decks] text: " + text);
+    server.send(200, "application/json", "{\"text\":\"" + text + "\"}");
   } else {
-    server.send(400, "text/plain", "Invalid 'id' parameter");
-    Serial.println("Invalid 'id' parameter");
+    sendError(server, 400, "Unknown deck id");
   }
 }
 
@@ -93,7 +98,7 @@ void WebServerManager::registerRoutes() {
 
 void WebServerManager::handleGetDeck() {
   if (!server.hasArg("id")) {
-    server.send(400, "text/plain", "Missing 'id' parameter");
+    sendError(server, 400, "Missing 'id' parameter");
     return;
   }
 
@@ -106,7 +111,7 @@ void WebServerManager::handleGetDeck() {
   }
 
   if (entries == nullptr) {
-    server.send(404, "text/plain", "Deck not found");
+    sendError(server, 404, "Deck not found");
     return;
   }
 
