@@ -12,9 +12,10 @@
  * @param message Error message included in the response.
  */
 static void sendError(WebServer &server, int code, const char *message) {
-  String body = "{\"error\":\"";
-  body += message;
-  body += "\"}";
+  JsonDocument doc;
+  doc["error"] = message;
+  String body;
+  serializeJson(doc, body);
   server.send(code, "application/json", body);
 }
 
