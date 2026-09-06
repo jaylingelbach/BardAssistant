@@ -11,6 +11,9 @@ if (page === 'insults') {
   showHome();
 }
 
+/**
+ * Displays the insults deck and provides controls for adding, editing, and deleting insults.
+ */
 async function showInsults() {
   const response = await fetch(`${API_BASE}/api/decks?id=insults`);
   const insults = await response.json();
@@ -126,6 +129,9 @@ async function showInsults() {
   });
 }
 
+/**
+ * Displays the application's home page.
+ */
 async function showHome() {
   app.innerHTML = `<h1>Bard's Assistant</h1>`;
 }

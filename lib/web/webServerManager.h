@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+/**
+ * Manages the web server and its HTTP request routes.
+ */
 class WebServerManager {
 public:
   void start();
