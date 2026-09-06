@@ -73,7 +73,12 @@ void WebServerManager::handleCreateDeckEntry() {
 
     const String text = doc["text"].as<String>();
     Serial.println("[POST /api/decks] text: " + text);
-    server.send(200, "application/json", "{\"text\":\"" + text + "\"}");
+
+    JsonDocument resDoc;
+    resDoc["text"] = text;
+    String response;
+    serializeJson(resDoc, response);
+    server.send(200, "application/json", response);
   } else {
     sendError(server, 400, "Unknown deck id");
   }
