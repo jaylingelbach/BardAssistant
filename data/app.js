@@ -2,6 +2,7 @@ const params = new URLSearchParams(window.location.search);
 const page = params.get('page');
 const app = document.getElementById('app');
 
+// Only added for developing ease. Remove when ships.
 const API_BASE = 'http://bardsassistant.local';
 
 if (page === 'insults') {
@@ -118,6 +119,7 @@ async function showInsults() {
       await response.text();
       inputElement.value = '';
       addInsultDialog.close();
+      await showInsults();
     } catch (error) {
       console.error('Failed to submit insult:', error);
     }
