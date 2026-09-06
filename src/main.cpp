@@ -309,22 +309,10 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 // ───────────────── Arduino lifecycle ─────────────
 
 /**
- * @brief Initialize hardware, application state, and modules for device
- * boot/wake.
+ * @brief Initializes hardware, persistent state, display content, and web services for boot or wake.
  *
- * - Reads an NVS "slept" flag to classify this boot as wake-from-deep-sleep.
- * - Sets a brief ignore window to suppress accidental input immediately after
- * boot/wake.
- * - Initializes LEDs, buttons, and the e-ink display.
- * - If waking from EXT0 deep sleep, deinitializes the wake GPIO from RTC IO
- * mode so it can be used as a normal digital input with INPUT_PULLUP again.
- * - Enters Boot state (boot LED splash) and initializes the insults module.
- *
- * Rendering policy (chosen UX):
- * - On wake-from-sleep: re-render the last insult immediately (screen was
- * blanked before sleep).
- * - On cold boot: optionally render an insult immediately if
- * PRINT_INSULT_ON_BOOT is true.
+ * Determines whether the device resumed from deep sleep, restores the corresponding insult state,
+ * configures input and LED hardware, displays the boot state, and starts the web server.
  */
 void setup() {
   Serial.begin(115200);
@@ -404,14 +392,11 @@ void setup() {
   webServerManager.start();
 }
 /**
- * @brief Main application loop: poll buttons and advance the state machine.
+ * @brief Polls device inputs, advances the application state, and services the web server.
  *
- * - Polls all buttons and routes debounced intent events through
- * handleButtonEvent().
- * - Boot: holds the boot LED splash for a short duration, then enters Idle.
- * - Idle: waits for button-driven actions.
- * - Updating: advances the active insult operation via insultsPoll() until
- * done. When it completes, we render the current insult and return to Idle.
+ * Processes debounced button events, transitions from the boot splash to idle,
+ * advances active insult operations, and renders completed operations before
+ * returning to the idle state.
  */
 void loop() {
   const uint32_t now = millis();

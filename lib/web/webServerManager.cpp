@@ -4,6 +4,13 @@
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
+/**
+ * @brief Sends a JSON-formatted error response.
+ *
+ * @param server Web server used to send the response.
+ * @param code HTTP status code.
+ * @param message Error message included in the response.
+ */
 static void sendError(WebServer &server, int code, const char *message) {
   String body = "{\"error\":\"";
   body += message;
@@ -11,6 +18,13 @@ static void sendError(WebServer &server, int code, const char *message) {
   server.send(code, "application/json", body);
 }
 
+/**
+ * @brief Determines the MIME type for a file path.
+ *
+ * @param path File path whose extension is used to determine the MIME type.
+ * @return String MIME type corresponding to the path extension, or `text/plain`
+ *         when the extension is unsupported.
+ */
 String WebServerManager::mimeTypeFor(const String &path) {
   if (path.endsWith(".html"))
     return "text/html";
@@ -23,6 +37,11 @@ String WebServerManager::mimeTypeFor(const String &path) {
   return "text/plain";
 }
 
+/**
+ * @brief Serves the root HTML page from LittleFS.
+ *
+ * Sends a 404 response when the page cannot be opened.
+ */
 void WebServerManager::handleRoot() {
   File file = LittleFS.open("/index.html", "r");
   if (!file) {
@@ -33,6 +52,11 @@ void WebServerManager::handleRoot() {
   file.close();
 }
 
+/**
+ * @brief Serves the requested filesystem resource when available.
+ *
+ * @return void
+ */
 void WebServerManager::handleNotFound() {
   const String path = server.uri();
   if (!LittleFS.exists(path)) {
@@ -48,6 +72,12 @@ void WebServerManager::handleNotFound() {
   file.close();
 }
 
+/**
+ * @brief Creates an entry in the specified deck from a JSON request body.
+ *
+ * @param id Deck identifier supplied by the request query parameters.
+ * @return Sends a JSON response containing the submitted text, or an error response for missing or invalid request data.
+ */
 void WebServerManager::handleCreateDeckEntry() {
   if (!server.hasArg("id")) {
     sendError(server, 400, "Missing 'id' parameter");
@@ -84,16 +114,28 @@ void WebServerManager::handleCreateDeckEntry() {
   }
 }
 
+/**
+ * @brief Registers the server routes and starts the web server.
+ */
 void WebServerManager::start() {
   registerRoutes();
   server.begin();
   Serial.println("[WebServerManager] Started Web Server");
 }
 
+/**
+ * @brief Stops the web server.
+ */
 void WebServerManager::stop() { server.stop(); }
 
+/**
+ * @brief Processes pending web-server client requests.
+ */
 void WebServerManager::handle() { server.handleClient(); }
 
+/**
+ * @brief Registers HTTP handlers for page delivery, deck operations, and unmatched requests.
+ */
 void WebServerManager::registerRoutes() {
   server.on("/", HTTP_GET, [this]() { handleRoot(); });
   server.on("/api/decks", HTTP_GET, [this]() { handleGetDeck(); });
@@ -101,6 +143,12 @@ void WebServerManager::registerRoutes() {
   server.onNotFound([this]() { handleNotFound(); });
 }
 
+/**
+ * @brief Sends the requested deck entries as a JSON array.
+ *
+ * Requires an `id` query parameter. The `insults` deck is supported; unknown
+ * deck identifiers return a 404 error.
+ */
 void WebServerManager::handleGetDeck() {
   if (!server.hasArg("id")) {
     sendError(server, 400, "Missing 'id' parameter");
