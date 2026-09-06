@@ -78,7 +78,12 @@ static bool operationIsNewInsult = false;
 static uint32_t operationStartedAt = 0;
 static uint16_t pendingInsultIndex = 0;
 
-// ───────────────── Utilities ─────────────────
+/**
+ * @brief Loads non-empty trimmed lines from a file.
+ *
+ * @param path Path to the file to read.
+ * @return std::vector<std::string> The file's non-empty trimmed lines, or an empty vector if the file cannot be opened.
+ */
 
 static std::vector<std::string> readDeckLineByLine(const char *path) {
   File file = LittleFS.open(path, "r");
@@ -97,6 +102,13 @@ static std::vector<std::string> readDeckLineByLine(const char *path) {
   file.close();
   return lines;
 }
+
+/**
+ * @brief Provides access to all loaded insults.
+ *
+ * @return const std::vector<std::string>& Reference to the loaded insult collection.
+ */
+const std::vector<std::string> &insultsGetAll() { return insults; }
 
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
@@ -305,10 +317,12 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
 // ───────────────── Persistence (NVS) ─────────────────
 
 /**
- * @brief Load last-seen insult + history cursor from NVS.
+ * @brief Restores the current insult and navigation history from NVS.
  *
- * This is used on wake-from-sleep to restore exactly what the user last saw.
- * A magic marker + size checks are used to avoid applying incompatible data.
+ * Rejects missing, incompatible, or invalid persisted state.
+ *
+ * @param[out] outIndex Receives the restored current insult index.
+ * @return `true` if valid state was restored, `false` otherwise.
  */
 static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
   Preferences prefs;
@@ -359,7 +373,8 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
   // Validate every active history entry against the current deck size.
   // If insults.txt changed since last sleep, stale indices could be out of
   // range.
-  const size_t oldest = wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
+  const size_t oldest =
+      wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
   for (size_t i = 0; i < savedSize; i++) {
     const size_t physical = wrapIndex(oldest + i, HISTORY_CAP);
     if (history[physical] >= insults.size()) {
