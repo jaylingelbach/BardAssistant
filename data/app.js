@@ -39,40 +39,48 @@ async function showInsults() {
     </dialog>
     </div>
 
-    <ul>
-    ${insults
-      .map((insult) => {
-        const id = insult.id;
-        const text = insult.text;
-
-        return `
-  <li>
-    <span style="display: inline-block; margin-bottom: 0.5em;">${text}</span>
-
-    <div>
-      <button id="editInsult" class="btn-small" data-id="${id}" data-action="edit">Edit</button>
-      <button id="deleteInsult" class="btn-small" data-id="${id}" data-action="delete">Delete</button>
-    </div>
-  </li>
-  `;
-      })
-      .join('')}
-    </ul>
+    <ul id="insultList"></ul>
   </div>
 `;
   const addInsultButton = document.getElementById('addInsult');
   const addInsultDialog = document.getElementById('addInsultDialog');
   const cancelAddInsult = document.getElementById('cancelAddInsult');
   const submitInsultForm = document.getElementById('addInsultForm');
+  const insultList = document.getElementById('insultList');
 
-  const buttons = document.querySelectorAll('[data-action]');
-  buttons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const id = button.dataset.id;
-      const action = button.dataset.action;
+  insults.forEach((insult) => {
+    const li = document.createElement('li');
 
-      console.log(id, action);
+    const span = document.createElement('span');
+    span.style.display = 'inline-block';
+    span.style.marginBottom = '0.5em';
+    span.textContent = insult.text;
+
+    const actions = document.createElement('div');
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'btn-small';
+    editBtn.dataset.id = insult.id;
+    editBtn.dataset.action = 'edit';
+    editBtn.textContent = 'Edit';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn-small';
+    deleteBtn.dataset.id = insult.id;
+    deleteBtn.dataset.action = 'delete';
+    deleteBtn.textContent = 'Delete';
+
+    [editBtn, deleteBtn].forEach((btn) => {
+      btn.addEventListener('click', () => {
+        console.log(btn.dataset.id, btn.dataset.action);
+      });
     });
+
+    actions.appendChild(editBtn);
+    actions.appendChild(deleteBtn);
+    li.appendChild(span);
+    li.appendChild(actions);
+    insultList.appendChild(li);
   });
 
   addInsultButton.addEventListener('click', () => {
