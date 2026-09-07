@@ -690,6 +690,7 @@ CreateEntryResult createInsult(std::string text) {
   insults.emplace_back(newEntry);
 
   if (saveJsonFile("/insults.json", insults)) {
+    initDeck();
     // saved successfully
     Serial.println("[createInsult] JSON file updated successfully!");
     return {true, newEntry};
