@@ -38,6 +38,13 @@ String WebServerManager::mimeTypeFor(const String &path) {
   return "text/plain";
 }
 
+/**
+ * @brief Parses a JSON request body into a document.
+ *
+ * @param body JSON-encoded request body.
+ * @param doc Document to populate with the parsed JSON.
+ * @return `true` if parsing succeeds, `false` if the body is empty or invalid.
+ */
 static bool parseJsonBody(const String &body, JsonDocument &doc) {
 
   if (body.length() == 0) {
@@ -92,8 +99,6 @@ void WebServerManager::handleNotFound() {
  * @brief Creates an entry in the specified deck from a JSON request body.
  *
  * @param id Deck identifier supplied by the request query parameters.
- * @return Sends a JSON response containing the submitted text, or an error
- * response for missing or invalid request data.
  */
 void WebServerManager::handleCreateDeckEntry() {
   if (!server.hasArg("id")) {

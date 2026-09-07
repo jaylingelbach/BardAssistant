@@ -67,7 +67,12 @@ static bool operationIsNewInsult = false;
 static uint32_t operationStartedAt = 0;
 static uint16_t pendingInsultIndex = 0;
 
-// ───────────────── Storage Helpers ─────────────────
+/**
+ * @brief Loads insult entries from a JSON array stored in LittleFS.
+ *
+ * @param path Path to the JSON file.
+ * @return std::vector<DeckEntry> Parsed entries, or an empty vector if the file cannot be opened or parsed.
+ */
 
 static std::vector<DeckEntry> readJsonFile(const char *path) {
   File file = LittleFS.open(path, "r");
@@ -96,6 +101,13 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
   return deckEntries;
 }
 
+/**
+ * @brief Serializes a deck to a JSON file with backup and failure recovery.
+ *
+ * @param path Destination file path.
+ * @param deck Entries to serialize.
+ * @return `true` if the file is saved successfully, `false` otherwise.
+ */
 static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   // Write to a temp file first so the primary file is never truncated before
   // we know serialization succeeded.
@@ -147,6 +159,11 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   return true;
 }
 
+/**
+ * @brief Generates the next available insult identifier.
+ *
+ * @return uint32_t One greater than the highest identifier in the loaded insult collection.
+ */
 static uint32_t generateNextId() {
   uint32_t highestId = 0;
 
@@ -164,8 +181,7 @@ static uint32_t generateNextId() {
 /**
  * @brief Provides access to all loaded insults.
  *
- * @return const std::vector<std::string>& Reference to the loaded insult
- * collection.
+ * @return const std::vector<DeckEntry>& Reference to the loaded insult collection.
  */
 const std::vector<DeckEntry> &insultsGetAll() { return insults; }
 
@@ -198,9 +214,11 @@ static void initDeck() {
 }
 
 /**
- * @brief Draw the next insult index from the shuffled deck.
+ * @brief Draws the next insult index from the shuffled deck.
  *
- * If the deck is exhausted, it is reshuffled automatically.
+ * Rebuilds the deck when all entries have been drawn.
+ *
+ * @return uint16_t The selected insult index, or 0 when no insults are loaded.
  */
 static uint16_t drawFromDeck() {
   if (insults.size() == 0) {
@@ -216,7 +234,13 @@ static uint16_t drawFromDeck() {
   return idx;
 }
 
-// ───────────────── History Mechanics ─────────────────
+/**
+ * @brief Wraps an index within a modulus range.
+ *
+ * @param index Index to wrap.
+ * @param mod Modulus defining the range; zero returns zero.
+ * @return size_t Remainder of index divided by mod, or zero when mod is zero.
+ */
 
 static size_t wrapIndex(size_t index, size_t mod) {
   if (mod == 0) {
@@ -320,10 +344,11 @@ static void renderTitleScreen() {
 }
 
 /**
- * @brief Render a single insult with a small “reason/action” header.
+ * @brief Displays the selected insult with its action and rendering reason.
  *
- * This module prints to Serial today; later you can swap these prints
- * for display drawing calls without changing the higher-level flow.
+ * @param index Index of the insult to display.
+ * @param action Action associated with the insult.
+ * @param reason Reason the insult is being rendered.
  */
 static void renderInsultAtIndex(uint16_t index, PendingAction action,
                                 RenderReason reason) {
@@ -382,7 +407,8 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
 /**
  * @brief Restores the current insult and navigation history from NVS.
  *
- * Rejects missing, incompatible, or invalid persisted state.
+ * Validates the persisted metadata and active history entries against the
+ * currently loaded insult collection before updating the in-memory state.
  *
  * @param[out] outIndex Receives the restored current insult index.
  * @return `true` if valid state was restored, `false` otherwise.
@@ -545,16 +571,15 @@ static bool beginWorkFor(PendingAction action) {
 }
 
 /**
- * @brief Initialize the insults module and render the startup UI.
+ * @brief Initializes the insult collection, deck, history, and startup state.
  *
- * - Always rebuilds the randomized deck.
- * - On cold boot: resets history, renders title, and optionally prints an
- * insult.
- * - On wake-from-sleep: restore state, but do not render automatically.
+ * On cold boot, resets history and renders the title screen. On wake from
+ * sleep, restores persisted state when available or seeds history with a
+ * newly drawn insult without rendering it.
  *
- * @param printInsultOnBoot If true, prints an initial insult on cold boot.
- * @param wokeFromSleep If true, attempts NVS restore and renders [Wake] output.
- * @return true if an insult was rendered immediately; false otherwise.
+ * @param printInsultOnBoot Whether to draw and render an insult during cold boot.
+ * @param wokeFromSleep Whether to restore state from sleep persistence.
+ * @return true if an insult is rendered during initialization, false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
   insults = readJsonFile("/insults.json");
@@ -625,10 +650,13 @@ bool insultsStartOperation(PendingAction action, uint32_t now) {
 }
 
 /**
- * @brief Advance the mocked operation while in Updating.
+ * @brief Polls the pending insult operation and completes it when its duration has elapsed.
  *
- * Returns true exactly once when the operation completes, then resets internal
- * operation state back to Idle.
+ * Updates the current insult, records the completed action in history, renders the result,
+ * and resets the operation to idle.
+ *
+ * @param now Current time in milliseconds.
+ * @return true if an operation completed during this call, false otherwise.
  */
 bool insultsPoll(uint32_t now) {
   if (operationPhase != OperationPhase::Waiting) {
@@ -664,12 +692,26 @@ bool insultsPoll(uint32_t now) {
   return true;
 }
 
-// ───────────────── Public Accessors ─────────────────
+/**
+ * @brief Determines whether any insults are loaded.
+ *
+ * @return `true` if at least one insult is loaded, `false` otherwise.
+ */
 
 bool insultsHasAny() { return insults.size() > 0; }
 
+/**
+ * @brief Retrieves the index of the current insult.
+ *
+ * @return uint16_t Current insult index.
+ */
 uint16_t insultsGetCurrentIndex() { return currentInsultIndex; }
 
+/**
+ * @brief Gets the text of the current insult.
+ *
+ * @return const char* The current insult text, or a status message when no valid insult is selected.
+ */
 const char *insultsGetCurrentText() {
   if (insults.size() == 0)
     return "No insults";
@@ -678,7 +720,12 @@ const char *insultsGetCurrentText() {
   return insults[currentInsultIndex].text.c_str();
 }
 
-// ───────────────── Deck CRUD ─────────────────
+/**
+ * @brief Adds a user-sourced insult to the collection and persists it.
+ *
+ * @param text Text of the insult to create.
+ * @return CreateEntryResult indicating whether the entry was saved successfully and containing the created entry.
+ */
 
 CreateEntryResult createInsult(std::string text) {
   // 1. Generate ID

@@ -6,10 +6,10 @@
 bool isMdnsRunning = false;
 
 /**
- * @brief Configures the device as a Wi-Fi station and connects it to a network.
+ * @brief Configures the device as a Wi-Fi station and establishes a network connection.
  *
- * Opens a configuration portal when a saved network cannot be connected to
- * within the configured timeouts.
+ * Clears stored Wi-Fi settings and opens a configuration portal when a connection
+ * cannot be established within the configured timeouts.
  *
  * @return SetupModeResult::SUCCESS if connected successfully;
  *         SetupModeResult::SETUP_FAILED otherwise.
