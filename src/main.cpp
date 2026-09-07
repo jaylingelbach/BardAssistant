@@ -309,10 +309,10 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 // ───────────────── Arduino lifecycle ─────────────
 
 /**
- * @brief Initializes hardware, persistent state, display content, and web services for boot or wake.
+ * @brief Initializes the device for a cold boot or wake from deep sleep.
  *
- * Determines whether the device resumed from deep sleep, restores the corresponding insult state,
- * configures input and LED hardware, displays the boot state, and starts the web server.
+ * Configures hardware, restores persistent insult state, renders the appropriate
+ * display content, sets up Wi-Fi, and starts the web server.
  */
 void setup() {
   Serial.begin(115200);
@@ -383,16 +383,23 @@ void setup() {
 
   // TEMP FOR DEVELOPMENT. I WANT THIS TO CONNECT AND SPIN UP WHILE I CODE. WILL
   // BE MOVED TO BUTTON GESTURES.
-  WebModeResult webRes = enterWebMode();
-  if (webRes == WebModeResult::SUCCESS) {
-    Serial.println("[WebModeResult]: SUCCESS!!!");
-  } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-    Serial.println("[WebModeResult]: CONNECTION FAILED");
+  // WebModeResult webRes = enterWebMode();
+  // if (webRes == WebModeResult::SUCCESS) {
+  //   Serial.println("[WebModeResult]: SUCCESS!!!");
+  // } else if (webRes == WebModeResult::CONNECTION_FAILED) {
+  //   Serial.println("[WebModeResult]: CONNECTION FAILED");
+  // }
+  SetupModeResult setupRes = setupWiFi();
+  if (setupRes == SetupModeResult::SUCCESS) {
+    Serial.println("Setup Successful");
+  } else {
+    Serial.println("Setup Failed");
   }
   webServerManager.start();
 }
 /**
- * @brief Polls device inputs, advances the application state, and services the web server.
+ * @brief Polls device inputs, advances the application state, and services the
+ * web server.
  *
  * Processes debounced button events, transitions from the boot splash to idle,
  * advances active insult operations, and renders completed operations before

@@ -60,6 +60,24 @@ uint16_t insultsGetCurrentIndex();
 
 bool insultsHasAny();
 
-const std::vector<std::string> &insultsGetAll();
+struct DeckEntry {
+  uint32_t id;
+  std::string text;
+  std::string source;
+
+  DeckEntry(uint32_t id, std::string text, std::string source)
+      : id(id), text(text), source(source) {}
+};
+
+struct CreateEntryResult {
+  bool success;
+  DeckEntry entry;
+  CreateEntryResult(bool success, DeckEntry entry)
+      : success(success), entry(entry) {}
+};
+
+const std::vector<DeckEntry> &insultsGetAll();
+
+CreateEntryResult createInsult(std::string text);
 
 #endif // INSULTS_H

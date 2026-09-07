@@ -6,10 +6,10 @@
 bool isMdnsRunning = false;
 
 /**
- * @brief Configures the device as a Wi-Fi station and connects it to a network.
+ * @brief Configures the device as a Wi-Fi station and establishes a network connection.
  *
- * Opens a configuration portal when a saved network cannot be connected to within
- * the configured timeouts.
+ * Clears stored Wi-Fi settings and opens a configuration portal when a connection
+ * cannot be established within the configured timeouts.
  *
  * @return SetupModeResult::SUCCESS if connected successfully;
  *         SetupModeResult::SETUP_FAILED otherwise.
@@ -18,6 +18,8 @@ SetupModeResult setupWiFi() {
   WiFi.mode(WIFI_STA);
 
   WiFiManager wm;
+
+  wm.resetSettings();
 
   bool res;
 
@@ -45,7 +47,8 @@ SetupModeResult setupWiFi() {
  * @brief Disconnects the device from the Wi-Fi network.
  *
  * @return DisconnectModeResult::SUCCESS if disconnection is verified;
- *         DisconnectModeResult::DISCONNECT_FAILED if the device remains connected.
+ *         DisconnectModeResult::DISCONNECT_FAILED if the device remains
+ * connected.
  */
 DisconnectModeResult disconnectWiFi() {
   WiFi.disconnect(true, false);
@@ -60,9 +63,12 @@ DisconnectModeResult disconnectWiFi() {
 }
 
 /**
- * @brief Enters web mode by connecting to the configured Wi-Fi network and starting the mDNS responder.
+ * @brief Enters web mode by connecting to the configured Wi-Fi network and
+ * starting the mDNS responder.
  *
- * @return WebModeResult `SUCCESS` if Wi-Fi and mDNS are initialized, `MDNS_FAILED` if mDNS setup fails, or `CONNECTION_FAILED` if Wi-Fi connection fails.
+ * @return WebModeResult `SUCCESS` if Wi-Fi and mDNS are initialized,
+ * `MDNS_FAILED` if mDNS setup fails, or `CONNECTION_FAILED` if Wi-Fi connection
+ * fails.
  */
 WebModeResult enterWebMode() {
   WiFi.mode(WIFI_STA);

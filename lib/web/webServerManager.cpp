@@ -39,6 +39,28 @@ String WebServerManager::mimeTypeFor(const String &path) {
 }
 
 /**
+ * @brief Parses a JSON request body into a document.
+ *
+ * @param body JSON-encoded request body.
+ * @param doc Document to populate with the parsed JSON.
+ * @return `true` if parsing succeeds, `false` if the body is empty or invalid.
+ */
+static bool parseJsonBody(const String &body, JsonDocument &doc) {
+
+  if (body.length() == 0) {
+    return false;
+  }
+
+  DeserializationError error = deserializeJson(doc, body);
+
+  if (error) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * @brief Serves the root HTML page from LittleFS.
  *
  * Sends a 404 response when the page cannot be opened.
@@ -77,7 +99,6 @@ void WebServerManager::handleNotFound() {
  * @brief Creates an entry in the specified deck from a JSON request body.
  *
  * @param id Deck identifier supplied by the request query parameters.
- * @return Sends a JSON response containing the submitted text, or an error response for missing or invalid request data.
  */
 void WebServerManager::handleCreateDeckEntry() {
   if (!server.hasArg("id")) {
@@ -90,26 +111,36 @@ void WebServerManager::handleCreateDeckEntry() {
   if (id == "insults") {
     String body = server.arg("plain");
 
-    if (body.length() == 0) {
-      sendError(server, 400, "Missing request body");
-      return;
-    }
-
     JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, body);
-    if (error) {
-      sendError(server, 400, "Invalid JSON");
+
+    bool parseSuccess = parseJsonBody(body, doc);
+
+    if (!parseSuccess) {
+      sendError(server, 400, "Failed to parse Json");
       return;
     }
 
-    const String text = doc["text"].as<String>();
-    Serial.println("[POST /api/decks] text: " + text);
+    const std::string text = doc["text"];
 
-    JsonDocument resDoc;
-    resDoc["text"] = text;
-    String response;
-    serializeJson(resDoc, response);
-    server.send(200, "application/json", response);
+    if (text.length() == 0) {
+      sendError(server, 400, "Empty text body");
+      return;
+    }
+
+    CreateEntryResult result = createInsult(text);
+
+    if (result.success) {
+      JsonDocument resDoc;
+      resDoc["id"] = result.entry.id;
+      resDoc["text"] = result.entry.text;
+      resDoc["source"] = result.entry.source;
+      String response;
+      serializeJson(resDoc, response);
+      server.send(201, "application/json", response);
+    } else {
+      sendError(server, 500, "Failed to create deck entry");
+    }
+
   } else {
     sendError(server, 400, "Unknown deck id");
   }
@@ -135,7 +166,8 @@ void WebServerManager::stop() { server.stop(); }
 void WebServerManager::handle() { server.handleClient(); }
 
 /**
- * @brief Registers HTTP handlers for page delivery, deck operations, and unmatched requests.
+ * @brief Registers HTTP handlers for page delivery, deck operations, and
+ * unmatched requests.
  */
 void WebServerManager::registerRoutes() {
   server.on("/", HTTP_GET, [this]() { handleRoot(); });
@@ -159,7 +191,7 @@ void WebServerManager::handleGetDeck() {
   const String id = server.arg("id");
 
   // Temporary: deck routing belongs in DeckManager once multiple decks exist.
-  const std::vector<std::string> *entries = nullptr;
+  const std::vector<DeckEntry> *entries = nullptr;
   if (id == "insults") {
     entries = &insultsGetAll();
   }
@@ -174,8 +206,8 @@ void WebServerManager::handleGetDeck() {
 
   for (size_t i = 0; i < entries->size(); i++) {
     JsonObject obj = arr.add<JsonObject>();
-    obj["id"] = i;
-    obj["text"] = (*entries)[i];
+    obj["id"] = (*entries)[i].id;
+    obj["text"] = (*entries)[i].text;
   }
 
   String response;

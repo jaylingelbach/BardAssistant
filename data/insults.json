@@ -1,0 +1,502 @@
+[
+  {
+    "id": 1,
+    "text": "What smells worse than a goblin? Oh yeah, you!",
+    "source": "default"
+  },
+  {
+    "id": 2,
+    "text": "Your mother takes up more tiles than a gelatinous cube!",
+    "source": "default"
+  },
+  {
+    "id": 3,
+    "text": "You're going to make an excellent belt!",
+    "source": "default"
+  },
+  {
+    "id": 4,
+    "text": "I'm glad you're tall...It means there's more of you I can despise!",
+    "source": "default"
+  },
+  {
+    "id": 5,
+    "text": "I don't know whether to use charm person or hold monster!",
+    "source": "default"
+  },
+  {
+    "id": 6,
+    "text": "You're the reason baby gnomes cry!",
+    "source": "default"
+  },
+  {
+    "id": 7,
+    "text": "Ugh. What the hell is that all over your face? Oh...its just your face!",
+    "source": "default"
+  },
+  {
+    "id": 8,
+    "text": "You are the feces that is created when shame eats too much stupidly!",
+    "source": "default"
+  },
+  {
+    "id": 9,
+    "text": "You're like a dragon, only shit!",
+    "source": "default"
+  },
+  {
+    "id": 10,
+    "text": "I've seen more threatening geckos!",
+    "source": "default"
+  },
+  {
+    "id": 11,
+    "text": "I swear, if you were any worse at this, you'd be doing our job for us!",
+    "source": "default"
+  },
+  {
+    "id": 12,
+    "text": "On a scale of 1 - 10, you're proper screwed!",
+    "source": "default"
+  },
+  {
+    "id": 13,
+    "text": "Your mother was a kobold and your father smelled of elderberry!",
+    "source": "default"
+  },
+  {
+    "id": 14,
+    "text": "You would bore the legs off a village idiot!",
+    "source": "default"
+  },
+  {
+    "id": 15,
+    "text": "It gives me a headache just trying to think down to your level!",
+    "source": "default"
+  },
+  {
+    "id": 16,
+    "text": "You're not a complete idiot...Some parts are obviously missing!",
+    "source": "default"
+  },
+  {
+    "id": 17,
+    "text": "You're like a trained ape, only, without the training!",
+    "source": "default"
+  },
+  {
+    "id": 18,
+    "text": "Well, my time of not taking you seriously is coming to a middle!",
+    "source": "default"
+  },
+  {
+    "id": 19,
+    "text": "Your mother's so ugly, folk turn to stone just incase they might happen to catch a glimpse of her face!",
+    "source": "default"
+  },
+  {
+    "id": 20,
+    "text": "Some day you'll meet a doppelganger of yourself and be disappointed!",
+    "source": "default"
+  },
+  {
+    "id": 21,
+    "text": "Are you always stupid, or are you making a special effort today!",
+    "source": "default"
+  },
+  {
+    "id": 22,
+    "text": "Some day you'll go far and I hope you stay there!",
+    "source": "default"
+  },
+  {
+    "id": 23,
+    "text": "I'd like to leave you with one thought...but I'm not sure you have anywhere to put it!",
+    "source": "default"
+  },
+  {
+    "id": 24,
+    "text": "Your momma's so ugly, clerics try to turn her!",
+    "source": "default"
+  },
+  {
+    "id": 25,
+    "text": "Your magic is as bad as your breath!",
+    "source": "default"
+  },
+  {
+    "id": 26,
+    "text": "Oh look, both your weapons are tiny!",
+    "source": "default"
+  },
+  {
+    "id": 27,
+    "text": "A wet cat is tougher than you!",
+    "source": "default"
+  },
+  {
+    "id": 28,
+    "text": "If ignorance is bliss, you must be the happiest person alive!",
+    "source": "default"
+  },
+  {
+    "id": 29,
+    "text": "Wow, that's a fat ass. I guess those behind you are gaining cover for this fight!",
+    "source": "default"
+  },
+  {
+    "id": 30,
+    "text": "Your Breath would put an otyugh off its breakfast!",
+    "source": "default"
+  },
+  {
+    "id": 31,
+    "text": "I could say you're as ugly as an ogre, but that would be an insult to ogres!",
+    "source": "default"
+  },
+  {
+    "id": 32,
+    "text": "I would contact your mother about your death, but I don't speak goblin!",
+    "source": "default"
+  },
+  {
+    "id": 33,
+    "text": "Your very existence is an insult to all!",
+    "source": "default"
+  },
+  {
+    "id": 34,
+    "text": "You look like the armpit of an unshaven bog hag!",
+    "source": "default"
+  },
+  {
+    "id": 35,
+    "text": "You are maggot pie served from a dwarf's codpiece!",
+    "source": "default"
+  },
+  {
+    "id": 36,
+    "text": "A goblin with one hand nailed to a tree would be more of a threat than you!",
+    "source": "default"
+  },
+  {
+    "id": 37,
+    "text": "You look like a scab on a troll's wart!",
+    "source": "default"
+  },
+  {
+    "id": 38,
+    "text": "No loot is worth having to look at you!",
+    "source": "default"
+  },
+  {
+    "id": 39,
+    "text": "You are the worst example of your class that I've ever come across!",
+    "source": "default"
+  },
+  {
+    "id": 40,
+    "text": "I can tell your reservoir of courage is fed by the tributary running down your leg!",
+    "source": "default"
+  },
+  {
+    "id": 41,
+    "text": "I'd insult your parents, but you probably don't know who they are!",
+    "source": "default"
+  },
+  {
+    "id": 42,
+    "text": "Well...I have met sharper loaves of bread!",
+    "source": "default"
+  },
+  {
+    "id": 43,
+    "text": "Even Evard's black tentacles wouldn't touch something as gross as you!",
+    "source": "default"
+  },
+  {
+    "id": 44,
+    "text": "Would you like me to remove that curse? Oh my mistake, you were just born that way!",
+    "source": "default"
+  },
+  {
+    "id": 45,
+    "text": "There is no beholder's eye in which you are beautiful!",
+    "source": "default"
+  },
+  {
+    "id": 46,
+    "text": "Animal friendship was the only way your parents could get puppies to play with you!",
+    "source": "default"
+  },
+  {
+    "id": 47,
+    "text": "Your ugly face makes a good argument against raising the dead!",
+    "source": "default"
+  },
+  {
+    "id": 48,
+    "text": "When your god put teeth in your mouth, he ruined a perfectly good asshole!",
+    "source": "default"
+  },
+  {
+    "id": 49,
+    "text": "Whomever is willing to have sex with you, is just too lazy to jerk off!",
+    "source": "default"
+  },
+  {
+    "id": 50,
+    "text": "If your brain exploded, it wouldn't even mess up your hair!",
+    "source": "default"
+  },
+  {
+    "id": 51,
+    "text": "Somewhere, you're depriving a village of its idiot!",
+    "source": "default"
+  },
+  {
+    "id": 52,
+    "text": "I'd like to see things from your point of view, but I can't get my head that far up my arse!",
+    "source": "default"
+  },
+  {
+    "id": 53,
+    "text": "You call that an attack, I've seen dead kittens hit harder than that!",
+    "source": "default"
+  },
+  {
+    "id": 54,
+    "text": "You look like your mother, and, your mother looks like your father!",
+    "source": "default"
+  },
+  {
+    "id": 55,
+    "text": "You're so stupid, if an illithid tried to eat your brain, it would starve to death!",
+    "source": "default"
+  },
+  {
+    "id": 56,
+    "text": "I would try to insult your father, but you were probably mistaken for a half orc, and disowned!",
+    "source": "default"
+  },
+  {
+    "id": 57,
+    "text": "Did your mother cast a darkness spell to feed you!",
+    "source": "default"
+  },
+  {
+    "id": 58,
+    "text": "OMG. And I thought troglodytes smelt bad!",
+    "source": "default"
+  },
+  {
+    "id": 59,
+    "text": "Phew! Have you just cast stinking cloud or do you always smell like that!",
+    "source": "default"
+  },
+  {
+    "id": 60,
+    "text": "Very impressive, I think I'll hire you out for children's parties!",
+    "source": "default"
+  },
+  {
+    "id": 61,
+    "text": "Hey, you pox ridden dung heap, I bet not even a starving vampire would go near you!",
+    "source": "default"
+  },
+  {
+    "id": 62,
+    "text": "By looking at you, now I know what you get when you scrape out the bottom of the barrel!",
+    "source": "default"
+  },
+  {
+    "id": 63,
+    "text": "I was going to cast detect thoughts, but I don't think I'm going to find anything up there!",
+    "source": "default"
+  },
+  {
+    "id": 64,
+    "text": "I wish I still had that blindness spell, then I wouldn't have to endure that face anymore!",
+    "source": "default"
+  },
+  {
+    "id": 65,
+    "text": "I was thinking of casting feeblemind, but I doubt it would work on you!",
+    "source": "default"
+  },
+  {
+    "id": 66,
+    "text": "Tell me, did you run away from your parents, or did they run away from you!",
+    "source": "default"
+  },
+  {
+    "id": 67,
+    "text": "What's the difference between a troll and your mother? One's a stinking ugly monster, and the other is a troll!",
+    "source": "default"
+  },
+  {
+    "id": 68,
+    "text": "Your mother was so stupid, zombies made her a dunce hat!",
+    "source": "default"
+  },
+  {
+    "id": 69,
+    "text": "You're like a gnome on stilts, real cute, but it's not working!",
+    "source": "default"
+  },
+  {
+    "id": 70,
+    "text": "They say every rose has its thorn, ain't that right, buttercup!",
+    "source": "default"
+  },
+  {
+    "id": 71,
+    "text": "I'd say you were a worthy opponent, but I once fought a flumph wielding a dandelion!",
+    "source": "default"
+  },
+  {
+    "id": 72,
+    "text": "If this fight gets any harder, I'll have to switch it up to folk music!",
+    "source": "default"
+  },
+  {
+    "id": 73,
+    "text": "I'd draw my rapier, but I wouldn't want to make you jealous!",
+    "source": "default"
+  },
+  {
+    "id": 74,
+    "text": "Your mother is so fat that making a joke here would detract from the seriousness of her condition!",
+    "source": "default"
+  },
+  {
+    "id": 75,
+    "text": "Stop me if you've heard this one. The sole purpose of your existence is to serve as a speedbump on others path to greatness!",
+    "source": "default"
+  },
+  {
+    "id": 76,
+    "text": "What's the difference between a dragon and a mallard with a cold? One's a sick duck and I forget the punchline, but your mother's a whore!",
+    "source": "default"
+  },
+  {
+    "id": 77,
+    "text": "Wait, wait, I just need to ask, what do you need us to put on your headstone!",
+    "source": "default"
+  },
+  {
+    "id": 78,
+    "text": "I've heard of schoolgirls with better fighting skills than you!",
+    "source": "default"
+  },
+  {
+    "id": 79,
+    "text": "By the gods your ugly, I bet your father regrets not pulling out when he had the chance!",
+    "source": "default"
+  },
+  {
+    "id": 80,
+    "text": "You do know the pointy end is suppose to go in the other guy, right!",
+    "source": "default"
+  },
+  {
+    "id": 81,
+    "text": "Wait, so you're the manifestation of a divine being of supreme power and malevolence, and you chose that face? Do they even have mirrors on your plane of existence!",
+    "source": "default"
+  },
+  {
+    "id": 82,
+    "text": "I've spoken with sewer rats more polite than you.",
+    "source": "default"
+  },
+  {
+    "id": 83,
+    "text": "Your battle strategy has all the elegance of a goblin falling down stairs!",
+    "source": "default"
+  },
+  {
+    "id": 84,
+    "text": "I've seen skeletons with more backbone than you!",
+    "source": "default"
+  },
+  {
+    "id": 85,
+    "text": "Your sword arm has the grace of a drunk kobold swatting flies!",
+    "source": "default"
+  },
+  {
+    "id": 86,
+    "text": "Even a mimic would be embarrassed to be caught pretending to be you!",
+    "source": "default"
+  },
+  {
+    "id": 87,
+    "text": "You have the tactical instincts of a gelatinous cube with a head injury!",
+    "source": "default"
+  },
+  {
+    "id": 88,
+    "text": "I've met cursed statues with more personality!",
+    "source": "default"
+  },
+  {
+    "id": 89,
+    "text": "Your armor is doing a wonderful job protecting everyone from your competence!",
+    "source": "default"
+  },
+  {
+    "id": 90,
+    "text": "If courage were gold, you'd still owe the tavern money!",
+    "source": "default"
+  },
+  {
+    "id": 91,
+    "text": "Even a low-level wizard could outwit you with a cantrip!",
+    "source": "default"
+  },
+  {
+    "id": 92,
+    "text": "You fight like you're trying to lose politely!",
+    "source": "default"
+  },
+  {
+    "id": 93,
+    "text": "Your greatest critical hit was the moment you were born!",
+    "source": "default"
+  },
+  {
+    "id": 94,
+    "text": "I've seen rust monsters with better taste in equipment!",
+    "source": "default"
+  },
+  {
+    "id": 95,
+    "text": "Your adventuring party deserves hazard pay for traveling with you!",
+    "source": "default"
+  },
+  {
+    "id": 96,
+    "text": "You're about as useful as a healing potion at a lich's funeral!",
+    "source": "default"
+  },
+  {
+    "id": 97,
+    "text": "Even the dungeon's traps are starting to feel sorry for you!",
+    "source": "default"
+  },
+  {
+    "id": 98,
+    "text": "Your battle cry sounds like a kobold asking for directions!",
+    "source": "default"
+  },
+  {
+    "id": 99,
+    "text": "Your initiative is so low the tavern closes before you get your turn!",
+    "source": "default"
+  },
+  {
+    "id": 100,
+    "text": "You're proof that not every quest needs a hero!",
+    "source": "default"
+  }
+]

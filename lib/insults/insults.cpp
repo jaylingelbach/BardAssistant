@@ -1,10 +1,12 @@
 #include "insults.h"
 #include "persist_keys.h"
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <Preferences.h>
 #include <string>
 #include <vector>
+
 // Internal-only enums (not exposed in insults.h)
 enum class RenderReason {
   Boot,
@@ -24,23 +26,10 @@ static constexpr uint32_t NVS_MAGIC = 0xBADC0FFE;
 // Simulated “work” duration for operations (Random/Next/Prev).
 static constexpr uint32_t MOCK_WORK_MS = 800;
 
-// Source data (future: load from flash/SD/API)
-// static const char *const insults[] = {
-//     "You fight like a dairy farmer.",
-//     "You have the manners of a troll.",
-//     "I’ve spoken with sewer rats more polite than you.",
-//     "Oh look, both your weapons are tiny!",
-// };
+// ───────────────── Module State ─────────────────
 
-// std::vector<std::string> insults = {
-//     "You fight like a dairy farmer.",
-//     "You have the manners of a troll.",
-//     "I’ve spoken with sewer rats more polite than you.",
-//     "Oh look, both your weapons are tiny!",
-// };
-std::vector<std::string> insults;
-
-// static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
+// std::vector<std::string> insults;
+std::vector<DeckEntry> insults;
 
 // ───────────────── Persistent State (RTC) ─────────────────
 //
@@ -79,36 +68,124 @@ static uint32_t operationStartedAt = 0;
 static uint16_t pendingInsultIndex = 0;
 
 /**
- * @brief Loads non-empty trimmed lines from a file.
+ * @brief Loads insult entries from a JSON array stored in LittleFS.
  *
- * @param path Path to the file to read.
- * @return std::vector<std::string> The file's non-empty trimmed lines, or an empty vector if the file cannot be opened.
+ * @param path Path to the JSON file.
+ * @return std::vector<DeckEntry> Parsed entries, or an empty vector if the file cannot be opened or parsed.
  */
 
-static std::vector<std::string> readDeckLineByLine(const char *path) {
+static std::vector<DeckEntry> readJsonFile(const char *path) {
   File file = LittleFS.open(path, "r");
   if (!file) {
-    Serial.println("[readDeckLineByLine] Failed to open file");
+    Serial.println("[readJsonFile] Failed to open file");
     return {};
   }
-  std::vector<std::string> lines;
-  while (file.available()) {
-    String line = file.readStringUntil('\n');
-    line.trim();
-    if (line.length() == 0)
-      continue;
-    lines.push_back(line.c_str());
+  JsonDocument doc;
+  std::vector<DeckEntry> deckEntries;
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
+  if (error) {
+    Serial.println("[readJsonFle] Invalid JSON");
+    return deckEntries;
+  }
+
+  JsonArray arr = doc.as<JsonArray>();
+  for (JsonObject entry : arr) {
+    uint32_t id = entry["id"];
+    const char *text = entry["text"];
+    const char *source = entry["source"];
+    deckEntries.emplace_back(id, text, source);
+  }
+  Serial.println("deckEntries size: ");
+  Serial.println(deckEntries.size());
+  return deckEntries;
+}
+
+/**
+ * @brief Serializes a deck to a JSON file with backup and failure recovery.
+ *
+ * @param path Destination file path.
+ * @param deck Entries to serialize.
+ * @return `true` if the file is saved successfully, `false` otherwise.
+ */
+static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
+  // Write to a temp file first so the primary file is never truncated before
+  // we know serialization succeeded.
+  String tmpPath = String(path) + ".tmp";
+  String bakPath = String(path) + ".bak";
+
+  File file = LittleFS.open(tmpPath.c_str(), "w");
+  if (!file) {
+    Serial.println("[saveJsonFile] Failed to open temp file for writing");
+    return false;
+  }
+
+  JsonDocument doc;
+  JsonArray arr = doc.to<JsonArray>();
+  for (const DeckEntry &card : deck) {
+    JsonObject obj = arr.add<JsonObject>();
+    obj["id"] = card.id;
+    obj["text"] = card.text;
+    obj["source"] = card.source;
+  }
+
+  if (serializeJson(doc, file) == 0) {
+    Serial.println(F("[saveJsonFile] Failed to serialize JSON to temp file"));
+    file.close();
+    LittleFS.remove(tmpPath.c_str());
+    return false;
   }
   file.close();
-  return lines;
+
+  // Keep the previous file as a backup before replacing it.
+  if (LittleFS.exists(path)) {
+    LittleFS.remove(bakPath.c_str());
+    if (!LittleFS.rename(path, bakPath.c_str())) {
+      Serial.println(F("[saveJsonFile] Failed to back up existing file"));
+      LittleFS.remove(tmpPath.c_str());
+      return false;
+    }
+  }
+
+  if (!LittleFS.rename(tmpPath.c_str(), path)) {
+    Serial.println(F("[saveJsonFile] Failed to rename temp file to primary"));
+    // Attempt to restore the backup so the deck isn't lost.
+    if (LittleFS.exists(bakPath.c_str())) {
+      LittleFS.rename(bakPath.c_str(), path);
+    }
+    return false;
+  }
+
+  return true;
 }
+
+/**
+ * @brief Generates the next available insult identifier.
+ *
+ * @return uint32_t One greater than the highest identifier in the loaded insult collection.
+ */
+static uint32_t generateNextId() {
+  uint32_t highestId = 0;
+
+  for (const DeckEntry &insult : insults) {
+    if (insult.id > highestId) {
+      highestId = insult.id;
+    }
+  }
+
+  return highestId + 1;
+}
+
+// ───────────────── Public Data Access ─────────────────
 
 /**
  * @brief Provides access to all loaded insults.
  *
- * @return const std::vector<std::string>& Reference to the loaded insult collection.
+ * @return const std::vector<DeckEntry>& Reference to the loaded insult collection.
  */
-const std::vector<std::string> &insultsGetAll() { return insults; }
+const std::vector<DeckEntry> &insultsGetAll() { return insults; }
+
+// ───────────────── Deck Mechanics ─────────────────
 
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
@@ -137,9 +214,11 @@ static void initDeck() {
 }
 
 /**
- * @brief Draw the next insult index from the shuffled deck.
+ * @brief Draws the next insult index from the shuffled deck.
  *
- * If the deck is exhausted, it is reshuffled automatically.
+ * Rebuilds the deck when all entries have been drawn.
+ *
+ * @return uint16_t The selected insult index, or 0 when no insults are loaded.
  */
 static uint16_t drawFromDeck() {
   if (insults.size() == 0) {
@@ -154,6 +233,14 @@ static uint16_t drawFromDeck() {
   deckPosition++;
   return idx;
 }
+
+/**
+ * @brief Wraps an index within a modulus range.
+ *
+ * @param index Index to wrap.
+ * @param mod Modulus defining the range; zero returns zero.
+ * @return size_t Remainder of index divided by mod, or zero when mod is zero.
+ */
 
 static size_t wrapIndex(size_t index, size_t mod) {
   if (mod == 0) {
@@ -257,10 +344,11 @@ static void renderTitleScreen() {
 }
 
 /**
- * @brief Render a single insult with a small “reason/action” header.
+ * @brief Displays the selected insult with its action and rendering reason.
  *
- * This module prints to Serial today; later you can swap these prints
- * for display drawing calls without changing the higher-level flow.
+ * @param index Index of the insult to display.
+ * @param action Action associated with the insult.
+ * @param reason Reason the insult is being rendered.
  */
 static void renderInsultAtIndex(uint16_t index, PendingAction action,
                                 RenderReason reason) {
@@ -275,7 +363,7 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
     return;
   }
 
-  const char *line = insults[index].c_str();
+  const char *line = insults[index].text.c_str();
 
   Serial.println(F("────────────────────────────"));
   switch (reason) {
@@ -319,7 +407,8 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
 /**
  * @brief Restores the current insult and navigation history from NVS.
  *
- * Rejects missing, incompatible, or invalid persisted state.
+ * Validates the persisted metadata and active history entries against the
+ * currently loaded insult collection before updating the in-memory state.
  *
  * @param[out] outIndex Receives the restored current insult index.
  * @return `true` if valid state was restored, `false` otherwise.
@@ -371,7 +460,7 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
   }
 
   // Validate every active history entry against the current deck size.
-  // If insults.txt changed since last sleep, stale indices could be out of
+  // If insults.json changed since last sleep, stale indices could be out of
   // range.
   const size_t oldest =
       wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
@@ -482,19 +571,19 @@ static bool beginWorkFor(PendingAction action) {
 }
 
 /**
- * @brief Initialize the insults module and render the startup UI.
+ * @brief Initializes the insult collection, deck, history, and startup state.
  *
- * - Always rebuilds the randomized deck.
- * - On cold boot: resets history, renders title, and optionally prints an
- * insult.
- * - On wake-from-sleep: restore state, but do not render automatically.
+ * On cold boot, resets history and renders the title screen. On wake from
+ * sleep, restores persisted state when available or seeds history with a
+ * newly drawn insult without rendering it.
  *
- * @param printInsultOnBoot If true, prints an initial insult on cold boot.
- * @param wokeFromSleep If true, attempts NVS restore and renders [Wake] output.
- * @return true if an insult was rendered immediately; false otherwise.
+ * @param printInsultOnBoot Whether to draw and render an insult during cold boot.
+ * @param wokeFromSleep Whether to restore state from sleep persistence.
+ * @return true if an insult is rendered during initialization, false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
-  insults = readDeckLineByLine("/insults.txt");
+  insults = readJsonFile("/insults.json");
+
   initDeck();
 
   if (!wokeFromSleep) {
@@ -561,10 +650,13 @@ bool insultsStartOperation(PendingAction action, uint32_t now) {
 }
 
 /**
- * @brief Advance the mocked operation while in Updating.
+ * @brief Polls the pending insult operation and completes it when its duration has elapsed.
  *
- * Returns true exactly once when the operation completes, then resets internal
- * operation state back to Idle.
+ * Updates the current insult, records the completed action in history, renders the result,
+ * and resets the operation to idle.
+ *
+ * @param now Current time in milliseconds.
+ * @return true if an operation completed during this call, false otherwise.
  */
 bool insultsPoll(uint32_t now) {
   if (operationPhase != OperationPhase::Waiting) {
@@ -600,14 +692,59 @@ bool insultsPoll(uint32_t now) {
   return true;
 }
 
+/**
+ * @brief Determines whether any insults are loaded.
+ *
+ * @return `true` if at least one insult is loaded, `false` otherwise.
+ */
+
 bool insultsHasAny() { return insults.size() > 0; }
 
+/**
+ * @brief Retrieves the index of the current insult.
+ *
+ * @return uint16_t Current insult index.
+ */
 uint16_t insultsGetCurrentIndex() { return currentInsultIndex; }
 
+/**
+ * @brief Gets the text of the current insult.
+ *
+ * @return const char* The current insult text, or a status message when no valid insult is selected.
+ */
 const char *insultsGetCurrentText() {
   if (insults.size() == 0)
     return "No insults";
   if (currentInsultIndex >= insults.size())
     return "Invalid insult";
-  return insults[currentInsultIndex].c_str();
+  return insults[currentInsultIndex].text.c_str();
+}
+
+/**
+ * @brief Adds a user-sourced insult to the collection and persists it.
+ *
+ * @param text Text of the insult to create.
+ * @return CreateEntryResult indicating whether the entry was saved successfully and containing the created entry.
+ */
+
+CreateEntryResult createInsult(std::string text) {
+  // 1. Generate ID
+  uint32_t id = generateNextId();
+
+  // 2. Create Deck Entry
+  DeckEntry newEntry{id, text, "user"};
+  // 3. Add to in-memory vector
+  insults.emplace_back(newEntry);
+
+  if (saveJsonFile("/insults.json", insults)) {
+    initDeck();
+    // saved successfully
+    Serial.println("[createInsult] JSON file updated successfully!");
+    return {true, newEntry};
+  } else {
+    // save failed
+    Serial.println("[createInsult] error saving insult");
+    insults.pop_back();
+    return {false, newEntry};
+  }
 }
