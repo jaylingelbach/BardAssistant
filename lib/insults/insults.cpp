@@ -1,10 +1,12 @@
 #include "insults.h"
 #include "persist_keys.h"
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <Preferences.h>
 #include <string>
 #include <vector>
+
 // Internal-only enums (not exposed in insults.h)
 enum class RenderReason {
   Boot,
@@ -24,23 +26,10 @@ static constexpr uint32_t NVS_MAGIC = 0xBADC0FFE;
 // Simulated “work” duration for operations (Random/Next/Prev).
 static constexpr uint32_t MOCK_WORK_MS = 800;
 
-// Source data (future: load from flash/SD/API)
-// static const char *const insults[] = {
-//     "You fight like a dairy farmer.",
-//     "You have the manners of a troll.",
-//     "I’ve spoken with sewer rats more polite than you.",
-//     "Oh look, both your weapons are tiny!",
-// };
+// ───────────────── Module State ─────────────────
 
-// std::vector<std::string> insults = {
-//     "You fight like a dairy farmer.",
-//     "You have the manners of a troll.",
-//     "I’ve spoken with sewer rats more polite than you.",
-//     "Oh look, both your weapons are tiny!",
-// };
-std::vector<std::string> insults;
-
-// static constexpr size_t insultCount = sizeof(insults) / sizeof(insults[0]);
+// std::vector<std::string> insults;
+std::vector<DeckEntry> insults;
 
 // ───────────────── Persistent State (RTC) ─────────────────
 //
@@ -78,37 +67,85 @@ static bool operationIsNewInsult = false;
 static uint32_t operationStartedAt = 0;
 static uint16_t pendingInsultIndex = 0;
 
-/**
- * @brief Loads non-empty trimmed lines from a file.
- *
- * @param path Path to the file to read.
- * @return std::vector<std::string> The file's non-empty trimmed lines, or an empty vector if the file cannot be opened.
- */
+// ───────────────── Storage Helpers ─────────────────
 
-static std::vector<std::string> readDeckLineByLine(const char *path) {
+static std::vector<DeckEntry> readJsonFile(const char *path) {
   File file = LittleFS.open(path, "r");
   if (!file) {
-    Serial.println("[readDeckLineByLine] Failed to open file");
+    Serial.println("[readJsonFile] Failed to open file");
     return {};
   }
-  std::vector<std::string> lines;
-  while (file.available()) {
-    String line = file.readStringUntil('\n');
-    line.trim();
-    if (line.length() == 0)
-      continue;
-    lines.push_back(line.c_str());
+  JsonDocument doc;
+  std::vector<DeckEntry> deckEntries;
+  DeserializationError error = deserializeJson(doc, file);
+  file.close();
+  if (error) {
+    Serial.println("[readJsonFle] Invalid JSON");
+    return deckEntries;
+  }
+
+  JsonArray arr = doc.as<JsonArray>();
+  for (JsonObject entry : arr) {
+    uint32_t id = entry["id"];
+    const char *text = entry["text"];
+    const char *source = entry["source"];
+    deckEntries.emplace_back(id, text, source);
+  }
+  Serial.println("deckEntries size: ");
+  Serial.println(deckEntries.size());
+  return deckEntries;
+}
+
+static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
+  File file = LittleFS.open(path, "w");
+
+  if (!file) {
+    Serial.println("Failed to open file for writing");
+    return false;
+  }
+
+  JsonDocument doc;
+  JsonArray arr = doc.to<JsonArray>();
+
+  for (const DeckEntry &card : deck) {
+    JsonObject obj = arr.add<JsonObject>();
+    obj["id"] = card.id;
+    obj["text"] = card.text;
+    obj["source"] = card.source;
+  }
+
+  if (serializeJson(doc, file) == 0) {
+    Serial.println(F("Failed to write updated JSON to file"));
+    file.close();
+    return false;
   }
   file.close();
-  return lines;
+  return true;
 }
+
+static uint32_t generateNextId() {
+  uint32_t highestId = 0;
+
+  for (const DeckEntry &insult : insults) {
+    if (insult.id > highestId) {
+      highestId = insult.id;
+    }
+  }
+
+  return highestId + 1;
+}
+
+// ───────────────── Public Data Access ─────────────────
 
 /**
  * @brief Provides access to all loaded insults.
  *
- * @return const std::vector<std::string>& Reference to the loaded insult collection.
+ * @return const std::vector<std::string>& Reference to the loaded insult
+ * collection.
  */
-const std::vector<std::string> &insultsGetAll() { return insults; }
+const std::vector<DeckEntry> &insultsGetAll() { return insults; }
+
+// ───────────────── Deck Mechanics ─────────────────
 
 /**
  * @brief Populate the deck with indices and shuffle it, resetting draw
@@ -154,6 +191,8 @@ static uint16_t drawFromDeck() {
   deckPosition++;
   return idx;
 }
+
+// ───────────────── History Mechanics ─────────────────
 
 static size_t wrapIndex(size_t index, size_t mod) {
   if (mod == 0) {
@@ -275,7 +314,7 @@ static void renderInsultAtIndex(uint16_t index, PendingAction action,
     return;
   }
 
-  const char *line = insults[index].c_str();
+  const char *line = insults[index].text.c_str();
 
   Serial.println(F("────────────────────────────"));
   switch (reason) {
@@ -371,7 +410,7 @@ static bool loadInsultsStateFromNvs(uint16_t &outIndex) {
   }
 
   // Validate every active history entry against the current deck size.
-  // If insults.txt changed since last sleep, stale indices could be out of
+  // If insults.json changed since last sleep, stale indices could be out of
   // range.
   const size_t oldest =
       wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
@@ -494,7 +533,8 @@ static bool beginWorkFor(PendingAction action) {
  * @return true if an insult was rendered immediately; false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
-  insults = readDeckLineByLine("/insults.txt");
+  insults = readJsonFile("/insults.json");
+
   initDeck();
 
   if (!wokeFromSleep) {
@@ -600,6 +640,8 @@ bool insultsPoll(uint32_t now) {
   return true;
 }
 
+// ───────────────── Public Accessors ─────────────────
+
 bool insultsHasAny() { return insults.size() > 0; }
 
 uint16_t insultsGetCurrentIndex() { return currentInsultIndex; }
@@ -609,5 +651,28 @@ const char *insultsGetCurrentText() {
     return "No insults";
   if (currentInsultIndex >= insults.size())
     return "Invalid insult";
-  return insults[currentInsultIndex].c_str();
+  return insults[currentInsultIndex].text.c_str();
+}
+
+// ───────────────── Deck CRUD ─────────────────
+
+CreateEntryResult createInsult(std::string text) {
+  // 1. Generate ID
+  uint32_t id = generateNextId();
+
+  // 2. Create Deck Entry
+  DeckEntry newEntry{id, text, "user"};
+  // 3. Add to in-memory vector
+  insults.emplace_back(newEntry);
+
+  if (saveJsonFile("/insults.json", insults)) {
+    // saved successfully
+    Serial.println("[createInsult] JSON file updated successfully!");
+    return {true, newEntry};
+  } else {
+    // save failed
+    Serial.println("[createInsult] error saving insult");
+    insults.pop_back();
+    return {false, newEntry};
+  }
 }
