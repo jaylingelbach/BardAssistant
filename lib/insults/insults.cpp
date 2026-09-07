@@ -97,16 +97,19 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
 }
 
 static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
-  File file = LittleFS.open(path, "w");
+  // Write to a temp file first so the primary file is never truncated before
+  // we know serialization succeeded.
+  String tmpPath = String(path) + ".tmp";
+  String bakPath = String(path) + ".bak";
 
+  File file = LittleFS.open(tmpPath.c_str(), "w");
   if (!file) {
-    Serial.println("Failed to open file for writing");
+    Serial.println("[saveJsonFile] Failed to open temp file for writing");
     return false;
   }
 
   JsonDocument doc;
   JsonArray arr = doc.to<JsonArray>();
-
   for (const DeckEntry &card : deck) {
     JsonObject obj = arr.add<JsonObject>();
     obj["id"] = card.id;
@@ -115,11 +118,32 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   }
 
   if (serializeJson(doc, file) == 0) {
-    Serial.println(F("Failed to write updated JSON to file"));
+    Serial.println(F("[saveJsonFile] Failed to serialize JSON to temp file"));
     file.close();
+    LittleFS.remove(tmpPath.c_str());
     return false;
   }
   file.close();
+
+  // Keep the previous file as a backup before replacing it.
+  if (LittleFS.exists(path)) {
+    LittleFS.remove(bakPath.c_str());
+    if (!LittleFS.rename(path, bakPath.c_str())) {
+      Serial.println(F("[saveJsonFile] Failed to back up existing file"));
+      LittleFS.remove(tmpPath.c_str());
+      return false;
+    }
+  }
+
+  if (!LittleFS.rename(tmpPath.c_str(), path)) {
+    Serial.println(F("[saveJsonFile] Failed to rename temp file to primary"));
+    // Attempt to restore the backup so the deck isn't lost.
+    if (LittleFS.exists(bakPath.c_str())) {
+      LittleFS.rename(bakPath.c_str(), path);
+    }
+    return false;
+  }
+
   return true;
 }
 
