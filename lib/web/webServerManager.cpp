@@ -83,12 +83,12 @@ void WebServerManager::handleRoot() {
 void WebServerManager::handleNotFound() {
   const String path = server.uri();
   if (!LittleFS.exists(path)) {
-    sendError(server, 404, "Not found");
+    sendError(server, 404, "File not found");
     return;
   }
   File file = LittleFS.open(path, "r");
   if (!file) {
-    sendError(server, 404, "Not found");
+    sendError(server, 404, "File not found");
     return;
   }
   server.streamFile(file, mimeTypeFor(path));
@@ -116,14 +116,14 @@ void WebServerManager::handleCreateDeckEntry() {
     bool parseSuccess = parseJsonBody(body, doc);
 
     if (!parseSuccess) {
-      sendError(server, 400, "Failed to parse Json");
+      sendError(server, 400, "Invalid JSON");
       return;
     }
 
     const std::string text = doc["text"];
 
     if (text.length() == 0) {
-      sendError(server, 400, "Empty text body");
+      sendError(server, 400, "Missing required field: text");
       return;
     }
 
@@ -138,11 +138,11 @@ void WebServerManager::handleCreateDeckEntry() {
       serializeJson(resDoc, response);
       server.send(201, "application/json", response);
     } else {
-      sendError(server, 500, "Failed to create deck entry");
+      sendError(server, 500, "Failed to save deck entry");
     }
 
   } else {
-    sendError(server, 400, "Unknown deck id");
+    sendError(server, 404, "Deck not found");
   }
 }
 
