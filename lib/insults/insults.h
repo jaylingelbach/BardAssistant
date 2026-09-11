@@ -1,6 +1,7 @@
 #ifndef INSULTS_H
 #define INSULTS_H
 
+#include "deckTypes.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -56,28 +57,16 @@ void insultsPersistForSleep();
 
 const char *insultsGetCurrentText();
 
-uint16_t insultsGetCurrentIndex();
+uint32_t insultsGetCurrentId();
 
 bool insultsHasAny();
 
-struct DeckEntry {
-  uint32_t id;
-  std::string text;
-  std::string source;
-
-  DeckEntry(uint32_t id, std::string text, std::string source)
-      : id(id), text(text), source(source) {}
-};
-
-struct CreateEntryResult {
-  bool success;
-  DeckEntry entry;
-  CreateEntryResult(bool success, DeckEntry entry)
-      : success(success), entry(entry) {}
-};
-
 const std::vector<DeckEntry> &insultsGetAll();
 
-CreateEntryResult createInsult(std::string text);
+DeckEntryResult createInsult(std::string text);
+
+DeckEntryResult editInsult(uint32_t entryId, std::string text);
+
+DeleteDeckEntryResult deleteInsult(uint32_t entryId);
 
 #endif // INSULTS_H

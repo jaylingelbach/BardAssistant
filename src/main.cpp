@@ -20,9 +20,9 @@
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
 #else
-#define APP_LOGLN(msg)                                                         \
-  do {                                                                         \
-  } while (0)
+#define APP_LOGLN(msg)
+do {
+} while (0)
 #endif
 
 // ───────────────── Configuration ─────────────────
@@ -311,8 +311,8 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 /**
  * @brief Initializes the device for a cold boot or wake from deep sleep.
  *
- * Configures hardware, restores persistent insult state, renders the appropriate
- * display content, sets up Wi-Fi, and starts the web server.
+ * Configures hardware, restores persistent insult state, renders the
+ * appropriate display content, sets up Wi-Fi, and starts the web server.
  */
 void setup() {
   Serial.begin(115200);
@@ -379,22 +379,24 @@ void setup() {
     } else if (PRINT_INSULT_ON_BOOT) {
       displayRenderInsult(insultsGetCurrentText());
     }
+  } else {
+    displayRenderEmptyState();
   }
 
-  // TEMP FOR DEVELOPMENT. I WANT THIS TO CONNECT AND SPIN UP WHILE I CODE. WILL
-  // BE MOVED TO BUTTON GESTURES.
-  // WebModeResult webRes = enterWebMode();
-  // if (webRes == WebModeResult::SUCCESS) {
-  //   Serial.println("[WebModeResult]: SUCCESS!!!");
-  // } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-  //   Serial.println("[WebModeResult]: CONNECTION FAILED");
-  // }
-  SetupModeResult setupRes = setupWiFi();
-  if (setupRes == SetupModeResult::SUCCESS) {
-    Serial.println("Setup Successful");
-  } else {
-    Serial.println("Setup Failed");
+  // TEMP FOR DEVELOPMENT.I WANT THIS TO CONNECT AND SPIN UP WHILE I
+  //     CODE.WILL BE MOVED TO BUTTON GESTURES.
+  WebModeResult webRes = enterWebMode();
+  if (webRes == WebModeResult::SUCCESS) {
+    Serial.println("[WebModeResult]: SUCCESS!!!");
+  } else if (webRes == WebModeResult::CONNECTION_FAILED) {
+    Serial.println("[WebModeResult]: CONNECTION FAILED");
   }
+  // SetupModeResult setupRes = setupWiFi();
+  // if (setupRes == SetupModeResult::SUCCESS) {
+  //   Serial.println("Setup Successful");
+  // } else {
+  //   Serial.println("Setup Failed");
+  // }
   webServerManager.start();
 }
 /**

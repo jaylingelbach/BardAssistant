@@ -23,34 +23,113 @@ async function showInsults() {
     <div class="card-header">
       <h2>Insults</h2>
       <button class="btn-primary" id="addInsult">Add Insult</button>
-
-      <dialog id="addInsultDialog">
-      <h2>Add Insult</h2>
-
-      <form method="POST" id="addInsultForm">
-      <div>
-        <input
-          type="text"
-          id="insultText"
-          placeholder="Enter an insult..."
-        />
-      </div>
-        <div class="dialog-actions">
-          <button class="btn-secondary" type="button" id="cancelAddInsult">Cancel</button>
-          <button id="submitInsult" class="btn-primary" type="submit">Add</button>
-        </div>
-      </form>
-    </dialog>
     </div>
 
     <ul id="insultList"></ul>
   </div>
+
+  <dialog id="addInsultDialog">
+    <h2>Add Insult</h2>
+    <form method="POST" id="addInsultForm">
+      <div>
+        <input type="text" id="insultText" placeholder="Enter an insult..." />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn-secondary" type="button" id="cancelAddInsult">Cancel</button>
+        <button id="submitInsult" class="btn-primary" type="submit">Add</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editInsultDialog">
+    <h2>Edit Insult</h2>
+    <form id="editInsultForm">
+      <div>
+        <input type="text" id="editInsultText" placeholder="Enter an insult..." />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn-secondary" type="button" id="cancelEditInsult">Cancel</button>
+        <button class="btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="deleteInsultDialog">
+    <h2>Delete Insult</h2>
+    <p id="deleteInsultPreview"></p>
+    <p>This action cannot be undone.</p>
+    <div class="dialog-actions">
+      <button class="btn-secondary" type="button" id="cancelDeleteInsult">Cancel</button>
+      <button class="btn-primary" type="button" id="confirmDeleteInsult">Delete</button>
+    </div>
+  </dialog>
 `;
   const addInsultButton = document.getElementById('addInsult');
   const addInsultDialog = document.getElementById('addInsultDialog');
   const cancelAddInsult = document.getElementById('cancelAddInsult');
   const submitInsultForm = document.getElementById('addInsultForm');
+  const editInsultDialog = document.getElementById('editInsultDialog');
+  const editInsultText = document.getElementById('editInsultText');
+  const cancelEditInsult = document.getElementById('cancelEditInsult');
+  const editInsultForm = document.getElementById('editInsultForm');
+  const deleteInsultDialog = document.getElementById('deleteInsultDialog');
+  const deleteInsultPreview = document.getElementById('deleteInsultPreview');
+  const cancelDeleteInsult = document.getElementById('cancelDeleteInsult');
+  const confirmDeleteInsult = document.getElementById('confirmDeleteInsult');
   const insultList = document.getElementById('insultList');
+
+  let editingId = null;
+  let deletingId = null;
+
+  cancelDeleteInsult.addEventListener('click', () => {
+    deleteInsultDialog.close();
+  });
+
+  confirmDeleteInsult.addEventListener('click', async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/decks?id=insults&entryId=${deletingId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      deleteInsultDialog.close();
+      await showInsults();
+    } catch (error) {
+      console.error('Failed to delete insult:', error);
+    }
+  });
+
+  cancelEditInsult.addEventListener('click', () => {
+    editInsultDialog.close();
+  });
+
+  editInsultForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const text = editInsultText.value;
+    if (!text.trim()) return;
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/decks?id=insults&entryId=${editingId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+        }
+      );
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      editInsultDialog.close();
+      await showInsults();
+    } catch (error) {
+      console.error('Failed to edit insult:', error);
+    }
+  });
+
+  if (insults.length === 0) {
+    const empty = document.createElement('li');
+    empty.textContent = 'No insults yet. Add one to get started.';
+    empty.style.color = '#888';
+    empty.style.fontStyle = 'italic';
+    insultList.appendChild(empty);
+  }
 
   insults.forEach((insult) => {
     const li = document.createElement('li');
@@ -74,10 +153,16 @@ async function showInsults() {
     deleteBtn.dataset.action = 'delete';
     deleteBtn.textContent = 'Delete';
 
-    [editBtn, deleteBtn].forEach((btn) => {
-      btn.addEventListener('click', () => {
-        console.log(btn.dataset.id, btn.dataset.action);
-      });
+    editBtn.addEventListener('click', () => {
+      editingId = insult.id;
+      editInsultText.value = insult.text;
+      editInsultDialog.showModal();
+    });
+
+    deleteBtn.addEventListener('click', () => {
+      deletingId = insult.id;
+      deleteInsultPreview.textContent = insult.text;
+      deleteInsultDialog.showModal();
     });
 
     actions.appendChild(editBtn);

@@ -31,6 +31,7 @@ bool displayValidateConfig(const DisplayConfig &config);
 bool displayInit(const DisplayConfig &config);
 
 bool displayRenderBlankScreen();
+bool displayRenderEmptyState();
 bool displayRenderInsult(const char *text);
 bool displaySleep(DisplaySleepMode mode);
 

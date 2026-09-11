@@ -1,4 +1,5 @@
 #include "webServerManager.h"
+#include "display.h"
 #include "insults.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -19,12 +20,27 @@ static void sendError(WebServer &server, int code, const char *message) {
   server.send(code, "application/json", body);
 }
 
+template <typename T>
+static void sendDeckEntryResult(WebServer &server, const T &result, int statusCode) {
+  if (result.success && result.entry.has_value()) {
+    JsonDocument resDoc;
+    resDoc["id"] = result.entry->id;
+    resDoc["text"] = result.entry->text;
+    resDoc["source"] = result.entry->source;
+    String response;
+    serializeJson(resDoc, response);
+    server.send(statusCode, "application/json", response);
+  } else {
+    sendError(server, 500, "Failed to save deck entry");
+  }
+}
+
 /**
  * @brief Determines the MIME type for a file path.
  *
  * @param path File path whose extension is used to determine the MIME type.
- * @return String MIME type corresponding to the path extension, or `text/plain`
- *         when the extension is unsupported.
+ * @return String MIME type corresponding to the path extension, or
+ * `text/plain` when the extension is unsupported.
  */
 String WebServerManager::mimeTypeFor(const String &path) {
   if (path.endsWith(".html"))
@@ -45,7 +61,7 @@ String WebServerManager::mimeTypeFor(const String &path) {
  * @param doc Document to populate with the parsed JSON.
  * @return `true` if parsing succeeds, `false` if the body is empty or invalid.
  */
-static bool parseJsonBody(const String &body, JsonDocument &doc) {
+static bool tryParseJsonBody(const String &body, JsonDocument &doc) {
 
   if (body.length() == 0) {
     return false;
@@ -58,6 +74,20 @@ static bool parseJsonBody(const String &body, JsonDocument &doc) {
   }
 
   return true;
+}
+
+static bool isValidEntryId(const String &entryId) {
+  if (entryId.length() == 0) {
+    return false;
+  }
+
+  for (const char &c : entryId) {
+    if (!std::isdigit(static_cast<unsigned char>(c))) {
+
+      return false; // Stop checking immediately if a non-digit is found
+    }
+  }
+  return entryId.toInt() != 0;
 }
 
 /**
@@ -113,7 +143,7 @@ void WebServerManager::handleCreateDeckEntry() {
 
     JsonDocument doc;
 
-    bool parseSuccess = parseJsonBody(body, doc);
+    bool parseSuccess = tryParseJsonBody(body, doc);
 
     if (!parseSuccess) {
       sendError(server, 400, "Invalid JSON");
@@ -127,20 +157,115 @@ void WebServerManager::handleCreateDeckEntry() {
       return;
     }
 
-    CreateEntryResult result = createInsult(text);
+    DeckEntryResult result = createInsult(text);
 
-    if (result.success) {
-      JsonDocument resDoc;
-      resDoc["id"] = result.entry.id;
-      resDoc["text"] = result.entry.text;
-      resDoc["source"] = result.entry.source;
-      String response;
-      serializeJson(resDoc, response);
-      server.send(201, "application/json", response);
-    } else {
-      sendError(server, 500, "Failed to save deck entry");
+    if (result.success && insultsGetAll().size() == 1) {
+      displayRenderInsult(insultsGetCurrentText());
     }
 
+    sendDeckEntryResult(server, result, 201);
+
+  } else {
+    sendError(server, 404, "Deck not found");
+  }
+}
+
+void WebServerManager::handleEditDeckEntry() {
+  if (!server.hasArg("id")) {
+    sendError(server, 400, "Missing 'id' parameter");
+    return;
+  }
+
+  const String id = server.arg("id");
+
+  if (!server.hasArg("entryId")) {
+    sendError(server, 400, "Missing 'entryId' parameter");
+    return;
+  }
+
+  const String entryIdStr = server.arg("entryId");
+
+  if (!isValidEntryId(entryIdStr)) {
+    sendError(server, 400, "Invalid entryId parameter");
+    return;
+  }
+  const uint32_t entryId = entryIdStr.toInt();
+
+  if (entryId == 0) {
+    sendError(server, 400, "Invalid 'entryId' parameter");
+    return;
+  }
+
+  if (id == "insults") {
+    String body = server.arg("plain");
+
+    JsonDocument doc;
+
+    bool parseSuccess = tryParseJsonBody(body, doc);
+
+    if (!parseSuccess) {
+      sendError(server, 400, "Invalid JSON");
+      return;
+    }
+
+    const std::string text = doc["text"];
+
+    if (text.length() == 0) {
+      sendError(server, 400, "Missing required field: text");
+      return;
+    }
+
+    DeckEntryResult result = editInsult(entryId, text);
+
+    sendDeckEntryResult(server, result, 200);
+
+  } else {
+    sendError(server, 404, "Deck not found");
+  }
+}
+
+/**
+ * @brief Deletes an entry from the specified deck.
+ *
+ * Requires `id` (deck identifier) and `entryId` query parameters.
+ */
+void WebServerManager::handleDeleteDeckEntry() {
+  if (!server.hasArg("id")) {
+    sendError(server, 400, "Missing 'id' parameter");
+    return;
+  }
+
+  const String id = server.arg("id");
+
+  if (!server.hasArg("entryId")) {
+    sendError(server, 400, "Missing 'entryId' parameter");
+    return;
+  }
+
+  const String entryIdStr = server.arg("entryId");
+
+  if (!isValidEntryId(entryIdStr)) {
+    sendError(server, 400, "Invalid 'entryId' parameter");
+    return;
+  }
+
+  const uint32_t entryId = entryIdStr.toInt();
+
+  if (id == "insults") {
+    DeleteDeckEntryResult result = deleteInsult(entryId);
+    if (result.success) {
+      if (insultsHasAny()) {
+        if (!displayRenderInsult(insultsGetCurrentText())) {
+          sendError(server, 500, "Unable to render Current Insult");
+          return;
+        }
+      } else {
+        displayRenderEmptyState();
+      }
+      server.send(204);
+    } else {
+      sendError(server, 404, "Entry not found");
+    }
   } else {
     sendError(server, 404, "Deck not found");
   }
@@ -173,6 +298,8 @@ void WebServerManager::registerRoutes() {
   server.on("/", HTTP_GET, [this]() { handleRoot(); });
   server.on("/api/decks", HTTP_GET, [this]() { handleGetDeck(); });
   server.on("/api/decks", HTTP_POST, [this]() { handleCreateDeckEntry(); });
+  server.on("/api/decks", HTTP_PUT, [this]() { handleEditDeckEntry(); });
+  server.on("/api/decks", HTTP_DELETE, [this]() { handleDeleteDeckEntry(); });
   server.onNotFound([this]() { handleNotFound(); });
 }
 
