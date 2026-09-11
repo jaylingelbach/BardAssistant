@@ -1025,6 +1025,19 @@ bool insultsPoll(uint32_t now) {
 
   const PendingAction completedAction = pendingAction;
 
+  // If the pending insult was deleted while the operation was in flight,
+  // fall back to a fresh random draw so main.cpp can still transition out
+  // of Updating and the display shows a valid insult.
+  if (findInsultById(pendingInsultId) == insults.end()) {
+    if (insults.empty()) {
+      operationPhase = OperationPhase::Idle;
+      pendingAction = PendingAction::None;
+      operationIsNewInsult = false;
+      return true;
+    }
+    pendingInsultId = drawFromDeck();
+  }
+
   currentInsultId = pendingInsultId;
 
   // Maintain history semantics:
