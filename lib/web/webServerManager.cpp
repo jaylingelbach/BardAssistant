@@ -217,13 +217,18 @@ void WebServerManager::handleEditDeckEntry() {
 
     DeckEntryResult result = editInsult(entryId, text);
 
-    if (result.success && entryId == insultsGetCurrentId()) {
-      if (!displayRenderInsult(insultsGetCurrentText())) {
-        Serial.println("[WARN] Edit succeeded but display refresh failed");
+    if (result.success) {
+      if (entryId == insultsGetCurrentId()) {
+        if (!displayRenderInsult(insultsGetCurrentText())) {
+          Serial.println("[WARN] Edit succeeded but display refresh failed");
+        }
       }
+      sendDeckEntryResult(server, result, 200);
+    } else if (result.reason == EntryFailReason::NotFound) {
+      sendError(server, 404, "Entry not found");
+    } else {
+      sendError(server, 500, "Failed to save entry");
     }
-
-    sendDeckEntryResult(server, result, 200);
 
   } else {
     sendError(server, 404, "Deck not found");

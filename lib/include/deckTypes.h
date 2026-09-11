@@ -15,13 +15,17 @@ struct DeckEntry {
       : id(id), text(text), source(source) {}
 };
 
+enum class EntryFailReason { None, NotFound, PersistenceFailed };
+
 struct DeckEntryResult {
   bool success;
   std::optional<DeckEntry> entry;
+  EntryFailReason reason = EntryFailReason::None;
   DeckEntryResult(bool success, DeckEntry entry)
       : success(success), entry(entry) {}
-  DeckEntryResult(bool success, std::nullopt_t)
-      : success(success), entry(std::nullopt) {}
+  DeckEntryResult(bool success, std::nullopt_t,
+                  EntryFailReason reason = EntryFailReason::None)
+      : success(success), entry(std::nullopt), reason(reason) {}
 };
 
 enum class DeleteFailReason { None, NotFound, PersistenceFailed };

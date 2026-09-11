@@ -1162,8 +1162,7 @@ DeckEntryResult editInsult(uint32_t entryId, std::string text) {
   auto it = findInsultById(entryId);
 
   if (it == insults.end()) {
-
-    return {false, std::nullopt};
+    return {false, std::nullopt, EntryFailReason::NotFound};
   }
 
   std::string oldText = it->text;
@@ -1186,7 +1185,7 @@ DeckEntryResult editInsult(uint32_t entryId, std::string text) {
     // Roll back the in-memory change.
     it->text = oldText;
 
-    return {false, std::nullopt};
+    return {false, std::nullopt, EntryFailReason::PersistenceFailed};
   }
 }
 
