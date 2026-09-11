@@ -217,6 +217,12 @@ void WebServerManager::handleEditDeckEntry() {
 
     DeckEntryResult result = editInsult(entryId, text);
 
+    if (result.success && entryId == insultsGetCurrentId()) {
+      if (!displayRenderInsult(insultsGetCurrentText())) {
+        Serial.println("[WARN] Edit succeeded but display refresh failed");
+      }
+    }
+
     sendDeckEntryResult(server, result, 200);
 
   } else {
