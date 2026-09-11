@@ -262,8 +262,7 @@ void WebServerManager::handleDeleteDeckEntry() {
     if (result.success) {
       if (insultsHasAny()) {
         if (!displayRenderInsult(insultsGetCurrentText())) {
-          sendError(server, 500, "Unable to render Current Insult");
-          return;
+          Serial.println("[WARN] Delete succeeded but display refresh failed");
         }
       } else {
         displayRenderEmptyState();
