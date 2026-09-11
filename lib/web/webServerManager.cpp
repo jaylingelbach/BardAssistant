@@ -269,8 +269,10 @@ void WebServerManager::handleDeleteDeckEntry() {
         displayRenderEmptyState();
       }
       server.send(204);
-    } else {
+    } else if (result.reason == DeleteFailReason::NotFound) {
       sendError(server, 404, "Entry not found");
+    } else {
+      sendError(server, 500, "Failed to delete entry");
     }
   } else {
     sendError(server, 404, "Deck not found");

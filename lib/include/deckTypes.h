@@ -24,8 +24,11 @@ struct DeckEntryResult {
       : success(success), entry(std::nullopt) {}
 };
 
+enum class DeleteFailReason { None, NotFound, PersistenceFailed };
+
 struct DeleteDeckEntryResult {
   bool success;
+  DeleteFailReason reason = DeleteFailReason::None;
 };
 
 #endif // DECK_TYPES_H

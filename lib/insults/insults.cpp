@@ -1189,7 +1189,7 @@ DeleteDeckEntryResult deleteInsult(uint32_t entryId) {
 
   // The entry does not exist, so there is nothing to delete.
   if (it == insults.end()) {
-    return {false};
+    return {false, DeleteFailReason::NotFound};
   }
 
   if (it->id == currentInsultId) {
@@ -1248,7 +1248,7 @@ DeleteDeckEntryResult deleteInsult(uint32_t entryId) {
 
   insults.insert(insults.begin() + oldPosition, oldEntry);
 
-  return {false};
+  return {false, DeleteFailReason::PersistenceFailed};
 }
 
 // ============================================================================
