@@ -117,12 +117,16 @@ WebModeResult enterWebMode() {
 }
 
 /**
- * @brief Exits web mode by disconnecting Wi-Fi and stopping the mDNS responder.
+ * @brief Exits web mode by stopping mDNS and disconnecting Wi-Fi.
+ *
+ * mDNS is stopped before Wi-Fi disconnects so the goodbye multicast packet
+ * reaches the network. Callers should stop WebServerManager before calling
+ * this.
  */
 void exitWebMode() {
-  disconnectWiFi();
   if (isMdnsRunning) {
     MDNS.end();
     isMdnsRunning = false;
   }
+  disconnectWiFi();
 }

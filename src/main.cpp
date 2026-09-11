@@ -25,6 +25,10 @@ do {
 } while (0)
 #endif
 
+// ───────────────── Development flags ─────────────
+// Set to false and implement button gesture before shipping.
+#define WEB_MODE_ON_BOOT true
+
 // ───────────────── Configuration ─────────────────
 
 // Buttons
@@ -383,21 +387,15 @@ void setup() {
     displayRenderEmptyState();
   }
 
-  // TEMP FOR DEVELOPMENT.I WANT THIS TO CONNECT AND SPIN UP WHILE I
-  //     CODE.WILL BE MOVED TO BUTTON GESTURES.
+#if WEB_MODE_ON_BOOT
   WebModeResult webRes = enterWebMode();
   if (webRes == WebModeResult::SUCCESS) {
     Serial.println("[WebModeResult]: SUCCESS!!!");
   } else if (webRes == WebModeResult::CONNECTION_FAILED) {
     Serial.println("[WebModeResult]: CONNECTION FAILED");
   }
-  // SetupModeResult setupRes = setupWiFi();
-  // if (setupRes == SetupModeResult::SUCCESS) {
-  //   Serial.println("Setup Successful");
-  // } else {
-  //   Serial.println("Setup Failed");
-  // }
   webServerManager.start();
+#endif
 }
 /**
  * @brief Polls device inputs, advances the application state, and services the
@@ -438,5 +436,7 @@ void loop() {
     }
     break;
   }
+#if WEB_MODE_ON_BOOT
   webServerManager.handle();
+#endif
 }
