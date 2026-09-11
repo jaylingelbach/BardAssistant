@@ -1028,6 +1028,7 @@ bool insultsPoll(uint32_t now) {
   // If the pending insult was deleted while the operation was in flight,
   // fall back to a fresh random draw so main.cpp can still transition out
   // of Updating and the display shows a valid insult.
+  bool usedFallback = false;
   if (findInsultById(pendingInsultId) == insults.end()) {
     if (insults.empty()) {
       operationPhase = OperationPhase::Idle;
@@ -1036,6 +1037,7 @@ bool insultsPoll(uint32_t now) {
       return true;
     }
     pendingInsultId = drawFromDeck();
+    usedFallback = true;
   }
 
   currentInsultId = pendingInsultId;
@@ -1044,7 +1046,12 @@ bool insultsPoll(uint32_t now) {
   // - Random always appends
   // - Next appends only if it generated a new insult
   // - Prev does not append (cursor moved within beginWork)
-  if (completedAction == PendingAction::Random) {
+  // - Fallback (deleted-while-in-flight) always appends regardless of action
+  if (usedFallback) {
+
+    appendToHistory(currentInsultId);
+
+  } else if (completedAction == PendingAction::Random) {
 
     appendToHistory(currentInsultId);
 
