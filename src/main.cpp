@@ -20,9 +20,9 @@
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
 #else
-#define APP_LOGLN(msg)
-do {
-} while (0)
+#define APP_LOGLN(msg) \
+  do {                 \
+  } while (0)
 #endif
 
 // ───────────────── Development flags ─────────────
