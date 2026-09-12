@@ -334,3 +334,21 @@ mDNS + WebServer
 ```
 
 **Do not put mDNS in `setupWiFi()` merely because setup resulted in a Wi-Fi connection.**
+
+---
+
+## OTA Authentication (Deferred)
+
+ElegantOTA is integrated but currently has no authentication configured — `ElegantOTA.begin(&server)` leaves `/update` open to anyone on the network.
+
+This is acceptable during development on a trusted home network over USB, but must be addressed before shipping.
+
+When the 8MB production board is designed, add `ElegantOTA.setAuth()` sourcing credentials from NVS or a provisioning flow rather than hardcoding them. The provisioning mechanism (how a user sets OTA credentials on first setup) should be decided alongside the broader Wi-Fi provisioning UX.
+
+### ElegantOTA License (AGPL-3.0)
+
+ElegantOTA is licensed under AGPL-3.0. Private use on your own device carries no obligation. If you ever distribute firmware to others (sell or give devices), AGPL requires making the complete corresponding source available to recipients.
+
+Before shipping to anyone else, either:
+- Open-source the firmware under a compatible license and provide source with every binary, or
+- Purchase the ElegantOTA Pro commercial license to remove the AGPL obligation.
