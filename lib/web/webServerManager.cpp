@@ -20,6 +20,15 @@ static void sendError(WebServer &server, int code, const char *message) {
   server.send(code, "application/json", body);
 }
 
+/**
+ * @brief Sends a deck-entry result as JSON.
+ *
+ * @param server Web server used to send the response.
+ * @param result Operation result whose entry supplies the response body.
+ * @param statusCode HTTP status code used for a successful result.
+ *
+ * Failed results and successful results without an entry produce a 500 error.
+ */
 template <typename T>
 static void sendDeckEntryResult(WebServer &server, const T &result, int statusCode) {
   if (result.success && result.entry.has_value()) {
@@ -76,6 +85,13 @@ static bool tryParseJsonBody(const String &body, JsonDocument &doc) {
   return true;
 }
 
+/**
+ * @brief Checks whether a query value is a nonzero decimal entry identifier.
+ *
+ * @param entryId Query value to validate.
+ * @return `true` when the value contains only digits and converts to a nonzero
+ * identifier, or `false` otherwise.
+ */
 static bool isValidEntryId(const String &entryId) {
   if (entryId.length() == 0) {
     return false;
@@ -128,7 +144,7 @@ void WebServerManager::handleNotFound() {
 /**
  * @brief Creates an entry in the specified deck from a JSON request body.
  *
- * @param id Deck identifier supplied by the request query parameters.
+ * Requires an `id` query parameter and a JSON body containing nonempty `text`.
  */
 void WebServerManager::handleCreateDeckEntry() {
   if (!server.hasArg("id")) {
@@ -170,6 +186,13 @@ void WebServerManager::handleCreateDeckEntry() {
   }
 }
 
+/**
+ * @brief Updates an entry in the specified deck from a JSON request body.
+ *
+ * Requires `id` and numeric `entryId` query parameters plus a JSON body
+ * containing nonempty `text`. A successful edit of the current insult also
+ * refreshes the display.
+ */
 void WebServerManager::handleEditDeckEntry() {
   if (!server.hasArg("id")) {
     sendError(server, 400, "Missing 'id' parameter");
