@@ -23,6 +23,14 @@ static SPIClass hspi(HSPI);
 
 // --- internal helpers ---------------------------------
 
+/**
+ * @brief Measures the rendered pixel width of a text string at the given size.
+ *
+ * @param text Null-terminated string to measure.
+ * @param textSize GxEPD2 text size multiplier (1 = 8px tall, 2 = 16px, etc.).
+ * @return uint16_t Pixel width of the string, or 0 if the driver is unavailable
+ * or text is null.
+ */
 static uint16_t measureTextWidth(const char *text, uint8_t textSize) {
   if (displayDriver == nullptr || text == nullptr)
     return 0;
@@ -37,6 +45,21 @@ static uint16_t measureTextWidth(const char *text, uint8_t textSize) {
   return w;
 }
 
+/**
+ * @brief Draws word-wrapped text into a bounded region on the display.
+ *
+ * Words are placed left-to-right and wrapped to the next line when they exceed
+ * `maxWidth`. Explicit newlines force a line break. Words wider than `maxWidth`
+ * are hard-broken character-by-character. Text that would exceed `maxHeight` is
+ * silently clipped.
+ *
+ * @param text Null-terminated string to render.
+ * @param left Left edge of the text area in pixels.
+ * @param top Top edge of the text area in pixels.
+ * @param maxWidth Width of the text area in pixels.
+ * @param maxHeight Height of the text area in pixels.
+ * @param textSize GxEPD2 text size multiplier.
+ */
 static void drawWrappedText(const char *text, int16_t left, int16_t top,
                             int16_t maxWidth, int16_t maxHeight,
                             uint8_t textSize) {
@@ -191,6 +214,19 @@ static void drawWrappedText(const char *text, int16_t left, int16_t top,
   flushLine();
 }
 
+/**
+ * @brief Checks whether text fits within a bounded region without overflowing.
+ *
+ * Simulates the same word-wrap and hard-break logic as `drawWrappedText`
+ * without touching the display, so callers can probe whether a given text size
+ * fits before committing to a render.
+ *
+ * @param text Null-terminated string to test.
+ * @param maxWidth Width of the target area in pixels.
+ * @param maxHeight Height of the target area in pixels.
+ * @param textSize GxEPD2 text size multiplier.
+ * @return `true` if the text fits within the area, `false` if it overflows.
+ */
 static bool textFitsInBounds(const char *text, int16_t maxWidth,
                              int16_t maxHeight, uint8_t textSize) {
   if (displayDriver == nullptr || text == nullptr)
@@ -305,6 +341,19 @@ static bool textFitsInBounds(const char *text, int16_t maxWidth,
   return !overflowed;
 }
 
+/**
+ * @brief Replaces characters unsupported by the display font with safe
+ * substitutes.
+ *
+ * Converts UTF-8 curly apostrophes (U+2018, U+2019) and ASCII single quotes
+ * to backticks, which the GxEPD2 default font renders correctly. Other
+ * characters are copied unchanged.
+ *
+ * @param src Null-terminated source string.
+ * @param dst Destination buffer for the sanitized output.
+ * @param dstSize Size of the destination buffer in bytes, including the null
+ * terminator.
+ */
 static void sanitizeForDisplay(const char *src, char *dst, size_t dstSize) {
   size_t s = 0, d = 0;
   while (src[s] != '\0' && d < dstSize - 1) {
@@ -323,7 +372,13 @@ static void sanitizeForDisplay(const char *src, char *dst, size_t dstSize) {
   dst[d] = '\0';
 }
 
-// if this returns true, thats bad.
+/**
+ * @brief Checks whether a pin number appears in a list of reserved pins.
+ *
+ * @param value Pin number to search for.
+ * @param list Array of reserved pin numbers.
+ * @return `true` if `value` is found in `list`, `false` otherwise.
+ */
 static bool isInList(int8_t value, const std::array<int8_t, 4> &list) {
   for (int8_t item : list) {
     if (value == item) {
@@ -333,6 +388,17 @@ static bool isInList(int8_t value, const std::array<int8_t, 4> &list) {
   return false;
 }
 
+/**
+ * @brief Validates a DisplayConfig before it is applied to the driver.
+ *
+ * Checks that all required pins are assigned (>= 0), that no required pin
+ * conflicts with the button pins, that required pins do not duplicate each
+ * other, and that optional pins (busy, miso) do not collide with any required
+ * or button pins.
+ *
+ * @param config Configuration to validate.
+ * @return `true` if the configuration is safe to use, `false` otherwise.
+ */
 bool displayValidateConfig(const DisplayConfig &config) {
   // 1) Required pins must be connected (>= 0)
   const std::array<int8_t, 5> requiredPins = {config.pins.cs, config.pins.dc,
@@ -383,6 +449,17 @@ bool displayValidateConfig(const DisplayConfig &config) {
   return true;
 }
 
+/**
+ * @brief Initializes the e-ink display driver with the given configuration.
+ *
+ * Validates the config, configures the BUSY pin if wired, starts HSPI,
+ * constructs the GxEPD2 driver, applies rotation, performs an initial full
+ * clear, and marks the display ready. Calling this a second time tears down
+ * the existing driver before constructing a new one.
+ *
+ * @param config Pin assignments, rotation, and driver options.
+ * @return `true` if initialization succeeds, `false` if config validation fails.
+ */
 bool displayInit(const DisplayConfig &config) {
   // 0) Reset internal state
   displayReady = false;
@@ -447,6 +524,12 @@ bool displayInit(const DisplayConfig &config) {
   return true;
 }
 
+/**
+ * @brief Fills the display with white, effectively clearing it.
+ *
+ * @return `true` if the display is initialized and the clear is applied,
+ * `false` if the display is unavailable.
+ */
 bool displayRenderBlankScreen() {
   if (!displayReady || displayDriver == nullptr)
     return false;
@@ -487,6 +570,17 @@ bool displayRenderEmptyState() {
   return true;
 }
 
+/**
+ * @brief Renders an insult string on the e-ink display.
+ *
+ * Sanitizes the text, then performs a two-pass size selection: text size 2 is
+ * used when the content fits within the body area, falling back to size 1 for
+ * longer strings. Null text is rendered as "(null)".
+ *
+ * @param text Null-terminated insult string to display.
+ * @return `true` if the display is initialized and the render completes,
+ * `false` if the display is unavailable.
+ */
 bool displayRenderInsult(const char *text) {
   if (!displayReady || displayDriver == nullptr)
     return false;
@@ -534,6 +628,17 @@ bool displayRenderInsult(const char *text) {
   return true;
 }
 
+/**
+ * @brief Puts the display into the requested low-power mode.
+ *
+ * `KeepPowered` is a no-op that returns success. `Hibernate` calls the
+ * GxEPD2 hibernate routine, which is the lowest-power option and should be
+ * called just before deep sleep.
+ *
+ * @param mode Desired sleep mode.
+ * @return `true` if the mode was applied, `false` if the display is
+ * unavailable or the mode is unrecognized.
+ */
 bool displaySleep(DisplaySleepMode mode) {
   // if display isn't initialized, fail.
   if (!displayReady || displayDriver == nullptr)
