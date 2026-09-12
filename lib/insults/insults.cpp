@@ -575,6 +575,9 @@ static bool removeFromHistory(uint32_t id) {
 // This section should not know about HTTP or LittleFS.
 // ============================================================================
 
+/**
+ * @brief Prints the Mackey ASCII-art logo to the serial monitor.
+ */
 static void renderLogo() {
 
   Serial.println(F(" /$$      /$$                     /$$                      "
@@ -601,6 +604,9 @@ static void renderLogo() {
                    "     \\______/ "));
 }
 
+/**
+ * @brief Prints the boot title and logo to the serial monitor.
+ */
 static void renderTitleScreen() {
 
   Serial.println();
