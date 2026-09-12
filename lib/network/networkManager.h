@@ -1,7 +1,7 @@
 #ifndef NETWORK_MANAGER_H
 #define NETWORK_MANAGER_H
 
-/** Result of a Wi-Fi provisioning attempt via WiFiManager. */
+/** Result of entering web mode: covers WiFi.begin() and MDNS.begin() outcomes. */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
 /** Result of a Wi-Fi disconnection attempt. */
