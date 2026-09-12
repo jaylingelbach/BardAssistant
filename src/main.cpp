@@ -11,6 +11,7 @@
 #include "networkManager.h"
 #include "persist_keys.h"
 #include "webServerManager.h"
+#include <ElegantOTA.h>
 
 // ───────────────── Logging ───────────────────────
 
@@ -20,8 +21,8 @@
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
 #else
-#define APP_LOGLN(msg) \
-  do {                 \
+#define APP_LOGLN(msg)                                                         \
+  do {                                                                         \
   } while (0)
 #endif
 

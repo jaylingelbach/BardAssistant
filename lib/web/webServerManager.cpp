@@ -3,6 +3,7 @@
 #include "insults.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <ElegantOTA.h>
 #include <LittleFS.h>
 
 /**
@@ -30,7 +31,8 @@ static void sendError(WebServer &server, int code, const char *message) {
  * Failed results and successful results without an entry produce a 500 error.
  */
 template <typename T>
-static void sendDeckEntryResult(WebServer &server, const T &result, int statusCode) {
+static void sendDeckEntryResult(WebServer &server, const T &result,
+                                int statusCode) {
   if (result.success && result.entry.has_value()) {
     JsonDocument resDoc;
     resDoc["id"] = result.entry->id;
@@ -311,6 +313,7 @@ void WebServerManager::handleDeleteDeckEntry() {
  */
 void WebServerManager::start() {
   registerRoutes();
+  ElegantOTA.begin(&server);
   server.begin();
   Serial.println("[WebServerManager] Started Web Server");
 }
@@ -323,7 +326,10 @@ void WebServerManager::stop() { server.stop(); }
 /**
  * @brief Processes pending web-server client requests.
  */
-void WebServerManager::handle() { server.handleClient(); }
+void WebServerManager::handle() {
+  server.handleClient();
+  ElegantOTA.loop();
+}
 
 /**
  * @brief Registers HTTP handlers for page delivery, deck operations, and
