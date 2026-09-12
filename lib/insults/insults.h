@@ -1,6 +1,7 @@
 #ifndef INSULTS_H
 #define INSULTS_H
 
+#include "deckTypes.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -24,23 +25,25 @@ enum class PendingAction { None = 0, Random, Next, Prev };
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep);
 
 /**
- * @brief Start a mocked “operation” (Random/Next/Prev).
+ * @brief Starts a delayed Random, Next, or Previous operation.
  *
- * Selects pending work (new insult or history navigation) and renders the
- * operation start UI. This does not change application state; the caller should
- * transition to Updating only if this returns true.
+ * Selects a pending insult and records the operation start time. The caller
+ * should transition to Updating only if this returns `true`, then call
+ * insultsPoll() to complete the operation.
  *
  * @param action The action to start (Random, Next, Prev).
  * @param now Current time in milliseconds (typically millis()).
- * @return true if work was started; false if there was nothing to do.
+ * @return `true` if the operation was queued, or `false` if the action is
+ * unsupported or its requested history entry cannot be selected.
  */
 bool insultsStartOperation(PendingAction action, uint32_t now);
 
 /**
- * @brief Advance the mocked operation while in Updating.
+ * @brief Advances the pending operation while in Updating.
  *
  * Returns true exactly once when the operation completes. On completion, this
- * renders the final insult output and resets internal operation state.
+ * selects a replacement for a deleted pending insult and renders the final
+ * output unless no insults remain, then resets internal operation state.
  *
  * @param now Current time in milliseconds (typically millis()).
  * @return true when the operation completes; false otherwise.
@@ -56,28 +59,16 @@ void insultsPersistForSleep();
 
 const char *insultsGetCurrentText();
 
-uint16_t insultsGetCurrentIndex();
+uint32_t insultsGetCurrentId();
 
 bool insultsHasAny();
 
-struct DeckEntry {
-  uint32_t id;
-  std::string text;
-  std::string source;
-
-  DeckEntry(uint32_t id, std::string text, std::string source)
-      : id(id), text(text), source(source) {}
-};
-
-struct CreateEntryResult {
-  bool success;
-  DeckEntry entry;
-  CreateEntryResult(bool success, DeckEntry entry)
-      : success(success), entry(entry) {}
-};
-
 const std::vector<DeckEntry> &insultsGetAll();
 
-CreateEntryResult createInsult(std::string text);
+DeckEntryResult createInsult(std::string text);
+
+DeckEntryResult editInsult(uint32_t entryId, std::string text);
+
+DeleteDeckEntryResult deleteInsult(uint32_t entryId);
 
 #endif // INSULTS_H

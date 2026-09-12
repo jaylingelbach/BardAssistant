@@ -460,6 +460,33 @@ bool displayRenderBlankScreen() {
   return true;
 }
 
+/**
+ * @brief Replaces the display contents with guidance for an empty insult deck.
+ *
+ * @return `true` when the display is initialized and the empty state is
+ * rendered, or `false` when the display is unavailable.
+ */
+bool displayRenderEmptyState() {
+  if (!displayReady || displayDriver == nullptr)
+    return false;
+
+  const int16_t screenW = static_cast<int16_t>(displayDriver->width());
+  const int16_t screenH = static_cast<int16_t>(displayDriver->height());
+  const int16_t margin = 8;
+  const int16_t areaW = static_cast<int16_t>(screenW - 2 * margin);
+  const int16_t areaH = static_cast<int16_t>(screenH - 2 * margin);
+
+  displayDriver->setFullWindow();
+  displayDriver->firstPage();
+  do {
+    displayDriver->fillScreen(GxEPD_WHITE);
+    drawWrappedText("No insults loaded. Add some via the web UI.", margin,
+                    margin, areaW, areaH, 1);
+  } while (displayDriver->nextPage());
+
+  return true;
+}
+
 bool displayRenderInsult(const char *text) {
   if (!displayReady || displayDriver == nullptr)
     return false;

@@ -20,10 +20,14 @@
 #if ENABLE_APP_LOGS
 #define APP_LOGLN(msg) Serial.println(F(msg))
 #else
-#define APP_LOGLN(msg)                                                         \
-  do {                                                                         \
+#define APP_LOGLN(msg) \
+  do {                 \
   } while (0)
 #endif
+
+// ───────────────── Development flags ─────────────
+// Set to false and implement button gesture before shipping.
+#define WEB_MODE_ON_BOOT true
 
 // ───────────────── Configuration ─────────────────
 
@@ -311,8 +315,9 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 /**
  * @brief Initializes the device for a cold boot or wake from deep sleep.
  *
- * Configures hardware, restores persistent insult state, renders the appropriate
- * display content, sets up Wi-Fi, and starts the web server.
+ * Configures hardware, restores persistent insult state, renders the
+ * appropriate display content, and starts Wi-Fi and the web server when Web
+ * Mode startup is enabled.
  */
 void setup() {
   Serial.begin(115200);
@@ -379,23 +384,19 @@ void setup() {
     } else if (PRINT_INSULT_ON_BOOT) {
       displayRenderInsult(insultsGetCurrentText());
     }
+  } else {
+    displayRenderEmptyState();
   }
 
-  // TEMP FOR DEVELOPMENT. I WANT THIS TO CONNECT AND SPIN UP WHILE I CODE. WILL
-  // BE MOVED TO BUTTON GESTURES.
-  // WebModeResult webRes = enterWebMode();
-  // if (webRes == WebModeResult::SUCCESS) {
-  //   Serial.println("[WebModeResult]: SUCCESS!!!");
-  // } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-  //   Serial.println("[WebModeResult]: CONNECTION FAILED");
-  // }
-  SetupModeResult setupRes = setupWiFi();
-  if (setupRes == SetupModeResult::SUCCESS) {
-    Serial.println("Setup Successful");
-  } else {
-    Serial.println("Setup Failed");
+#if WEB_MODE_ON_BOOT
+  WebModeResult webRes = enterWebMode();
+  if (webRes == WebModeResult::SUCCESS) {
+    Serial.println("[WebModeResult]: SUCCESS!!!");
+  } else if (webRes == WebModeResult::CONNECTION_FAILED) {
+    Serial.println("[WebModeResult]: CONNECTION FAILED");
   }
   webServerManager.start();
+#endif
 }
 /**
  * @brief Polls device inputs, advances the application state, and services the
@@ -403,7 +404,8 @@ void setup() {
  *
  * Processes debounced button events, transitions from the boot splash to idle,
  * advances active insult operations, and renders completed operations before
- * returning to the idle state.
+ * returning to the idle state. Web requests are serviced when Web Mode startup
+ * is enabled.
  */
 void loop() {
   const uint32_t now = millis();
@@ -436,5 +438,7 @@ void loop() {
     }
     break;
   }
+#if WEB_MODE_ON_BOOT
   webServerManager.handle();
+#endif
 }
