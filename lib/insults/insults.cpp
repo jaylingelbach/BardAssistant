@@ -266,6 +266,13 @@ static uint32_t generateNextId() {
   return highestId + 1;
 }
 
+/**
+ * @brief Finds an insult by its persistent identifier.
+ *
+ * @param entryId Identifier to locate.
+ * @return An iterator to the matching entry, or `insults.end()` when no entry
+ * matches.
+ */
 static std::vector<DeckEntry>::iterator findInsultById(uint32_t entryId) {
 
   auto it = std::find_if(
@@ -469,6 +476,17 @@ static void appendToHistory(uint32_t id) {
   historyPosition = historySize - 1;
 }
 
+/**
+ * @brief Removes every occurrence of an insult ID from navigation history.
+ *
+ * Rebuilds the ring buffer and moves its cursor to the current insult when it
+ * remains in history, or to the newest remaining entry otherwise. The cursor
+ * resets to zero when history becomes empty.
+ *
+ * @param id Insult identifier to remove.
+ * @return `true` if the identifier was present, or `false` if history was
+ * unchanged.
+ */
 static bool removeFromHistory(uint32_t id) {
   // 1. Find the ID in the logical history and record its position.
   bool isHistoryIdFound = false;
@@ -812,6 +830,10 @@ void insultsPersistForSleep() {
  * - Random always draws a new insult.
  * - Prev moves back within history if possible.
  * - Next moves forward within history, but draws a new insult if at the end.
+ *
+ * @param action Navigation action to prepare.
+ * @return `true` if the action was queued, or `false` if the action is
+ * unsupported or its requested history entry cannot be selected.
  */
 static bool beginWorkFor(PendingAction action) {
 
@@ -979,10 +1001,16 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
 // ============================================================================
 
 /**
- * @brief Start a mocked “operation” (Random/Next/Prev).
+ * @brief Starts a delayed Random, Next, or Previous operation.
  *
- * This sets internal operation state and returns true if there is work to do.
- * The caller typically transitions the app into an Updating state only if true.
+ * Selects the pending insult and records the start time. The caller should
+ * transition to its updating state only when this function returns `true`, then
+ * call insultsPoll() to complete the operation.
+ *
+ * @param action Operation to start.
+ * @param now Current time in milliseconds.
+ * @return `true` if the operation was queued, or `false` if the action is
+ * unsupported or its requested history entry cannot be selected.
  */
 bool insultsStartOperation(PendingAction action, uint32_t now) {
 
@@ -1007,8 +1035,9 @@ bool insultsStartOperation(PendingAction action, uint32_t now) {
  * @brief Polls the pending insult operation and completes it when its duration
  * has elapsed.
  *
- * Updates the current insult, records the completed action in history, renders
- * the result, and resets the operation to idle.
+ * Selects a replacement if the pending insult was deleted. A completed
+ * operation updates history as needed and renders the result unless no insults
+ * remain, then resets the operation to idle.
  *
  * @param now Current time in milliseconds.
  * @return true if an operation completed during this call, false otherwise.
@@ -1163,6 +1192,16 @@ DeckEntryResult createInsult(std::string text) {
   }
 }
 
+/**
+ * @brief Updates an insult's text and persists the collection.
+ *
+ * Restores the previous text when persistence fails.
+ *
+ * @param entryId Identifier of the insult to update.
+ * @param text Replacement text.
+ * @return A successful result containing the updated entry, or a failed result
+ * whose reason distinguishes a missing entry from a persistence failure.
+ */
 DeckEntryResult editInsult(uint32_t entryId, std::string text) {
 
   // Find existing entry.
@@ -1200,6 +1239,18 @@ DeckEntryResult editInsult(uint32_t entryId, std::string text) {
 // CRUD — DELETE
 // ============================================================================
 
+/**
+ * @brief Deletes an insult and persists the remaining collection.
+ *
+ * After persistence succeeds, removes the identifier from the shuffled deck
+ * and navigation history. Deleting the current insult selects a replacement or
+ * clears the current identifier when the collection becomes empty. A
+ * persistence failure restores the removed in-memory entry.
+ *
+ * @param entryId Identifier of the insult to delete.
+ * @return A result indicating success, a missing entry, or a persistence
+ * failure.
+ */
 DeleteDeckEntryResult deleteInsult(uint32_t entryId) {
   bool isCurrentInsult = false;
 

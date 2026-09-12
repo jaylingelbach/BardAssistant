@@ -460,6 +460,12 @@ bool displayRenderBlankScreen() {
   return true;
 }
 
+/**
+ * @brief Replaces the display contents with guidance for an empty insult deck.
+ *
+ * @return `true` when the display is initialized and the empty state is
+ * rendered, or `false` when the display is unavailable.
+ */
 bool displayRenderEmptyState() {
   if (!displayReady || displayDriver == nullptr)
     return false;
