@@ -309,7 +309,7 @@ void WebServerManager::handleDeleteDeckEntry() {
 }
 
 /**
- * @brief Registers the server routes and starts the web server.
+ * @brief Registers HTTP and OTA routes, then starts the web server.
  */
 void WebServerManager::start() {
   registerRoutes();
@@ -324,7 +324,7 @@ void WebServerManager::start() {
 void WebServerManager::stop() { server.stop(); }
 
 /**
- * @brief Processes pending web-server client requests.
+ * @brief Processes pending web-server requests and OTA updates.
  */
 void WebServerManager::handle() {
   server.handleClient();
