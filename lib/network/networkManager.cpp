@@ -103,7 +103,7 @@ WebModeResult enterWebMode() {
                                    // failure of mdns
   } else {
     Serial.println("Failed to connect to WiFi.");
-    WiFi.disconnect();
+    disconnectWiFi();
     return WebModeResult::CONNECTION_FAILED;
   }
 }
