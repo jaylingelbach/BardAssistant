@@ -4,9 +4,6 @@
 /** Result of entering web mode: covers WiFi.begin() and MDNS.begin() outcomes. */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
-/** Result of a Wi-Fi disconnection attempt. */
-enum class DisconnectModeResult { SUCCESS, DISCONNECT_FAILED };
-
 /** Result of a Wi-Fi setup/provisioning attempt. */
 enum class SetupModeResult { SUCCESS, SETUP_FAILED };
 
@@ -19,12 +16,11 @@ enum class SetupModeResult { SUCCESS, SETUP_FAILED };
 SetupModeResult setupWiFi();
 
 /**
- * @brief Disconnects from the current Wi-Fi network without erasing credentials.
+ * @brief Disconnects from the current Wi-Fi network and powers down the radio.
  *
- * @return DisconnectModeResult::SUCCESS if disconnection is verified,
- * DISCONNECT_FAILED if the device remains associated.
+ * Credentials are preserved so a future enterWebMode() call can reconnect.
  */
-DisconnectModeResult disconnectWiFi();
+void disconnectWiFi();
 
 /**
  * @brief Connects using saved credentials, starts mDNS, and enables web mode.

@@ -32,6 +32,7 @@ bool displayInit(const DisplayConfig &config);
 
 bool displayRenderBlankScreen();
 bool displayRenderEmptyState();
+bool displayRenderWebModeState(bool active, const char *url);
 bool displayRenderInsult(const char *text);
 bool displaySleep(DisplaySleepMode mode);
 
