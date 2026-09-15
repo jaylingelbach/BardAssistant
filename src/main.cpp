@@ -283,8 +283,8 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     }
   }
 
-  // For Random/Next/Prev we only start work from Idle.
-  if (currentState != ApplicationState::Idle) {
+  // For Random/Next/Prev we only start work from Idle and outside Web Mode.
+  if (currentState != ApplicationState::Idle || isWebModeActive) {
     return;
   }
 
@@ -327,7 +327,7 @@ static void handleButtonGestures(uint32_t now) {
                            prevButton.state == ButtonState::Pressed;
 
   // TODO: Before PROD (of device not software) remove dev debug lines.
-  if (bothPressed) {
+  if (bothPressed && currentState == ApplicationState::Idle) {
     if (!gestureActive) {
       // Start tracking the gesture.
       gestureActive = true;
