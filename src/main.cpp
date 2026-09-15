@@ -457,10 +457,15 @@ void setup() {
   WebModeResult webRes = enterWebMode();
   if (webRes == WebModeResult::SUCCESS) {
     Serial.println("[WebModeResult]: SUCCESS!!!");
+    webServerManager.start();
+    isWebModeActive = true;
+  } else if (webRes == WebModeResult::MDNS_FAILED) {
+    Serial.println("[WebModeResult]: MDNS FAILED");
+    webServerManager.start();
+    isWebModeActive = true;
   } else if (webRes == WebModeResult::CONNECTION_FAILED) {
     Serial.println("[WebModeResult]: CONNECTION FAILED");
   }
-  webServerManager.start();
 #endif
 
   // setupWiFi();
