@@ -241,9 +241,7 @@ static bool textFitsInBounds(const char *text, int16_t maxWidth,
 
   const char *cursor = text;
 
-  auto linesFull = [&]() -> bool {
-    return cursorY + lineHeight > maxHeight;
-  };
+  auto linesFull = [&]() -> bool { return cursorY + lineHeight > maxHeight; };
 
   bool overflowed = false;
 
@@ -458,7 +456,8 @@ bool displayValidateConfig(const DisplayConfig &config) {
  * the existing driver before constructing a new one.
  *
  * @param config Pin assignments, rotation, and driver options.
- * @return `true` if initialization succeeds, `false` if config validation fails.
+ * @return `true` if initialization succeeds, `false` if config validation
+ * fails.
  */
 bool displayInit(const DisplayConfig &config) {
   // 0) Reset internal state
@@ -565,6 +564,40 @@ bool displayRenderEmptyState() {
     displayDriver->fillScreen(GxEPD_WHITE);
     drawWrappedText("No insults loaded. Add some via the web UI.", margin,
                     margin, areaW, areaH, 1);
+  } while (displayDriver->nextPage());
+
+  return true;
+}
+
+/**
+ * @brief Renders a web mode status screen on the e-ink display.
+ *
+ * When entering web mode, shows the provided URL so the user knows where to
+ * connect. When exiting, shows a brief offline message.
+ *
+ * @param active  true when web mode is being entered; false when exiting.
+ * @param url     URL string shown when active (e.g. "bardsassistant.local").
+ *                Ignored when active is false.
+ */
+bool displayRenderWebModeState(bool active, const char *url) {
+  if (!displayReady || displayDriver == nullptr)
+    return false;
+
+  const int16_t screenW = static_cast<int16_t>(displayDriver->width());
+  const int16_t screenH = static_cast<int16_t>(displayDriver->height());
+  const int16_t margin = 8;
+  const int16_t areaW = static_cast<int16_t>(screenW - 2 * margin);
+  const int16_t areaH = static_cast<int16_t>(screenH - 2 * margin);
+
+  displayDriver->setFullWindow();
+  displayDriver->firstPage();
+  do {
+    displayDriver->fillScreen(GxEPD_WHITE);
+    if (active) {
+      drawWrappedText(url, margin, margin, areaW, areaH, 1);
+    } else {
+      drawWrappedText("Web mode off.", margin, margin, areaW, areaH, 1);
+    }
   } while (displayDriver->nextPage());
 
   return true;

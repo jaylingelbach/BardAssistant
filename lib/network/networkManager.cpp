@@ -6,10 +6,11 @@
 bool isMdnsRunning = false;
 
 /**
- * @brief Configures the device as a Wi-Fi station and establishes a network connection.
+ * @brief Configures the device as a Wi-Fi station and establishes a network
+ * connection.
  *
- * Clears stored Wi-Fi settings and opens a configuration portal when a connection
- * cannot be established within the configured timeouts.
+ * Clears stored Wi-Fi settings and opens a configuration portal when a
+ * connection cannot be established within the configured timeouts.
  *
  * @return SetupModeResult::SUCCESS if connected successfully;
  *         SetupModeResult::SETUP_FAILED otherwise.
@@ -44,22 +45,13 @@ SetupModeResult setupWiFi() {
 }
 
 /**
- * @brief Disconnects the device from the Wi-Fi network.
+ * @brief Disconnects from Wi-Fi and powers down the radio.
  *
- * @return DisconnectModeResult::SUCCESS if disconnection is verified;
- *         DisconnectModeResult::DISCONNECT_FAILED if the device remains
- * connected.
+ * Credentials are preserved (eraseap=false) so enterWebMode() can reconnect
+ * without re-provisioning.
  */
-DisconnectModeResult disconnectWiFi() {
-  WiFi.disconnect(true, false);
-
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Disconnection verified.");
-    return DisconnectModeResult::SUCCESS;
-  } else {
-    Serial.println("Disconnection failed. Device still online.");
-    return DisconnectModeResult::DISCONNECT_FAILED;
-  }
+void disconnectWiFi() {
+  WiFi.disconnect(true /* wifioff */, false /* eraseap */);
 }
 
 /**

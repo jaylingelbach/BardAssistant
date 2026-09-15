@@ -12,6 +12,7 @@
 #include "persist_keys.h"
 #include "webServerManager.h"
 #include <ElegantOTA.h>
+#include <WiFi.h>
 
 // ───────────────── Logging ───────────────────────
 
@@ -28,7 +29,7 @@
 
 // ───────────────── Development flags ─────────────
 // Set to false and implement button gesture before shipping.
-#define WEB_MODE_ON_BOOT true
+#define WEB_MODE_ON_BOOT false
 
 // ───────────────── Configuration ─────────────────
 
@@ -81,6 +82,11 @@ static uint32_t ignoreInputUntil = 0;
 // splash) so USB monitor reconnect/reset doesn’t hide the “woke-from-sleep”
 // classification.
 static bool needsSleepFlagClear = false;
+
+static bool gestureActive = false;
+static uint32_t gestureStartedAt = 0;
+static bool gestureTriggered = false;
+static bool isWebModeActive = false;
 
 // ───────────────── State transitions ─────────────
 
@@ -293,21 +299,79 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 
     case ButtonId::Next:
       APP_LOGLN("[Next] Tap");
-      if (insultsStartOperation(PendingAction::Next, now)) {
-        enterUpdating();
+      if (!gestureActive && !gestureTriggered) {
+        if (insultsStartOperation(PendingAction::Next, now)) {
+          enterUpdating();
+        }
       }
       break;
 
     case ButtonId::Prev:
       APP_LOGLN("[Prev] Tap");
-      if (insultsStartOperation(PendingAction::Prev, now)) {
-        enterUpdating();
+      if (!gestureActive && !gestureTriggered) {
+        if (insultsStartOperation(PendingAction::Prev, now)) {
+          enterUpdating();
+        }
       }
       break;
 
     default:
       break;
     }
+  }
+}
+
+static void handleButtonGestures(uint32_t now) {
+
+  const bool bothPressed = nextButton.state == ButtonState::Pressed &&
+                           prevButton.state == ButtonState::Pressed;
+
+  // TODO: Before PROD (of device not software) remove dev debug lines.
+  if (bothPressed) {
+    if (!gestureActive) {
+      // Start tracking the gesture.
+      gestureActive = true;
+      gestureStartedAt = now;
+    } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
+      if (!isWebModeActive) {
+        WebModeResult webRes = enterWebMode();
+        if (webRes == WebModeResult::SUCCESS) {
+          Serial.println("[WebModeResult]: SUCCESS!!!");
+          webServerManager.start();
+          isWebModeActive = true;
+          displayRenderWebModeState(true, "bardsassistant.local");
+        } else if (webRes == WebModeResult::MDNS_FAILED) {
+          Serial.println("[WebModeResult]: MDNS FAILED");
+          webServerManager.start();
+          isWebModeActive = true;
+          displayRenderWebModeState(true, WiFi.localIP().toString().c_str());
+        } else if (webRes == WebModeResult::CONNECTION_FAILED) {
+          Serial.println("[WebModeResult]: CONNECTION FAILED");
+          if (insultsHasAny()) {
+            displayRenderInsult(insultsGetCurrentText());
+          } else {
+            displayRenderEmptyState();
+          }
+        }
+      } else {
+        webServerManager.stop();
+        exitWebMode();
+        isWebModeActive = false;
+        Serial.println("[WebMode]: Exited successfully.");
+        if (insultsHasAny()) {
+          displayRenderInsult(insultsGetCurrentText());
+        } else {
+          displayRenderEmptyState();
+        }
+      }
+      gestureTriggered = true;
+    }
+  } else {
+    // One or both buttons were released.
+    // Reset so the gesture can be performed again.
+    gestureActive = false;
+    gestureStartedAt = 0;
+    gestureTriggered = false;
   }
 }
 
@@ -398,6 +462,8 @@ void setup() {
   }
   webServerManager.start();
 #endif
+
+  // setupWiFi();
 }
 /**
  * @brief Polls device inputs, advances the application state, and services the
@@ -422,6 +488,9 @@ void loop() {
   handleButtonEvent(ButtonId::Next, nextEvent, now);
   handleButtonEvent(ButtonId::Prev, prevEvent, now);
 
+  // enable/disable webMode
+  handleButtonGestures(now);
+
   // High-level app state machine
   switch (currentState) {
   case ApplicationState::Boot:
@@ -439,7 +508,7 @@ void loop() {
     }
     break;
   }
-#if WEB_MODE_ON_BOOT
-  webServerManager.handle();
-#endif
+  if (isWebModeActive) {
+    webServerManager.handle();
+  }
 }
