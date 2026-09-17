@@ -1,4 +1,5 @@
 #include "networkManager.h"
+#include "log.h"
 #include <ESPmDNS.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
@@ -34,12 +35,12 @@ SetupModeResult setupWiFi() {
                        "bardsassistant"); // password protected ap
 
   if (!res) {
-    Serial.println("Failed to connect");
+    LOG_ERROR("WiFi setup failed.");
     return SetupModeResult::SETUP_FAILED;
   } else {
-    Serial.println("Connected to WiFi");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
+    LOG_INFO("WiFi setup complete.");
+    LOG_INFO_PRINT("IP Address: ");
+    LOG_INFO_RAW(WiFi.localIP());
     return SetupModeResult::SUCCESS;
   }
 }
@@ -65,7 +66,7 @@ void disconnectWiFi() {
 WebModeResult enterWebMode() {
   WiFi.mode(WIFI_STA);
 
-  Serial.println("Attempting automatic connection...");
+  LOG_INFO("Attempting automatic connection...");
 
   WiFi.begin();
 
@@ -74,35 +75,29 @@ WebModeResult enterWebMode() {
 
   while (WiFi.status() != WL_CONNECTED && millis() - startTime < timeout) {
     delay(500);
-    Serial.print(".");
+    LOG_DEBUG_PRINT(".");
   }
 
-  Serial.println();
+  LOG_DEBUG("");
 
   if (WiFi.status() == WL_CONNECTED) {
 
-    Serial.println("WiFi connected");
-    Serial.print("Network: ");
-    Serial.println(WiFi.SSID());
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+    LOG_INFO("WiFi connected.");
+    LOG_INFO_PRINT("Network: ");
+    LOG_INFO_RAW(WiFi.SSID());
+    LOG_INFO_PRINT("IP address: ");
+    LOG_INFO_RAW(WiFi.localIP());
 
     if (!MDNS.begin("bardsassistant")) {
-      Serial.println("Error setting up MDNS responder");
-      Serial.println("Visit: ");
-      Serial.println(WiFi.localIP());
-      Serial.println("to view decks");
-      return WebModeResult::MDNS_FAILED; // can print to user to use the localip
-                                         // in main.
+      LOG_ERROR("mDNS setup failed. Connect via IP:");
+      LOG_INFO_RAW(WiFi.localIP());
+      return WebModeResult::MDNS_FAILED;
     }
     isMdnsRunning = true;
-    Serial.println("Visit BardAssistant.local to view decks");
-    return WebModeResult::SUCCESS; // SUCCESS includes MDNS bc it's the enter
-                                   // web mode's overall success, if Wifi
-                                   // connects but mdns doesn't it returns a
-                                   // failure of mdns
+    LOG_INFO("Visit bardsassistant.local to manage decks.");
+    return WebModeResult::SUCCESS;
   } else {
-    Serial.println("Failed to connect to WiFi.");
+    LOG_ERROR("Failed to connect to WiFi.");
     disconnectWiFi();
     return WebModeResult::CONNECTION_FAILED;
   }

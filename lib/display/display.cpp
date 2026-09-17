@@ -1,4 +1,5 @@
 #include "display.h"
+#include "log.h"
 #include <Arduino.h>
 #include <GxEPD2_BW.h>
 #include <SPI.h>
@@ -467,7 +468,7 @@ bool displayInit(const DisplayConfig &config) {
 
   // 1) Validate config (pins present, no duplicates, no conflicts)
   if (!displayValidateConfig(config)) {
-    Serial.println("Display init failed: invalid config");
+    LOG_ERROR("Display init failed: invalid config.");
     return false;
   }
 
@@ -519,7 +520,7 @@ bool displayInit(const DisplayConfig &config) {
 
   // 9) Mark ready + log
   displayReady = true;
-  Serial.println("Display initialized");
+  LOG_INFO("Display initialized.");
   return true;
 }
 

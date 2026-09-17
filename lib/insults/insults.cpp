@@ -1,4 +1,5 @@
 #include "insults.h"
+#include "log.h"
 #include "persist_keys.h"
 
 #include <Arduino.h>
@@ -132,7 +133,7 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
   File file = LittleFS.open(path, "r");
 
   if (!file) {
-    Serial.println("[readJsonFile] Failed to open file");
+    LOG_ERROR("[insults] Failed to open JSON file.");
     return {};
   }
 
@@ -143,7 +144,7 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
   file.close();
 
   if (error) {
-    Serial.println("[readJsonFle] Invalid JSON");
+    LOG_ERROR("[insults] Invalid JSON.");
     return deckEntries;
   }
 
@@ -157,8 +158,8 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
     deckEntries.emplace_back(id, text, source);
   }
 
-  Serial.println("deckEntries size: ");
-  Serial.println(deckEntries.size());
+  LOG_DEBUG_PRINT("deckEntries size: ");
+  LOG_DEBUG_RAW(deckEntries.size());
 
   return deckEntries;
 }
@@ -180,7 +181,7 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   File file = LittleFS.open(tmpPath.c_str(), "w");
 
   if (!file) {
-    Serial.println("[saveJsonFile] Failed to open temp file for writing");
+    LOG_ERROR("[insults] Failed to open temp file for writing.");
     return false;
   }
 
@@ -195,7 +196,7 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   }
 
   if (serializeJson(doc, file) == 0) {
-    Serial.println(F("[saveJsonFile] Failed to serialize JSON to temp file"));
+    LOG_ERROR("[insults] Failed to serialize JSON to temp file.");
     file.close();
     LittleFS.remove(tmpPath.c_str());
     return false;
@@ -211,7 +212,7 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
     }
 
     if (!LittleFS.rename(path, bakPath.c_str())) {
-      Serial.println(F("[saveJsonFile] Failed to back up existing file"));
+      LOG_ERROR("[insults] Failed to back up existing file.");
       LittleFS.remove(tmpPath.c_str());
       return false;
     }
@@ -219,7 +220,7 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
 
   if (!LittleFS.rename(tmpPath.c_str(), path)) {
 
-    Serial.println(F("[saveJsonFile] Failed to rename temp file to primary"));
+    LOG_ERROR("[insults] Failed to rename temp file to primary.");
 
     // Attempt to restore the backup so the deck isn't lost.
     if (LittleFS.exists(bakPath.c_str())) {
@@ -580,28 +581,17 @@ static bool removeFromHistory(uint32_t id) {
  */
 static void renderLogo() {
 
-  Serial.println(F(" /$$      /$$                     /$$                      "
-                   "             "));
-  Serial.println(F("| $$$    /$$$                    | $$                      "
-                   "             "));
-  Serial.println(F("| $$$$  /$$$$  /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   "
-                   "/$$$$$$  /$$   /$$"));
-  Serial.println(F("| $$ $$/$$ $$ /$$__  $$ /$$_____/| $$  /$$/ /$$__  $$ "
-                   "/$$__  $$| $$  | $$"));
-  Serial.println(F("| $$  $$$| $$| $$  \\ $$| $$      | $$$$$$/ | $$$$$$$$| $$ "
-                   " \\__/| $$  | $$"));
-  Serial.println(F("| $$\\  $ | $$| $$  | $$| $$      | $$_  $$ | $$_____/| $$ "
-                   "     | $$  | $$"));
-  Serial.println(F("| $$ \\/  | $$|  $$$$$$/|  $$$$$$$| $$ \\  $$|  $$$$$$$| "
-                   "$$      |  $$$$$$$"));
-  Serial.println(F("|__/     |__/ \\______/  \\_______/|__/  \\__/ "
-                   "\\_______/|__/       \\____  $$"));
-  Serial.println(F("                                                           "
-                   "     /$$  | $$"));
-  Serial.println(F("                                                           "
-                   "    |  $$$$$$/"));
-  Serial.println(F("                                                           "
-                   "     \\______/ "));
+  LOG_INFO(" /$$      /$$                     /$$                                   ");
+  LOG_INFO("| $$$    /$$$                    | $$                                   ");
+  LOG_INFO("| $$$$  /$$$$  /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   /$$$$$$  /$$   /$$");
+  LOG_INFO("| $$ $$/$$ $$ /$$__  $$ /$$_____/| $$  /$$/ /$$__  $$ /$$__  $$| $$  | $$");
+  LOG_INFO("| $$  $$$| $$| $$  \\ $$| $$      | $$$$$$/ | $$$$$$$$| $$  \\__/| $$  | $$");
+  LOG_INFO("| $$\\  $ | $$| $$  | $$| $$      | $$_  $$ | $$_____/| $$      | $$  | $$");
+  LOG_INFO("| $$ \\/  | $$|  $$$$$$/|  $$$$$$$| $$ \\  $$|  $$$$$$$| $$      |  $$$$$$$");
+  LOG_INFO("|__/     |__/ \\______/  \\_______/|__/  \\__/ \\_______/|__/       \\____  $$");
+  LOG_INFO("                                                                    /$$  | $$");
+  LOG_INFO("                                                                   |  $$$$$$/");
+  LOG_INFO("                                                                    \\______/ ");
 }
 
 /**
@@ -609,14 +599,14 @@ static void renderLogo() {
  */
 static void renderTitleScreen() {
 
-  Serial.println();
-  Serial.println(F("Brown Bear Creative presents..."));
-  Serial.println(F("The Bard's Assistant"));
-  Serial.println();
+  LOG_INFO("");
+  LOG_INFO("Brown Bear Creative presents...");
+  LOG_INFO("The Bard's Assistant");
+  LOG_INFO("");
 
   renderLogo();
 
-  Serial.println();
+  LOG_INFO("");
 }
 
 /**
@@ -630,69 +620,69 @@ static void renderInsultById(uint32_t id, PendingAction action,
                              RenderReason reason) {
 
   if (insults.size() == 0) {
-    Serial.println(F("[WARN] No insults available."));
+    LOG_WARN("[insults] No insults available.");
     return;
   }
 
   auto it = findInsultById(id);
 
   if (it == insults.end()) {
-    Serial.print(F("[WARN] Invalid insult ID: "));
-    Serial.println(id);
+    LOG_WARN_PRINT("[insults] Invalid insult ID: ");
+    LOG_WARN_RAW(id);
     return;
   }
 
   const char *line = it->text.c_str();
 
-  Serial.println(F("────────────────────────────"));
+  LOG_DEBUG("────────────────────────────");
 
   switch (reason) {
 
   case RenderReason::Boot:
-    Serial.println(F("[Boot]"));
+    LOG_DEBUG("[Boot]");
     break;
 
   case RenderReason::Wake:
-    Serial.println(F("[Wake]"));
+    LOG_DEBUG("[Wake]");
     break;
 
   case RenderReason::OperationStart:
-    Serial.println(F("[Starting]"));
+    LOG_DEBUG("[Starting]");
     break;
 
   case RenderReason::OperationComplete:
-    Serial.println(F("[Done]"));
+    LOG_DEBUG("[Done]");
     break;
 
   case RenderReason::UserTap:
-    Serial.println(F("[Tap]"));
+    LOG_DEBUG("[Tap]");
     break;
 
   case RenderReason::Deleted:
-    Serial.println(F("[Deleted]"));
+    LOG_DEBUG("[Deleted]");
     break;
   }
 
   switch (action) {
 
   case PendingAction::Random:
-    Serial.println(F("(Random)"));
+    LOG_DEBUG("(Random)");
     break;
 
   case PendingAction::Next:
-    Serial.println(F("(Next)"));
+    LOG_DEBUG("(Next)");
     break;
 
   case PendingAction::Prev:
-    Serial.println(F("(Previous)"));
+    LOG_DEBUG("(Previous)");
     break;
 
   case PendingAction::None:
     break;
   }
 
-  Serial.println(line);
-  Serial.println(F("────────────────────────────"));
+  LOG_DEBUG_RAW(line);
+  LOG_DEBUG("────────────────────────────");
 }
 
 // ============================================================================
@@ -857,12 +847,12 @@ static bool beginWorkFor(PendingAction action) {
   if (action == PendingAction::Prev) {
 
     if (historySize == 0) {
-      Serial.println(F("[Prev] No history yet."));
+      LOG_WARN("[insults] Prev: no history yet.");
       return false;
     }
 
     if (historyPosition == 0) {
-      Serial.println(F("[Prev] Already at oldest entry."));
+      LOG_WARN("[insults] Prev: already at oldest entry.");
       return false;
     }
 
@@ -870,7 +860,7 @@ static bool beginWorkFor(PendingAction action) {
 
     if (!historyGetAtLogical(historyPosition, pendingInsultId)) {
 
-      Serial.println(F("[Prev] History read failed."));
+      LOG_ERROR("[insults] Prev: history read failed.");
       return false;
     }
 
@@ -898,7 +888,7 @@ static bool beginWorkFor(PendingAction action) {
 
       if (!historyGetAtLogical(historyPosition, pendingInsultId)) {
 
-        Serial.println(F("[Next] History read failed."));
+        LOG_ERROR("[insults] Next: history read failed.");
         return false;
       }
 
@@ -975,7 +965,7 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
 
   if (loadInsultsStateFromNvs(unusedRestoredId)) {
 
-    Serial.println("[Wake] restored insult state");
+    LOG_INFO("[insults] Wake: restored insult state.");
 
     return false; // nothing rendered
   }
@@ -993,7 +983,7 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
 
   appendToHistory(currentInsultId);
 
-  Serial.println("[Wake] no saved state; seeded first insult");
+  LOG_INFO("[insults] Wake: no saved state; seeded first insult.");
 
   return false;
 }
@@ -1183,14 +1173,14 @@ DeckEntryResult createInsult(std::string text) {
     }
 
     // Saved successfully.
-    Serial.println("[createInsult] JSON file updated successfully!");
+    LOG_INFO("[insults] createInsult: saved successfully.");
 
     return {true, newEntry};
 
   } else {
 
     // Save failed.
-    Serial.println("[createInsult] error saving insult");
+    LOG_ERROR("[insults] createInsult: save failed.");
 
     insults.pop_back();
 
@@ -1225,14 +1215,14 @@ DeckEntryResult editInsult(uint32_t entryId, std::string text) {
   if (saveJsonFile("/insults.json", insults)) {
 
     // Saved successfully.
-    Serial.println("[editInsult] JSON file updated successfully!");
+    LOG_INFO("[insults] editInsult: saved successfully.");
 
     return {true, *it};
 
   } else {
 
     // Save failed.
-    Serial.println("[editInsult] error saving insult");
+    LOG_ERROR("[insults] editInsult: save failed.");
 
     // Roll back the in-memory change.
     it->text = oldText;
@@ -1283,7 +1273,7 @@ DeleteDeckEntryResult deleteInsult(uint32_t entryId) {
 
   // Persist the updated collection to the JSON file.
   if (saveJsonFile("/insults.json", insults)) {
-    Serial.println("[deleteInsult] JSON file updated successfully!");
+    LOG_INFO("[insults] deleteInsult: saved successfully.");
 
     // Remove the deleted ID from the shuffled deck.
     auto deckIt = std::find(deck.begin(), deck.end(), entryId);
@@ -1320,7 +1310,7 @@ DeleteDeckEntryResult deleteInsult(uint32_t entryId) {
   }
 
   // Saving failed, so restore the deleted entry in memory.
-  Serial.println("[deleteInsult] Error saving insult");
+  LOG_ERROR("[insults] deleteInsult: save failed.");
 
   insults.insert(insults.begin() + oldPosition, oldEntry);
 

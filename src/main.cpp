@@ -1,3 +1,4 @@
+#include "HWCDC.h"
 #include "driver/rtc_io.h"
 #include <Arduino.h>
 #include <LittleFS.h>
@@ -8,24 +9,12 @@
 #include "display.h"
 #include "insults.h"
 #include "led.h"
+#include "log.h"
 #include "networkManager.h"
 #include "persist_keys.h"
 #include "webServerManager.h"
 #include <ElegantOTA.h>
 #include <WiFi.h>
-
-// ───────────────── Logging ───────────────────────
-
-// Set to 0 to silence app logs (sleep/random/next/prev messages).
-#define ENABLE_APP_LOGS 1
-
-#if ENABLE_APP_LOGS
-#define APP_LOGLN(msg) Serial.println(F(msg))
-#else
-#define APP_LOGLN(msg)                                                         \
-  do {                                                                         \
-  } while (0)
-#endif
 
 // ───────────────── Development flags ─────────────
 // Set to false and implement button gesture before shipping.
@@ -87,6 +76,7 @@ static bool gestureActive = false;
 static uint32_t gestureStartedAt = 0;
 static bool gestureTriggered = false;
 static bool isWebModeActive = false;
+static bool isWiFiProvisioned = false;
 
 // ───────────────── State transitions ─────────────
 
@@ -196,7 +186,7 @@ static void enterSleep() {
   // Configure wake on Sleep button press (LOW).
   esp_err_t err = esp_sleep_enable_ext0_wakeup(WAKEUP_GPIO, 0 /* LOW */);
   if (err != ESP_OK) {
-    Serial.printf("EXT0 wake config failed: %d\n", err);
+    LOG_ERRORF("EXT0 wake config failed: %d\n", err);
   }
 
   // Keep the wake pin at the inactive level while asleep.
@@ -265,12 +255,12 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     if (event == ButtonEvent::HoldStart) {
       sleepArmed = true;
       ledShowSleep();
-      APP_LOGLN("[Sleep] HoldStart (armed). Release to sleep.");
+      LOG_DEBUG("[Sleep] HoldStart (armed). Release to sleep.");
       return;
     }
     if (event == ButtonEvent::HoldEnd) {
       if (sleepArmed) {
-        APP_LOGLN("[Sleep] HoldEnd (released). Going to sleep.");
+        LOG_DEBUG("[Sleep] HoldEnd (released). Going to sleep.");
         sleepArmed = false;
         enterSleep();
       }
@@ -291,14 +281,14 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   if (event == ButtonEvent::Tap) {
     switch (buttonId) {
     case ButtonId::Random:
-      APP_LOGLN("[Random] Tap");
+      LOG_DEBUG("[Random] Tap");
       if (insultsStartOperation(PendingAction::Random, now)) {
         enterUpdating();
       }
       break;
 
     case ButtonId::Next:
-      APP_LOGLN("[Next] Tap");
+      LOG_DEBUG("[Next] Tap");
       if (!gestureActive && !gestureTriggered) {
         if (insultsStartOperation(PendingAction::Next, now)) {
           enterUpdating();
@@ -307,7 +297,7 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
       break;
 
     case ButtonId::Prev:
-      APP_LOGLN("[Prev] Tap");
+      LOG_DEBUG("[Prev] Tap");
       if (!gestureActive && !gestureTriggered) {
         if (insultsStartOperation(PendingAction::Prev, now)) {
           enterUpdating();
@@ -321,13 +311,34 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   }
 }
 
+// this should detect the gesture and call the appropriate function.
 static void handleButtonGestures(uint32_t now) {
 
-  const bool bothPressed = nextButton.state == ButtonState::Pressed &&
-                           prevButton.state == ButtonState::Pressed;
+  const bool webmodeGesture = nextButton.state == ButtonState::Pressed &&
+                              prevButton.state == ButtonState::Pressed;
 
+  const bool provisioningGesture = nextButton.state == ButtonState::Pressed &&
+                                   prevButton.state == ButtonState::Pressed &&
+                                   randomButton.state == ButtonState::Pressed;
+
+  // TODO: web mode path should become handleWebModeToggle(),
   // TODO: Before PROD (of device not software) remove dev debug lines.
-  if (bothPressed && currentState == ApplicationState::Idle) {
+  if (provisioningGesture && currentState == ApplicationState::Idle) {
+    LOG_DEBUG("Provisioning Gesture pressed.");
+    if (!gestureActive) {
+      gestureActive = true;
+      gestureStartedAt = now;
+    } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
+      // do I need a better way of checking if provisioned?
+      if (!isWebModeActive) {
+        // enter provisioning
+        setupWiFi();
+      } else {
+        LOG_WARN("Provisioning failed, try again.");
+      }
+      gestureTriggered = true;
+    }
+  } else if (webmodeGesture && currentState == ApplicationState::Idle) {
     if (!gestureActive) {
       // Start tracking the gesture.
       gestureActive = true;
@@ -336,17 +347,17 @@ static void handleButtonGestures(uint32_t now) {
       if (!isWebModeActive) {
         WebModeResult webRes = enterWebMode();
         if (webRes == WebModeResult::SUCCESS) {
-          Serial.println("[WebModeResult]: SUCCESS!!!");
+          LOG_INFO("[WebMode] Entered: bardsassistant.local");
           webServerManager.start();
           isWebModeActive = true;
           displayRenderWebModeState(true, "bardsassistant.local");
         } else if (webRes == WebModeResult::MDNS_FAILED) {
-          Serial.println("[WebModeResult]: MDNS FAILED");
+          LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
           webServerManager.start();
           isWebModeActive = true;
           displayRenderWebModeState(true, WiFi.localIP().toString().c_str());
         } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-          Serial.println("[WebModeResult]: CONNECTION FAILED");
+          LOG_ERROR("[WebMode] Connection failed.");
           if (insultsHasAny()) {
             displayRenderInsult(insultsGetCurrentText());
           } else {
@@ -357,7 +368,7 @@ static void handleButtonGestures(uint32_t now) {
         webServerManager.stop();
         exitWebMode();
         isWebModeActive = false;
-        Serial.println("[WebMode]: Exited successfully.");
+        LOG_INFO("[WebMode] Exited successfully.");
         if (insultsHasAny()) {
           displayRenderInsult(insultsGetCurrentText());
         } else {
@@ -389,7 +400,7 @@ void setup() {
   delay(50);
 
   if (!LittleFS.begin(true)) {
-    Serial.println("LittleFS mount failed — restarting");
+    LOG_ERROR("LittleFS mount failed — restarting");
     Serial.flush();
     ESP.restart();
   }
@@ -410,8 +421,8 @@ void setup() {
     }
   }
 
-  Serial.println();
-  Serial.println(F("Booting Bard's Assistant..."));
+  LOG_INFO("");
+  LOG_INFO("Booting Bard's Assistant...");
 
   // Seed RNG for deck shuffling
   randomSeed(esp_random());
@@ -434,7 +445,7 @@ void setup() {
   enterBoot();
 
   if (!displayInit(displayConfig)) {
-    Serial.println(F("Display init failed"));
+    LOG_ERROR("Display init failed");
   }
 
   // Initialize insults state (restores from NVS on wake).
@@ -456,28 +467,28 @@ void setup() {
 #if WEB_MODE_ON_BOOT
   WebModeResult webRes = enterWebMode();
   if (webRes == WebModeResult::SUCCESS) {
-    Serial.println("[WebModeResult]: SUCCESS!!!");
+    LOG_INFO("[WebMode] Entered: bardsassistant.local");
     webServerManager.start();
     isWebModeActive = true;
   } else if (webRes == WebModeResult::MDNS_FAILED) {
-    Serial.println("[WebModeResult]: MDNS FAILED");
+    LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
     webServerManager.start();
     isWebModeActive = true;
   } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-    Serial.println("[WebModeResult]: CONNECTION FAILED");
+    LOG_ERROR("[WebMode] Connection failed.");
   }
 #endif
 
   // setupWiFi();
 }
 /**
- * @brief Polls device inputs, advances the application state, and services the
- * web server.
+ * @brief Polls device inputs, advances the application state, and services
+ * the web server.
  *
- * Processes debounced button events, transitions from the boot splash to idle,
- * advances active insult operations, and renders completed operations before
- * returning to the idle state. Web requests are serviced when Web Mode startup
- * is enabled.
+ * Processes debounced button events, transitions from the boot splash to
+ * idle, advances active insult operations, and renders completed operations
+ * before returning to the idle state. Web requests are serviced when Web Mode
+ * startup is enabled.
  */
 void loop() {
   const uint32_t now = millis();
