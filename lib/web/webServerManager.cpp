@@ -1,6 +1,7 @@
 #include "webServerManager.h"
 #include "display.h"
 #include "insults.h"
+#include "log.h"
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <ElegantOTA.h>
@@ -245,7 +246,7 @@ void WebServerManager::handleEditDeckEntry() {
     if (result.success) {
       if (entryId == insultsGetCurrentId()) {
         if (!displayRenderInsult(insultsGetCurrentText())) {
-          Serial.println("[WARN] Edit succeeded but display refresh failed");
+          LOG_WARN("[WebServer] Edit succeeded but display refresh failed.");
         }
       }
       sendDeckEntryResult(server, result, 200);
@@ -292,7 +293,7 @@ void WebServerManager::handleDeleteDeckEntry() {
     if (result.success) {
       if (insultsHasAny()) {
         if (!displayRenderInsult(insultsGetCurrentText())) {
-          Serial.println("[WARN] Delete succeeded but display refresh failed");
+          LOG_WARN("[WebServer] Delete succeeded but display refresh failed.");
         }
       } else {
         displayRenderEmptyState();
@@ -315,7 +316,7 @@ void WebServerManager::start() {
   registerRoutes();
   ElegantOTA.begin(&server);
   server.begin();
-  Serial.println("[WebServerManager] Started Web Server");
+  LOG_INFO("[WebServer] Started.");
 }
 
 /**
