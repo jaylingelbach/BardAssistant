@@ -76,6 +76,7 @@ static bool gestureActive = false;
 static uint32_t gestureStartedAt = 0;
 static bool gestureTriggered = false;
 static bool isWebModeActive = false;
+static bool gestureIsProvisioning = false;
 static bool isWiFiProvisioned = false;
 
 // ───────────────── State transitions ─────────────
@@ -325,9 +326,11 @@ static void handleButtonGestures(uint32_t now) {
   // TODO: Before PROD (of device not software) remove dev debug lines.
   if (provisioningGesture && currentState == ApplicationState::Idle) {
     LOG_DEBUG("Provisioning Gesture pressed.");
-    if (!gestureActive) {
+    if (!gestureActive || !gestureIsProvisioning) {
       gestureActive = true;
       gestureStartedAt = now;
+      gestureTriggered = false;
+      gestureIsProvisioning = true;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
       // do I need a better way of checking if provisioned?
       if (!isWebModeActive) {
@@ -339,10 +342,11 @@ static void handleButtonGestures(uint32_t now) {
       gestureTriggered = true;
     }
   } else if (webmodeGesture && currentState == ApplicationState::Idle) {
-    if (!gestureActive) {
-      // Start tracking the gesture.
+    if (!gestureActive || gestureIsProvisioning) {
       gestureActive = true;
       gestureStartedAt = now;
+      gestureTriggered = false;
+      gestureIsProvisioning = false;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
       if (!isWebModeActive) {
         WebModeResult webRes = enterWebMode();
@@ -378,11 +382,10 @@ static void handleButtonGestures(uint32_t now) {
       gestureTriggered = true;
     }
   } else {
-    // One or both buttons were released.
-    // Reset so the gesture can be performed again.
     gestureActive = false;
     gestureStartedAt = 0;
     gestureTriggered = false;
+    gestureIsProvisioning = false;
   }
 }
 
