@@ -7,10 +7,9 @@ CompileFlags:
     - "-freorder-blocks"
     - "-mfix-esp32-psram-cache-issue"
     - "-mfix-esp32-psram-cache-strategy=*"
+  Add:
+    - "-ferror-limit=0"
 
 Diagnostics:
   Suppress:
-    - drv_unknown_argument
-    - drv_unknown_argument_with_suggestion
-    - attribute_section_invalid_for_target
-    - block_on_nonlocal
+    - "*"
