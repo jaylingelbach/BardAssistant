@@ -12,6 +12,7 @@
 #include "log.h"
 #include "networkManager.h"
 #include "persist_keys.h"
+#include "provisioning.h"
 #include "webServerManager.h"
 #include <ElegantOTA.h>
 #include <WiFi.h>
@@ -53,10 +54,14 @@ static WebServerManager webServerManager;
 
 // ───────────────── App State ─────────────────────
 
-enum class ApplicationState { Boot, Idle, Updating };
+enum class ApplicationState { Boot, Idle, Updating, Provisioning };
 enum class ButtonId { Sleep, Random, Next, Prev };
+// Idle means not provisioning. Waiting means provisioning has started and
+// we are waiting for a result.
+enum class ProvisioningState { Idle, Waiting, Success, Failed };
 
 static ApplicationState currentState = ApplicationState::Boot;
+static ProvisioningState provisioningState = ProvisioningState::Idle;
 
 // Timing
 static uint32_t stateEnteredAt = 0;
@@ -77,7 +82,6 @@ static uint32_t gestureStartedAt = 0;
 static bool gestureTriggered = false;
 static bool isWebModeActive = false;
 static bool gestureIsProvisioning = false;
-static bool isWiFiProvisioned = false;
 
 // ───────────────── State transitions ─────────────
 
@@ -144,6 +148,8 @@ static void restoreLedForState() {
   case ApplicationState::Updating:
     ledShowUpdating();
     break;
+  case ApplicationState::Provisioning:
+    ledShowUpdating();
   }
 }
 
@@ -323,7 +329,6 @@ static void handleButtonGestures(uint32_t now) {
                                    randomButton.state == ButtonState::Pressed;
 
   // TODO: web mode path should become handleWebModeToggle(),
-  // TODO: Before PROD (of device not software) remove dev debug lines.
   if (provisioningGesture && currentState == ApplicationState::Idle) {
     LOG_DEBUG("Provisioning Gesture pressed.");
     if (!gestureActive || !gestureIsProvisioning) {
@@ -335,7 +340,18 @@ static void handleButtonGestures(uint32_t now) {
       // do I need a better way of checking if provisioned?
       if (!isWebModeActive) {
         // enter provisioning
-        setupWiFi();
+        ProvisioningStartResult provisioningResult = provisioningStart(now);
+        if (provisioningResult == ProvisioningStartResult::STARTED) {
+          currentState = ApplicationState::Provisioning;
+          provisioningState = ProvisioningState::Waiting;
+        } else if (provisioningResult ==
+                   ProvisioningStartResult::ALREADY_ACTIVE) {
+          LOG_DEBUG("Provisioning is already active, do nothing?");
+        } else if (provisioningResult ==
+                   ProvisioningStartResult::START_FAILED) {
+          LOG_DEBUG("Something went wrong, need to handle");
+        }
+        // setupWiFi();
       } else {
         LOG_WARN("Provisioning failed, try again.");
       }
@@ -526,6 +542,16 @@ void loop() {
       onOperationCompleted();
     }
     break;
+  case ApplicationState::Provisioning:
+    ProvisioningPollResult pollResult = provisioningPoll(now);
+    if (pollResult == ProvisioningPollResult::SUCCESS) {
+      provisioningState = ProvisioningState::Success;
+    } else if (pollResult == ProvisioningPollResult::FAILED) {
+      provisioningState = ProvisioningState::Failed;
+    } else if (pollResult == ProvisioningPollResult::CANCELLED) {
+      provisioningState = ProvisioningState::Success;
+      currentState = ApplicationState::Idle;
+    }
   }
   if (isWebModeActive) {
     webServerManager.handle();
