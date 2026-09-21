@@ -7,11 +7,10 @@ CompileFlags:
     - "-freorder-blocks"
     - "-mfix-esp32-psram-cache-issue"
     - "-mfix-esp32-psram-cache-strategy=*"
-  Add:
-    - "--target=xtensa"
 
 Diagnostics:
   Suppress:
     - drv_unknown_argument
     - drv_unknown_argument_with_suggestion
     - attribute_section_invalid_for_target
+    - block_on_nonlocal
