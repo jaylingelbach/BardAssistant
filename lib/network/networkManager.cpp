@@ -1,10 +1,48 @@
 #include "networkManager.h"
+#include "WiFiType.h"
 #include "log.h"
 #include <ESPmDNS.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
 
 bool isMdnsRunning = false;
+WiFiManager wm;
+bool portalHasTimedOut = false;
+
+WiFiConfigurationStartResult startWiFiConfiguration() {
+  if (getConfigPortalActive()) {
+    return WiFiConfigurationStartResult::ALREADY_ACTIVE;
+  } else {
+    WiFi.mode(WIFI_STA);
+    portalTimedOut = false;
+    wm.setConfigPortalBlocking(false);
+    wm.setConfigPortalTimeout(
+        180); // 3 minutes for the user to complete Wi-Fi configuration.
+    wm.setConnectTimeout(
+        15); // Wait 15 seconds for a router response before opening portal
+    wm.setConfigPortalTimeoutCallback([]() { portalTimedOut = true; });
+    wm.startConfigPortal("BardsAssistant", "bardsassistant");
+
+    if (getConfigPortalActive()) {
+      return WiFiConfigurationStartResult::STARTED;
+    } else {
+      return WiFiConfigurationStartResult::START_FAILED;
+    }
+  }
+}
+
+WiFiConfigurationPollResult pollWiFiConfiguration() {
+  wm.process();
+
+  // if process says connected
+  //     → SUCCESS
+
+  // else if portal is still active
+  //     → IN_PROGRESS
+
+  // else
+  //     → something terminated the portal
+}
 
 /**
  * @brief Configures the device as a Wi-Fi station and establishes a network
