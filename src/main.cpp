@@ -267,6 +267,13 @@ static void startProvisioning() {
   }
 }
 
+/**
+ * @brief Attempts to enter web mode and displays its connection address.
+ *
+ * Starts the web server even if mDNS fails, showing the IP address instead of
+ * the hostname. If Wi-Fi connection fails, leaves web mode inactive and
+ * restores the current insult or empty-state screen.
+ */
 static void handleWebModeToggle() {
   WebModeResult webRes = enterWebMode();
   if (webRes == WebModeResult::SUCCESS) {
@@ -289,6 +296,11 @@ static void handleWebModeToggle() {
   }
 }
 
+/**
+ * @brief Exits web mode and restores the current insult or empty-state screen.
+ *
+ * Stops the web server, ends mDNS if active, and disconnects Wi-Fi.
+ */
 static void handleExitWebMode() {
   webServerManager.stop();
   exitWebMode();
