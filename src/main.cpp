@@ -306,7 +306,16 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     }
     if (event == ButtonEvent::Tap) {
       sleepArmed = false;
-      restoreLedForState();
+      if (currentState == ApplicationState::ProvisioningConfirmation) {
+        currentState = ApplicationState::Idle;
+        if (insultsHasAny()) {
+          displayRenderInsult(insultsGetCurrentText());
+        } else {
+          displayRenderEmptyState();
+        }
+      } else {
+        restoreLedForState();
+      }
       return;
     }
   }
@@ -318,14 +327,6 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     }
     if (buttonId == ButtonId::Next) {
       startProvisioning();
-      return;
-    } else if (buttonId == ButtonId::Sleep) {
-      currentState = ApplicationState::Idle;
-      if (insultsHasAny()) {
-        displayRenderInsult(insultsGetCurrentText());
-      } else {
-        displayRenderEmptyState();
-      }
       return;
     }
     return;

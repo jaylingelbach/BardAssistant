@@ -52,11 +52,14 @@ WiFiConfigurationPollResult pollWiFiConfiguration() {
     return WiFiConfigurationPollResult::SUCCESS;
   } else if (portalHasTimedOut) {
     return WiFiConfigurationPollResult::FAILED;
+  } else if (portalConnectionFailed && wm.getConfigPortalActive()) {
+    // Credentials were submitted but connection failed — close the portal
+    // rather than leaving the user stuck until the 3-minute timeout.
+    wm.stopConfigPortal();
+    return WiFiConfigurationPollResult::FAILED;
   } else if (wm.getConfigPortalActive()) {
     return WiFiConfigurationPollResult::IN_PROGRESS;
   } else {
-    // Portal closed — either user dismissed it or credentials were rejected
-    // (setConnectRetryMax(1) closes the portal after one failed attempt).
     return portalConnectionFailed ? WiFiConfigurationPollResult::FAILED
                                   : WiFiConfigurationPollResult::CANCELLED;
   }
