@@ -7,9 +7,6 @@ static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
  */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
-/** Result of a Wi-Fi setup/provisioning attempt. */
-enum class SetupModeResult { SUCCESS, SETUP_FAILED };
-
 /** Result of connecting to a known Wi-Fi network. */
 enum class WiFiConnectionResult { CONNECTED, IN_PROGRESS, FAILED };
 
@@ -27,15 +24,6 @@ enum class WiFiConfigurationStartResult {
   ALREADY_ACTIVE,
   START_FAILED
 };
-
-/**
- * @brief Opens the WiFiManager configuration portal and connects to the
- * selected network.
- *
- * @return SetupModeResult::SUCCESS on connection, SETUP_FAILED otherwise.
- */
-[[deprecated("Use the provisioning module instead.")]]
-SetupModeResult setupWiFi();
 
 /**
  * @brief Disconnects from the current Wi-Fi network and powers down the radio.
