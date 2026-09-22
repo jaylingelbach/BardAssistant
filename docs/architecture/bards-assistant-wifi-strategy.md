@@ -4,269 +4,143 @@
 
 Record the intended Wi-Fi architecture so future changes do not mix up **Wi-Fi provisioning** with **Web Mode**.
 
-> **`setupWiFi()` configures Wi-Fi. `enterWebMode()` starts Web Mode.**
-
-mDNS belongs to Web Mode, not generic Wi-Fi provisioning.
+mDNS belongs to Web Mode, not Wi-Fi provisioning.
 
 ## Mental Model
 
-Bard's Assistant is **offline-first**. Normal use should not automatically turn on Wi-Fi or the web server.
+Bard's Assistant is **offline-first**. Normal use does not turn on Wi-Fi or the web server.
 
-### First-time setup
+---
+
+## Provisioning Flow
+
+### First-time setup (no saved credentials)
 
 ```text
-NORMAL / OFFLINE
-       |
-       | User chooses Wi-Fi Setup
-       v
-  setupWiFi()
-       |
-       | Wi-Fi credentials configured
-       v
-   SUCCESS
-       |
-       v
-  enterWebMode()
-       |
-       +-- Connect/use saved Wi-Fi
-       +-- Start mDNS
-       +-- Start Web Server
-       |
-       v
-     WEB MODE
+IDLE
+ |
+ | Provisioning gesture held 2s
+ v
+provisioningStart()
+ |
+ +-- Open WiFiManager captive portal (non-blocking)
+ +-- Display connection instructions
+ |
+ | User connects phone to "BardsAssistant" AP,
+ | submits credentials at 192.168.4.1
+ |
+ v
+provisioningPoll() → SUCCESS
+ |
+ v
+enterWebModeAlreadyConnected()
+ |
+ +--[SUCCESS]-----------------------------+
+ |   Start mDNS (bardsassistant.local)   |
+ |   Start WebServerManager              |
+ |   Display: "WiFi saved!               |
+ |             bardsassistant.local      |
+ |             <IP>"                     |
+ |                                       v
+ +--[MDNS_FAILED]-------------------> WEB MODE
+     Start WebServerManager
+     Display: "WiFi saved!
+               <IP>"
 ```
 
-### Later Web Mode entry
+### Re-provisioning (credentials already saved)
 
 ```text
-NORMAL / OFFLINE
-       |
-       | User chooses Web Mode
-       v
-  enterWebMode()
-       |
-       +-- Connect using saved credentials
-       +-- Start mDNS
-       +-- Start Web Server
-       |
-       v
-     WEB MODE
+IDLE
+ |
+ | Provisioning gesture held 2s
+ v
+hasKnownNetwork() → true
+ |
+ v
+ProvisioningConfirmation state
+ |
+ | Next tap → confirm
+ | Sleep tap → cancel → IDLE
+ v
+provisioningStart()
+ ... (same as first-time setup above)
+```
+
+---
+
+## Web Mode Flow
+
+### Entering Web Mode (gesture)
+
+```text
+IDLE
+ |
+ | Web Mode gesture held 2s
+ v
+enterWebMode()
+ |
+ +-- WiFi.begin() with saved credentials
+ +-- Wait for WL_CONNECTED + non-zero IP
+ +-- MDNS.begin(BARDS_HOSTNAME)
+ +-- WebServerManager.start()
+ |
+ v
+WEB MODE
 ```
 
 ### Exiting Web Mode
 
 ```text
 WEB MODE
-   |
-   v
+ |
+ | Web Mode gesture held 2s
+ v
+WebServerManager.stop()
 exitWebMode()
-   |
-   +-- Stop Web Server
-   +-- Stop mDNS
-   +-- Disconnect Wi-Fi
-   |
-   v
-NORMAL / OFFLINE
-```
-
-Wi-Fi credentials remain saved when Web Mode is exited.
-
----
-
-## `setupWiFi()`
-
-### Meaning
-
-> "I want to configure or change the Wi-Fi network."
-
-Owns Wi-Fi provisioning through WiFiManager:
-
-- Start the configuration portal
-- Let the user provide Wi-Fi credentials
-- Connect to the selected network
-- Return a setup result
-
-It should **not** be responsible for:
-
-- Starting mDNS
-- Starting the WebServer
-- Keeping Web Mode alive
-- Serving the web UI
-
-Having a Wi-Fi connection does not necessarily mean the device is in Web Mode.
-
----
-
-## `enterWebMode()`
-
-### Meaning
-
-> "I want to use the device's web interface."
-
-Owns the services required for Web Mode:
-
-1. Connect using saved Wi-Fi credentials.
-2. Verify Wi-Fi connection.
-3. Start mDNS with hostname:
-
-```text
-bardsassistant
-```
-
-which provides:
-
-```text
-http://bardsassistant.local
-```
-
-4. Start `WebServerManager`.
-5. Return the appropriate result.
-
-### Important
-
-**mDNS belongs here.**
-
-Do not move `MDNS.begin("bardsassistant")` into `setupWiFi()` just because Wi-Fi happens to be connected after setup.
-
----
-
-## `exitWebMode()`
-
-Reverses Web Mode:
-
-1. Stop the WebServer.
-2. Stop mDNS if running.
-3. Disconnect Wi-Fi.
-4. Preserve saved Wi-Fi credentials.
-
----
-
-## Successful Wi-Fi Setup
-
-The application/main layer coordinates the transition:
-
-```text
-if user requested Wi-Fi Setup:
-    result = setupWiFi()
-
-    if result == SUCCESS:
-        enterWebMode()
-```
-
-`setupWiFi()` does not need to call `enterWebMode()` itself.
-
-This keeps responsibilities clear.
-
----
-
-## After Initial Provisioning
-
-The user should not need to configure Wi-Fi every time.
-
-Later:
-
-```text
-User chooses Web Mode
- ↓
-enterWebMode()
- ↓
-Use saved credentials
- ↓
-Wi-Fi connects
- ↓
-MDNS.begin("bardsassistant")
- ↓
-WebServerManager.start()
-```
-
-No WiFiManager configuration portal should appear unless the user explicitly chooses Wi-Fi Setup.
-
----
-
-## Why mDNS Is NOT in `setupWiFi()`
-
-Avoid:
-
-```text
-setupWiFi()
-    ↓
-Wi-Fi connected
-    ↓
-MDNS.begin(...)
-```
-
-Instead:
-
-```text
-setupWiFi()
-    ↓
-Wi-Fi configuration
-```
-
-and:
-
-```text
-enterWebMode()
-    ↓
-Wi-Fi connection
-    +
-mDNS
-    +
-Web Server
+ |
+ +-- MDNS.end()
+ +-- WiFi.disconnect() (credentials preserved)
+ |
+ v
+IDLE
 ```
 
 ---
 
-## Temporary Development Exception
+## Key Functions
 
-During development it is okay to temporarily do:
+### `provisioningStart()` / `provisioningPoll()`
 
-```text
-setupWiFi()
-webServerManager.start()
-```
+Wraps WiFiManager's non-blocking captive portal. `provisioningPoll()` is called
+every loop tick while in the `Provisioning` state and returns:
 
-for convenience.
+- `IN_PROGRESS` — portal is open, waiting for user
+- `SUCCESS` — credentials submitted and WiFi connected
+- `FAILED` — timeout expired, or credentials were submitted but connection failed
+- `CANCELLED` — portal closed without a submission
 
-However, this bypasses `enterWebMode()`, so **mDNS will not start**. That is expected.
+### `enterWebMode()`
 
-If `.local` access is needed during development, temporarily use:
+Used for the gesture-triggered Web Mode path. Calls `WiFi.begin()` with saved
+credentials and waits up to 5 seconds for both `WL_CONNECTED` and a non-zero IP
+before starting mDNS.
 
-```text
-setupWiFi()
-    ↓
-enterWebMode()
-```
+### `enterWebModeAlreadyConnected()`
 
-Do not permanently move mDNS into `setupWiFi()` to accommodate the development shortcut.
+Used exclusively after a successful provisioning. Skips `WiFi.begin()` entirely
+since WiFiManager already holds a live connection. Only starts mDNS.
 
----
+### `hasKnownNetwork()`
 
-## Current mDNS Contract
+Calls `WiFi.mode(WIFI_STA)` before querying `wm.getWiFiIsSaved()`. The WiFi
+driver must be initialized first or the query returns stale data.
 
-The frontend expects:
+### `resetWiFiSettings()`
 
-```text
-bardsassistant.local
-```
-
-Therefore preserve:
-
-```text
-MDNS.begin("bardsassistant")
-```
-
-unless the hostname is intentionally changed throughout the application.
-
-If mDNS fails but Wi-Fi succeeds, Web Mode may still be usable through the ESP32's local IP address.
-
-Current conceptual results:
-
-```text
-SUCCESS
-CONNECTION_FAILED
-MDNS_FAILED
-```
+Clears both the ESP32's own WiFi NVS store (`WiFi.disconnect(true, true)`) and
+WiFiManager's NVS namespace (`wm.resetSettings()`). Both must be cleared — they
+are separate stores.
 
 ---
 
@@ -276,79 +150,84 @@ MDNS_FAILED
 
 Owns:
 
-- Wi-Fi provisioning
+- Wi-Fi provisioning (captive portal lifecycle)
 - Wi-Fi connection/disconnection
 - mDNS lifecycle
+- `BARDS_HOSTNAME` constant
 
 ### WebServerManager
 
 Owns:
 
 - HTTP server
-- HTTP routes
-- HTTP request/response handling
+- HTTP routes and request/response handling
 - Web UI/API serving
 
-It should **not** own:
+Does **not** own:
 
 - Wi-Fi provisioning
 - LittleFS persistence
 - Deck business logic
 
-### Main/Application Layer
+### Main / Application Layer
 
 Owns:
 
-- User-driven state transitions
-- Deciding when to enter/exit Web Mode
+- User-driven state transitions (`ApplicationState`)
+- Deciding when to enter/exit provisioning and Web Mode
 - Coordinating managers
 
 ---
 
-## Rule to Remember
+## Important Invariants
 
-If future development raises:
+**mDNS belongs to Web Mode.**
+Do not start `MDNS.begin()` in provisioning code. The question to ask is:
 
-> "Wi-Fi is connected. Should I start mDNS here?"
-
-Ask:
-
-> **"Is the device entering Web Mode?"**
+> "Is the device entering Web Mode?"
 
 If **no** → don't start mDNS.
+If **yes** → `enterWebMode()` or `enterWebModeAlreadyConnected()` handles it.
 
-If **yes** → `enterWebMode()` handles mDNS.
+**`hasKnownNetwork()` requires an initialized WiFi driver.**
+Always ensure `WiFi.mode(WIFI_STA)` has been called before querying saved
+credentials, or the result is unreliable.
 
-### Intended architecture
+**Two NVS stores, one reset.**
+`wm.resetSettings()` alone does not fully clear credentials. Always pair it with
+`WiFi.disconnect(true, true)`.
 
-```text
-Wi-Fi Setup
-    ↓
-setupWiFi()
-    ↓
-SUCCESS
-    ↓
-enterWebMode()
-    ↓
-mDNS + WebServer
+---
+
+## Hostname
+
+The hostname is defined as `BARDS_HOSTNAME` in `networkManager.h`:
+
+```cpp
+static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
 ```
 
-**Do not put mDNS in `setupWiFi()` merely because setup resulted in a Wi-Fi connection.**
+This is used for:
+- The WiFiManager AP password
+- `MDNS.begin()`
+- Display messages
+
+Change it in one place to update everywhere.
 
 ---
 
 ## OTA Authentication (Deferred)
 
-ElegantOTA is integrated but currently has no authentication configured — `ElegantOTA.begin(&server)` leaves `/update` open to anyone on the network.
+ElegantOTA is integrated but has no authentication — `/update` is open to anyone
+on the network. Acceptable during development on a trusted network, but must be
+addressed before shipping.
 
-This is acceptable during development on a trusted home network over USB, but must be addressed before shipping.
-
-When the 8MB production board is designed, add `ElegantOTA.setAuth()` sourcing credentials from NVS or a provisioning flow rather than hardcoding them. The provisioning mechanism (how a user sets OTA credentials on first setup) should be decided alongside the broader Wi-Fi provisioning UX.
+When the production board is finalized, add `ElegantOTA.setAuth()` sourcing
+credentials from NVS rather than hardcoding them.
 
 ### ElegantOTA License (AGPL-3.0)
 
-ElegantOTA is licensed under AGPL-3.0. Private use on your own device carries no obligation. If you ever distribute firmware to others (sell or give devices), AGPL requires making the complete corresponding source available to recipients.
-
-Before shipping to anyone else, either:
-- Open-source the firmware under a compatible license and provide source with every binary, or
-- Purchase the ElegantOTA Pro commercial license to remove the AGPL obligation.
+ElegantOTA is AGPL-3.0. Private use on your own device carries no obligation.
+If you distribute firmware to others, AGPL requires making the complete source
+available to recipients. Before shipping to anyone else, either open-source
+under a compatible license or purchase the ElegantOTA Pro commercial license.

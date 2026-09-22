@@ -66,45 +66,6 @@ WiFiConfigurationPollResult pollWiFiConfiguration() {
 }
 
 /**
- * @brief Configures the device as a Wi-Fi station and establishes a network
- * connection.
- *
- * Clears stored Wi-Fi settings and opens a configuration portal when a
- * connection cannot be established within the configured timeouts.
- *
- * @return SetupModeResult::SUCCESS if connected successfully;
- *         SetupModeResult::SETUP_FAILED otherwise.
- */
-SetupModeResult setupWiFi() {
-  WiFi.mode(WIFI_STA);
-
-  WiFiManager wm;
-
-  wm.resetSettings();
-
-  bool res;
-
-  wm.setConfigPortalTimeout(
-      180); // 3 minutes to input credentials, else autoConnect() returns false
-
-  wm.setConnectTimeout(
-      15); // Wait 15 seconds for a router response before opening portal
-
-  res = wm.autoConnect("BardsAssistant",
-                       "bardsassistant"); // password protected ap
-
-  if (!res) {
-    LOG_ERROR("WiFi setup failed.");
-    return SetupModeResult::SETUP_FAILED;
-  } else {
-    LOG_INFO("WiFi setup complete.");
-    LOG_INFO_PRINT("IP Address: ");
-    LOG_INFO_RAW(WiFi.localIP());
-    return SetupModeResult::SUCCESS;
-  }
-}
-
-/**
  * @brief Disconnects from Wi-Fi and powers down the radio.
  *
  * Credentials are preserved (eraseap=false) so enterWebMode() can reconnect
@@ -118,9 +79,14 @@ void disconnectWiFi() {
  * @brief Enters web mode by connecting to the configured Wi-Fi network and
  * starting the mDNS responder.
  *
- * @return WebModeResult `SUCCESS` if Wi-Fi and mDNS are initialized,
- * `MDNS_FAILED` if mDNS setup fails, or `CONNECTION_FAILED` if Wi-Fi connection
- * fails.
+ * Waits for a Wi-Fi connection with an assigned IP address. If mDNS fails,
+ * Wi-Fi remains connected for access by IP address. If the connection fails,
+ * the radio is powered down without clearing saved credentials.
+ *
+ * @return WebModeResult::SUCCESS if Wi-Fi and mDNS are ready,
+ *         WebModeResult::MDNS_FAILED if mDNS fails after Wi-Fi connects, or
+ *         WebModeResult::CONNECTION_FAILED if Wi-Fi has no connection or IP
+ *         address after the timeout.
  */
 WebModeResult enterWebMode() {
   WiFi.mode(WIFI_STA);
@@ -132,7 +98,8 @@ WebModeResult enterWebMode() {
   const unsigned long timeout = 5000;
   unsigned long startTime = millis();
 
-  while ((WiFi.status() != WL_CONNECTED || WiFi.localIP() == IPAddress(0, 0, 0, 0)) &&
+  while ((WiFi.status() != WL_CONNECTED ||
+          WiFi.localIP() == IPAddress(0, 0, 0, 0)) &&
          millis() - startTime < timeout) {
     delay(500);
     LOG_DEBUG_PRINT(".");
@@ -140,7 +107,8 @@ WebModeResult enterWebMode() {
 
   LOG_DEBUG("");
 
-  if (WiFi.status() == WL_CONNECTED && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
+  if (WiFi.status() == WL_CONNECTED &&
+      WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
 
     LOG_INFO("WiFi connected.");
     LOG_INFO_PRINT("Network: ");
