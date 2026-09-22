@@ -45,12 +45,18 @@ SetupModeResult setupWiFi();
 void disconnectWiFi();
 
 /**
- * @brief Connects using saved credentials, starts mDNS, and enables web mode.
+ * @brief Connects using saved credentials and starts mDNS.
  *
- * @return WebModeResult::SUCCESS if Wi-Fi and mDNS both start successfully,
- * CONNECTION_FAILED if Wi-Fi cannot connect, MDNS_FAILED if mDNS fails.
+ * @return WebModeResult::SUCCESS if Wi-Fi has an IP address and mDNS starts,
+ * CONNECTION_FAILED if Wi-Fi is disconnected or has no IP address after the
+ * timeout, or MDNS_FAILED if mDNS fails.
  */
 WebModeResult enterWebMode();
+/**
+ * @brief Starts mDNS for an existing Wi-Fi connection without reconnecting.
+ *
+ * @return SUCCESS if mDNS starts, or MDNS_FAILED if it does not.
+ */
 WebModeResult enterWebModeAlreadyConnected();
 
 /**
@@ -65,7 +71,7 @@ void exitWebMode();
 /**
  * @brief Determines whether at least one known Wi-Fi network is configured.
  *
- * @return true if a known network is available, false otherwise.
+ * @return true if Wi-Fi credentials are saved, false otherwise.
  */
 bool hasKnownNetwork();
 
@@ -105,11 +111,14 @@ WiFiConfigurationStartResult startWiFiConfiguration();
  *
  * @return WiFiConfigurationPollResult::IN_PROGRESS while configuration is
  *         still running, SUCCESS when configuration completes successfully,
- *         FAILED when configuration fails, or CANCELLED when the configuration
- *         process is cancelled.
+ *         FAILED after a timeout or unsuccessful credential submission, or
+ *         CANCELLED when the portal closes without a submission.
  */
 WiFiConfigurationPollResult pollWiFiConfiguration();
 
+/**
+ * @brief Disconnects Wi-Fi, powers down the radio, and clears saved settings.
+ */
 void resetWiFiSettings();
 
 #endif
