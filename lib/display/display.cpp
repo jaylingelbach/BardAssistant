@@ -573,7 +573,11 @@ bool displayRenderEmptyState() {
 /**
  * @brief Renders a short message on the e-ink display.
  *
- * @param msg Null-terminated string to display.
+ * A null message renders as empty text.
+ *
+ * @param msg Null-terminated string to display, or null for an empty message.
+ * @return `true` if the display is ready and the message is rendered;
+ *         `false` if the display is unavailable.
  */
 bool displayRenderMessage(const char *msg) {
   if (!displayReady || displayDriver == nullptr)

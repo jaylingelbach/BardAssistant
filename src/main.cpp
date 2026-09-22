@@ -141,7 +141,7 @@ static void enterUpdating() {
 /**
  * @brief Restore the LED pattern for the current application state.
  *
- * Re-applies the LED pattern corresponding to the current state.
+ * Provisioning uses the updating pattern; confirmation leaves the LED unchanged.
  */
 static void restoreLedForState() {
   switch (currentState) {
@@ -234,6 +234,12 @@ static void enterSleep() {
 
 // ───────────────── Work Orchestration ────────────
 
+/**
+ * @brief Starts Wi-Fi provisioning and shows connection instructions.
+ *
+ * On startup failure, returns to idle and restores the current insult or
+ * empty-state screen. An already active portal leaves the state unchanged.
+ */
 void startProvisioning() {
   ProvisioningStartResult provisioningResult = provisioningStart();
 
@@ -268,11 +274,15 @@ void startProvisioning() {
  * Sleep button behavior (allowed in any state):
  * - HoldStart arms sleep.
  * - HoldEnd triggers deep sleep if sleep was armed ("hold → release to sleep").
- * - Tap cancels any pending arming (no-op otherwise).
+ * - Tap cancels any pending arming; in provisioning confirmation it also
+ *   returns to idle and restores the insult or empty-state screen.
  *
  * Random/Next/Prev behavior:
- * - Only processed while in Idle.
- * - Tap starts the corresponding insult operation and transitions to Updating.
+ * - In provisioning confirmation, a Next tap starts provisioning; other
+ *   non-Sleep events are ignored.
+ * - Otherwise, only processed while in Idle and outside web mode.
+ * - Tap attempts the corresponding insult operation and transitions to Updating
+ *   when an operation starts.
  */
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
@@ -369,6 +379,15 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   }
 }
 
+/**
+ * @brief Handles long-press gestures for provisioning and web mode.
+ *
+ * While idle, holding Next, Prev, and Random for two seconds starts
+ * provisioning or requests confirmation when credentials are saved. Holding
+ * Next and Prev for two seconds toggles web mode and updates the display.
+ *
+ * @param now Current uptime in milliseconds, used to time the held gesture.
+ */
 static void handleButtonGestures(uint32_t now) {
 
   const bool webmodeGesture = nextButton.state == ButtonState::Pressed &&
@@ -542,8 +561,9 @@ void setup() {
  *
  * Processes debounced button events, transitions from the boot splash to
  * idle, advances active insult operations, and renders completed operations
- * before returning to the idle state. Web requests are serviced when Web Mode
- * startup is enabled.
+ * before returning to the idle state. It also polls Wi-Fi provisioning,
+ * starts web mode after successful configuration, and services web requests
+ * whenever web mode is active.
  */
 void loop() {
   const uint32_t now = millis();
