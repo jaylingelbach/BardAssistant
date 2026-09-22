@@ -583,7 +583,7 @@ void loop() {
     ProvisioningPollResult pollResult = provisioningPoll();
     if (pollResult == ProvisioningPollResult::SUCCESS) {
       provisioningState = ProvisioningState::Success;
-      WebModeResult webRes = enterWebMode();
+      WebModeResult webRes = enterWebModeAlreadyConnected();
       if (webRes == WebModeResult::SUCCESS || webRes == WebModeResult::MDNS_FAILED) {
         webServerManager.start();
         isWebModeActive = true;

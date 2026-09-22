@@ -132,7 +132,8 @@ WebModeResult enterWebMode() {
   const unsigned long timeout = 5000;
   unsigned long startTime = millis();
 
-  while (WiFi.status() != WL_CONNECTED && millis() - startTime < timeout) {
+  while ((WiFi.status() != WL_CONNECTED || WiFi.localIP() == IPAddress(0, 0, 0, 0)) &&
+         millis() - startTime < timeout) {
     delay(500);
     LOG_DEBUG_PRINT(".");
   }
@@ -160,6 +161,15 @@ WebModeResult enterWebMode() {
     disconnectWiFi();
     return WebModeResult::CONNECTION_FAILED;
   }
+}
+
+WebModeResult enterWebModeAlreadyConnected() {
+  if (!MDNS.begin(BARDS_HOSTNAME)) {
+    LOG_ERROR("mDNS setup failed.");
+    return WebModeResult::MDNS_FAILED;
+  }
+  isMdnsRunning = true;
+  return WebModeResult::SUCCESS;
 }
 
 /**

@@ -51,6 +51,7 @@ void disconnectWiFi();
  * CONNECTION_FAILED if Wi-Fi cannot connect, MDNS_FAILED if mDNS fails.
  */
 WebModeResult enterWebMode();
+WebModeResult enterWebModeAlreadyConnected();
 
 /**
  * @brief Stops mDNS and disconnects Wi-Fi, returning to offline mode.
