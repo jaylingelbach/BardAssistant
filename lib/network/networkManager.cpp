@@ -140,7 +140,7 @@ WebModeResult enterWebMode() {
 
   LOG_DEBUG("");
 
-  if (WiFi.status() == WL_CONNECTED) {
+  if (WiFi.status() == WL_CONNECTED && WiFi.localIP() != IPAddress(0, 0, 0, 0)) {
 
     LOG_INFO("WiFi connected.");
     LOG_INFO_PRINT("Network: ");
