@@ -571,18 +571,19 @@ bool displayRenderEmptyState() {
 }
 
 /**
- * @brief Renders a web mode status screen on the e-ink display.
+ * @brief Renders a short message on the e-ink display.
  *
- * When entering web mode, shows the provided URL so the user knows where to
- * connect. When exiting, shows a brief offline message.
+ * A null message renders as empty text.
  *
- * @param active  true when web mode is being entered; false when exiting.
- * @param url     URL string shown when active (e.g. "bardsassistant.local").
- *                Ignored when active is false.
+ * @param msg Null-terminated string to display, or null for an empty message.
+ * @return `true` if the display is ready and the message is rendered;
+ *         `false` if the display is unavailable.
  */
-bool displayRenderWebModeState(bool active, const char *url) {
+bool displayRenderMessage(const char *msg) {
   if (!displayReady || displayDriver == nullptr)
     return false;
+  if (msg == nullptr)
+    msg = "";
 
   const int16_t screenW = static_cast<int16_t>(displayDriver->width());
   const int16_t screenH = static_cast<int16_t>(displayDriver->height());
@@ -594,11 +595,7 @@ bool displayRenderWebModeState(bool active, const char *url) {
   displayDriver->firstPage();
   do {
     displayDriver->fillScreen(GxEPD_WHITE);
-    if (active) {
-      drawWrappedText(url, margin, margin, areaW, areaH, 1);
-    } else {
-      drawWrappedText("Web mode off.", margin, margin, areaW, areaH, 1);
-    }
+    drawWrappedText(msg, margin, margin, areaW, areaH, 1);
   } while (displayDriver->nextPage());
 
   return true;

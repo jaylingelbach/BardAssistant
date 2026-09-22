@@ -12,6 +12,7 @@
 #include "log.h"
 #include "networkManager.h"
 #include "persist_keys.h"
+#include "provisioning.h"
 #include "webServerManager.h"
 #include <ElegantOTA.h>
 #include <WiFi.h>
@@ -53,10 +54,20 @@ static WebServerManager webServerManager;
 
 // ───────────────── App State ─────────────────────
 
-enum class ApplicationState { Boot, Idle, Updating };
+enum class ApplicationState {
+  Boot,
+  Idle,
+  Updating,
+  Provisioning,
+  ProvisioningConfirmation
+};
 enum class ButtonId { Sleep, Random, Next, Prev };
+// Idle means not provisioning. Waiting means provisioning has started and
+// we are waiting for a result.
+enum class ProvisioningState { Idle, Waiting, Success, Failed };
 
 static ApplicationState currentState = ApplicationState::Boot;
+static ProvisioningState provisioningState = ProvisioningState::Idle;
 
 // Timing
 static uint32_t stateEnteredAt = 0;
@@ -77,7 +88,6 @@ static uint32_t gestureStartedAt = 0;
 static bool gestureTriggered = false;
 static bool isWebModeActive = false;
 static bool gestureIsProvisioning = false;
-static bool isWiFiProvisioned = false;
 
 // ───────────────── State transitions ─────────────
 
@@ -131,7 +141,7 @@ static void enterUpdating() {
 /**
  * @brief Restore the LED pattern for the current application state.
  *
- * Re-applies the LED pattern corresponding to the current state.
+ * Provisioning uses the updating pattern; confirmation leaves the LED unchanged.
  */
 static void restoreLedForState() {
   switch (currentState) {
@@ -144,6 +154,8 @@ static void restoreLedForState() {
   case ApplicationState::Updating:
     ledShowUpdating();
     break;
+  case ApplicationState::Provisioning:
+    ledShowUpdating();
   }
 }
 
@@ -223,6 +235,36 @@ static void enterSleep() {
 // ───────────────── Work Orchestration ────────────
 
 /**
+ * @brief Starts Wi-Fi provisioning and shows connection instructions.
+ *
+ * On startup failure, returns to idle and restores the current insult or
+ * empty-state screen. An already active portal leaves the state unchanged.
+ */
+void startProvisioning() {
+  ProvisioningStartResult provisioningResult = provisioningStart();
+
+  if (provisioningResult == ProvisioningStartResult::STARTED) {
+    currentState = ApplicationState::Provisioning;
+    provisioningState = ProvisioningState::Waiting;
+    displayRenderMessage("Connect to WiFi:\nBardsAssistant\n\nPassword:\nbardsassistant\n\nThen visit\n192.168.4.1");
+
+  } else if (provisioningResult == ProvisioningStartResult::ALREADY_ACTIVE) {
+    LOG_DEBUG("Provisioning is already active.");
+
+  } else if (provisioningResult == ProvisioningStartResult::START_FAILED) {
+    LOG_ERROR("[Provisioning] Failed to start.");
+
+    currentState = ApplicationState::Idle;
+
+    if (insultsHasAny()) {
+      displayRenderInsult(insultsGetCurrentText());
+    } else {
+      displayRenderEmptyState();
+    }
+  }
+}
+
+/**
  * @brief Handle a debounced button intent event and apply app-level behavior.
  *
  * Input gating:
@@ -232,11 +274,15 @@ static void enterSleep() {
  * Sleep button behavior (allowed in any state):
  * - HoldStart arms sleep.
  * - HoldEnd triggers deep sleep if sleep was armed ("hold → release to sleep").
- * - Tap cancels any pending arming (no-op otherwise).
+ * - Tap cancels any pending arming; in provisioning confirmation it also
+ *   returns to idle and restores the insult or empty-state screen.
  *
  * Random/Next/Prev behavior:
- * - Only processed while in Idle.
- * - Tap starts the corresponding insult operation and transitions to Updating.
+ * - In provisioning confirmation, a Next tap starts provisioning; other
+ *   non-Sleep events are ignored.
+ * - Otherwise, only processed while in Idle and outside web mode.
+ * - Tap attempts the corresponding insult operation and transitions to Updating
+ *   when an operation starts.
  */
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
@@ -269,9 +315,30 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     }
     if (event == ButtonEvent::Tap) {
       sleepArmed = false;
-      restoreLedForState();
+      if (currentState == ApplicationState::ProvisioningConfirmation) {
+        currentState = ApplicationState::Idle;
+        if (insultsHasAny()) {
+          displayRenderInsult(insultsGetCurrentText());
+        } else {
+          displayRenderEmptyState();
+        }
+      } else {
+        restoreLedForState();
+      }
       return;
     }
+  }
+
+  // Provisioning Confirmation buttons mean different things.
+  if (currentState == ApplicationState::ProvisioningConfirmation) {
+    if (event != ButtonEvent::Tap) {
+      return;
+    }
+    if (buttonId == ButtonId::Next) {
+      startProvisioning();
+      return;
+    }
+    return;
   }
 
   // For Random/Next/Prev we only start work from Idle and outside Web Mode.
@@ -312,7 +379,15 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   }
 }
 
-// this should detect the gesture and call the appropriate function.
+/**
+ * @brief Handles long-press gestures for provisioning and web mode.
+ *
+ * While idle, holding Next, Prev, and Random for two seconds starts
+ * provisioning or requests confirmation when credentials are saved. Holding
+ * Next and Prev for two seconds toggles web mode and updates the display.
+ *
+ * @param now Current uptime in milliseconds, used to time the held gesture.
+ */
 static void handleButtonGestures(uint32_t now) {
 
   const bool webmodeGesture = nextButton.state == ButtonState::Pressed &&
@@ -323,21 +398,19 @@ static void handleButtonGestures(uint32_t now) {
                                    randomButton.state == ButtonState::Pressed;
 
   // TODO: web mode path should become handleWebModeToggle(),
-  // TODO: Before PROD (of device not software) remove dev debug lines.
   if (provisioningGesture && currentState == ApplicationState::Idle) {
-    LOG_DEBUG("Provisioning Gesture pressed.");
     if (!gestureActive || !gestureIsProvisioning) {
       gestureActive = true;
       gestureStartedAt = now;
       gestureTriggered = false;
       gestureIsProvisioning = true;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
-      // do I need a better way of checking if provisioned?
-      if (!isWebModeActive) {
-        // enter provisioning
-        setupWiFi();
+      if (hasKnownNetwork()) {
+        displayRenderMessage("Wifi Already configured, change/add settings?, "
+                             "press Next to confirm, or Sleep to cancel.");
+        currentState = ApplicationState::ProvisioningConfirmation;
       } else {
-        LOG_WARN("Provisioning failed, try again.");
+        startProvisioning();
       }
       gestureTriggered = true;
     }
@@ -354,12 +427,12 @@ static void handleButtonGestures(uint32_t now) {
           LOG_INFO("[WebMode] Entered: bardsassistant.local");
           webServerManager.start();
           isWebModeActive = true;
-          displayRenderWebModeState(true, "bardsassistant.local");
+          displayRenderMessage("bardsassistant.local");
         } else if (webRes == WebModeResult::MDNS_FAILED) {
           LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
           webServerManager.start();
           isWebModeActive = true;
-          displayRenderWebModeState(true, WiFi.localIP().toString().c_str());
+          displayRenderMessage(WiFi.localIP().toString().c_str());
         } else if (webRes == WebModeResult::CONNECTION_FAILED) {
           LOG_ERROR("[WebMode] Connection failed.");
           if (insultsHasAny()) {
@@ -481,8 +554,6 @@ void setup() {
     LOG_ERROR("[WebMode] Connection failed.");
   }
 #endif
-
-  // setupWiFi();
 }
 /**
  * @brief Polls device inputs, advances the application state, and services
@@ -490,8 +561,9 @@ void setup() {
  *
  * Processes debounced button events, transitions from the boot splash to
  * idle, advances active insult operations, and renders completed operations
- * before returning to the idle state. Web requests are serviced when Web Mode
- * startup is enabled.
+ * before returning to the idle state. It also polls Wi-Fi provisioning,
+ * starts web mode after successful configuration, and services web requests
+ * whenever web mode is active.
  */
 void loop() {
   const uint32_t now = millis();
@@ -526,6 +598,46 @@ void loop() {
       onOperationCompleted();
     }
     break;
+  case ApplicationState::Provisioning: {
+    ProvisioningPollResult pollResult = provisioningPoll();
+    if (pollResult == ProvisioningPollResult::SUCCESS) {
+      provisioningState = ProvisioningState::Success;
+      WebModeResult webRes = enterWebModeAlreadyConnected();
+      if (webRes == WebModeResult::SUCCESS) {
+        webServerManager.start();
+        isWebModeActive = true;
+        char msg[64];
+        snprintf(msg, sizeof(msg), "WiFi saved!\n%s.local\n%s", BARDS_HOSTNAME,
+                 WiFi.localIP().toString().c_str());
+        displayRenderMessage(msg);
+      } else if (webRes == WebModeResult::MDNS_FAILED) {
+        webServerManager.start();
+        isWebModeActive = true;
+        char msg[64];
+        snprintf(msg, sizeof(msg), "WiFi saved!\n%s", WiFi.localIP().toString().c_str());
+        displayRenderMessage(msg);
+      } else {
+        displayRenderMessage("WiFi saved!\nCouldn't start web mode.");
+      }
+      currentState = ApplicationState::Idle;
+    } else if (pollResult == ProvisioningPollResult::FAILED) {
+      provisioningState = ProvisioningState::Failed;
+      currentState = ApplicationState::Idle;
+      displayRenderMessage("WiFi setup cancelled/failed.");
+    } else if (pollResult == ProvisioningPollResult::CANCELLED) {
+      provisioningState = ProvisioningState::Idle;
+      currentState = ApplicationState::Idle;
+      if (insultsHasAny()) {
+        displayRenderInsult(insultsGetCurrentText());
+      } else {
+        displayRenderEmptyState();
+      }
+    }
+    break;
+  }
+  case ApplicationState::ProvisioningConfirmation: {
+    break;
+  }
   }
   if (isWebModeActive) {
     webServerManager.handle();

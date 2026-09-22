@@ -1,0 +1,15 @@
+CompileFlags:
+  Remove:
+    - "-mlongcalls"
+    - "-fstrict-volatile-bitfields"
+    - "-fno-tree-switch-conversion"
+    - "-fno-jump-tables"
+    - "-freorder-blocks"
+    - "-mfix-esp32-psram-cache-issue"
+    - "-mfix-esp32-psram-cache-strategy=*"
+  Add:
+    - "-ferror-limit=0"
+
+Diagnostics:
+  Suppress:
+    - "*"
