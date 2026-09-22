@@ -583,12 +583,18 @@ void loop() {
     if (pollResult == ProvisioningPollResult::SUCCESS) {
       provisioningState = ProvisioningState::Success;
       WebModeResult webRes = enterWebModeAlreadyConnected();
-      if (webRes == WebModeResult::SUCCESS || webRes == WebModeResult::MDNS_FAILED) {
+      if (webRes == WebModeResult::SUCCESS) {
         webServerManager.start();
         isWebModeActive = true;
         char msg[64];
         snprintf(msg, sizeof(msg), "WiFi saved!\n%s.local\n%s", BARDS_HOSTNAME,
                  WiFi.localIP().toString().c_str());
+        displayRenderMessage(msg);
+      } else if (webRes == WebModeResult::MDNS_FAILED) {
+        webServerManager.start();
+        isWebModeActive = true;
+        char msg[64];
+        snprintf(msg, sizeof(msg), "WiFi saved!\n%s", WiFi.localIP().toString().c_str());
         displayRenderMessage(msg);
       } else {
         displayRenderMessage("WiFi saved!\nCouldn't start web mode.");
