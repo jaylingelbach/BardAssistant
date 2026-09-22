@@ -65,29 +65,10 @@ WiFiConfigurationPollResult pollWiFiConfiguration() {
   }
 }
 
-/**
- * @brief Disconnects from Wi-Fi and powers down the radio.
- *
- * Credentials are preserved (eraseap=false) so enterWebMode() can reconnect
- * without re-provisioning.
- */
 void disconnectWiFi() {
   WiFi.disconnect(true /* wifioff */, false /* eraseap */);
 }
 
-/**
- * @brief Enters web mode by connecting to the configured Wi-Fi network and
- * starting the mDNS responder.
- *
- * Waits for a Wi-Fi connection with an assigned IP address. If mDNS fails,
- * Wi-Fi remains connected for access by IP address. If the connection fails,
- * the radio is powered down without clearing saved credentials.
- *
- * @return WebModeResult::SUCCESS if Wi-Fi and mDNS are ready,
- *         WebModeResult::MDNS_FAILED if mDNS fails after Wi-Fi connects, or
- *         WebModeResult::CONNECTION_FAILED if Wi-Fi has no connection or IP
- *         address after the timeout.
- */
 WebModeResult enterWebMode() {
   WiFi.mode(WIFI_STA);
 
@@ -140,13 +121,6 @@ WebModeResult enterWebModeAlreadyConnected() {
   return WebModeResult::SUCCESS;
 }
 
-/**
- * @brief Exits web mode by stopping mDNS and disconnecting Wi-Fi.
- *
- * mDNS is stopped before Wi-Fi disconnects so the goodbye multicast packet
- * reaches the network. Callers should stop WebServerManager before calling
- * this.
- */
 void exitWebMode() {
   if (isMdnsRunning) {
     MDNS.end();
