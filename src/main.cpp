@@ -281,8 +281,9 @@ static void handleWebModeToggle() {
   } else if (webRes == WebModeResult::CONNECTION_FAILED) {
     isWebModeActive = false;
     LOG_ERROR("[WebMode] Connection failed.");
-    git if (insultsHasAny()) { displayRenderInsult(insultsGetCurrentText()); }
-    else {
+    if (insultsHasAny()) {
+      displayRenderInsult(insultsGetCurrentText());
+    } else {
       displayRenderEmptyState();
     }
   }
