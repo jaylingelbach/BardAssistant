@@ -7,10 +7,8 @@ enum class ProvisioningStartResult { STARTED, ALREADY_ACTIVE, START_FAILED };
 
 enum class ProvisioningPollResult { IN_PROGRESS, SUCCESS, FAILED, CANCELLED };
 
-ProvisioningStartResult provisioningStart(uint32_t now);
+ProvisioningStartResult provisioningStart();
 
-ProvisioningPollResult provisioningPoll(uint32_t now);
-
-bool provisioningIsActive();
+ProvisioningPollResult provisioningPoll();
 
 #endif

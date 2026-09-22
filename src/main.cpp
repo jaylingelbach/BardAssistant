@@ -54,7 +54,13 @@ static WebServerManager webServerManager;
 
 // ───────────────── App State ─────────────────────
 
-enum class ApplicationState { Boot, Idle, Updating, Provisioning };
+enum class ApplicationState {
+  Boot,
+  Idle,
+  Updating,
+  Provisioning,
+  ProvisioningConfirmation
+};
 enum class ButtonId { Sleep, Random, Next, Prev };
 // Idle means not provisioning. Waiting means provisioning has started and
 // we are waiting for a result.
@@ -228,6 +234,30 @@ static void enterSleep() {
 
 // ───────────────── Work Orchestration ────────────
 
+void startProvisioning() {
+  ProvisioningStartResult provisioningResult = provisioningStart();
+
+  if (provisioningResult == ProvisioningStartResult::STARTED) {
+    currentState = ApplicationState::Provisioning;
+    provisioningState = ProvisioningState::Waiting;
+    displayRenderMessage("Connect to BardsAssistant WiFi");
+
+  } else if (provisioningResult == ProvisioningStartResult::ALREADY_ACTIVE) {
+    LOG_DEBUG("Provisioning is already active.");
+
+  } else if (provisioningResult == ProvisioningStartResult::START_FAILED) {
+    LOG_ERROR("[Provisioning] Failed to start.");
+
+    currentState = ApplicationState::Idle;
+
+    if (insultsHasAny()) {
+      displayRenderInsult(insultsGetCurrentText());
+    } else {
+      displayRenderEmptyState();
+    }
+  }
+}
+
 /**
  * @brief Handle a debounced button intent event and apply app-level behavior.
  *
@@ -280,6 +310,26 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     }
   }
 
+  // Provisioning Confirmation buttons mean different things.
+  if (currentState == ApplicationState::ProvisioningConfirmation) {
+    if (event != ButtonEvent::Tap) {
+      return;
+    }
+    if (buttonId == ButtonId::Next) {
+      startProvisioning();
+      return;
+    } else if (buttonId == ButtonId::Sleep) {
+      currentState = ApplicationState::Idle;
+      if (insultsHasAny()) {
+        displayRenderInsult(insultsGetCurrentText());
+      } else {
+        displayRenderEmptyState();
+      }
+      return;
+    }
+    return;
+  }
+
   // For Random/Next/Prev we only start work from Idle and outside Web Mode.
   if (currentState != ApplicationState::Idle || isWebModeActive) {
     return;
@@ -318,7 +368,6 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
   }
 }
 
-// this should detect the gesture and call the appropriate function.
 static void handleButtonGestures(uint32_t now) {
 
   const bool webmodeGesture = nextButton.state == ButtonState::Pressed &&
@@ -330,30 +379,18 @@ static void handleButtonGestures(uint32_t now) {
 
   // TODO: web mode path should become handleWebModeToggle(),
   if (provisioningGesture && currentState == ApplicationState::Idle) {
-    LOG_DEBUG("Provisioning Gesture pressed.");
     if (!gestureActive || !gestureIsProvisioning) {
       gestureActive = true;
       gestureStartedAt = now;
       gestureTriggered = false;
       gestureIsProvisioning = true;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
-      // do I need a better way of checking if provisioned?
-      if (!isWebModeActive) {
-        // enter provisioning
-        ProvisioningStartResult provisioningResult = provisioningStart(now);
-        if (provisioningResult == ProvisioningStartResult::STARTED) {
-          currentState = ApplicationState::Provisioning;
-          provisioningState = ProvisioningState::Waiting;
-        } else if (provisioningResult ==
-                   ProvisioningStartResult::ALREADY_ACTIVE) {
-          LOG_DEBUG("Provisioning is already active, do nothing?");
-        } else if (provisioningResult ==
-                   ProvisioningStartResult::START_FAILED) {
-          LOG_DEBUG("Something went wrong, need to handle");
-        }
-        // setupWiFi();
+      if (hasKnownNetwork()) {
+        displayRenderMessage("Wifi Already configured, change/add settings?, "
+                             "press Next to confirm, or Sleep to cancel.");
+        currentState = ApplicationState::ProvisioningConfirmation;
       } else {
-        LOG_WARN("Provisioning failed, try again.");
+        startProvisioning();
       }
       gestureTriggered = true;
     }
@@ -370,12 +407,12 @@ static void handleButtonGestures(uint32_t now) {
           LOG_INFO("[WebMode] Entered: bardsassistant.local");
           webServerManager.start();
           isWebModeActive = true;
-          displayRenderWebModeState(true, "bardsassistant.local");
+          displayRenderMessage("bardsassistant.local");
         } else if (webRes == WebModeResult::MDNS_FAILED) {
           LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
           webServerManager.start();
           isWebModeActive = true;
-          displayRenderWebModeState(true, WiFi.localIP().toString().c_str());
+          displayRenderMessage(WiFi.localIP().toString().c_str());
         } else if (webRes == WebModeResult::CONNECTION_FAILED) {
           LOG_ERROR("[WebMode] Connection failed.");
           if (insultsHasAny()) {
@@ -497,8 +534,6 @@ void setup() {
     LOG_ERROR("[WebMode] Connection failed.");
   }
 #endif
-
-  // setupWiFi();
 }
 /**
  * @brief Polls device inputs, advances the application state, and services
@@ -542,16 +577,30 @@ void loop() {
       onOperationCompleted();
     }
     break;
-  case ApplicationState::Provisioning:
-    ProvisioningPollResult pollResult = provisioningPoll(now);
+  case ApplicationState::Provisioning: {
+    ProvisioningPollResult pollResult = provisioningPoll();
     if (pollResult == ProvisioningPollResult::SUCCESS) {
       provisioningState = ProvisioningState::Success;
+      currentState = ApplicationState::Idle;
+      displayRenderMessage("WiFi saved!");
     } else if (pollResult == ProvisioningPollResult::FAILED) {
       provisioningState = ProvisioningState::Failed;
-    } else if (pollResult == ProvisioningPollResult::CANCELLED) {
-      provisioningState = ProvisioningState::Success;
       currentState = ApplicationState::Idle;
+      displayRenderMessage("WiFi setup cancelled/failed.");
+    } else if (pollResult == ProvisioningPollResult::CANCELLED) {
+      provisioningState = ProvisioningState::Idle;
+      currentState = ApplicationState::Idle;
+      if (insultsHasAny()) {
+        displayRenderInsult(insultsGetCurrentText());
+      } else {
+        displayRenderEmptyState();
+      }
     }
+    break;
+  }
+  case ApplicationState::ProvisioningConfirmation: {
+    break;
+  }
   }
   if (isWebModeActive) {
     webServerManager.handle();

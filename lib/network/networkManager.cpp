@@ -8,40 +8,58 @@
 bool isMdnsRunning = false;
 WiFiManager wm;
 bool portalHasTimedOut = false;
+bool portalConnectionFailed = false;
+
+bool hasKnownNetwork() {
+  WiFi.mode(WIFI_STA);
+  return wm.getWiFiIsSaved();
+}
+
+void resetWiFiSettings() {
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect(true /* wifioff */, true /* eraseap */);
+  wm.resetSettings();
+}
 
 WiFiConfigurationStartResult startWiFiConfiguration() {
-  if (getConfigPortalActive()) {
+  if (wm.getConfigPortalActive()) {
     return WiFiConfigurationStartResult::ALREADY_ACTIVE;
   } else {
     WiFi.mode(WIFI_STA);
-    portalTimedOut = false;
+    portalHasTimedOut = false;
+    portalConnectionFailed = false;
     wm.setConfigPortalBlocking(false);
     wm.setConfigPortalTimeout(
         180); // 3 minutes for the user to complete Wi-Fi configuration.
     wm.setConnectTimeout(
         15); // Wait 15 seconds for a router response before opening portal
-    wm.setConfigPortalTimeoutCallback([]() { portalTimedOut = true; });
+    wm.setConnectRetries(
+        1); // Close portal after one failed attempt instead of re-opening
+    wm.setConfigPortalTimeoutCallback([]() { portalHasTimedOut = true; });
+    // Mark that credentials were submitted; if the portal closes without
+    // process() succeeding, we know the connection attempt failed.
+    wm.setSaveParamsCallback([]() { portalConnectionFailed = true; });
     wm.startConfigPortal("BardsAssistant", "bardsassistant");
 
-    if (getConfigPortalActive()) {
-      return WiFiConfigurationStartResult::STARTED;
-    } else {
-      return WiFiConfigurationStartResult::START_FAILED;
-    }
+    return wm.getConfigPortalActive()
+               ? WiFiConfigurationStartResult::STARTED
+               : WiFiConfigurationStartResult::START_FAILED;
   }
 }
 
 WiFiConfigurationPollResult pollWiFiConfiguration() {
-  wm.process();
-
-  // if process says connected
-  //     → SUCCESS
-
-  // else if portal is still active
-  //     → IN_PROGRESS
-
-  // else
-  //     → something terminated the portal
+  if (wm.process()) {
+    return WiFiConfigurationPollResult::SUCCESS;
+  } else if (portalHasTimedOut) {
+    return WiFiConfigurationPollResult::FAILED;
+  } else if (wm.getConfigPortalActive()) {
+    return WiFiConfigurationPollResult::IN_PROGRESS;
+  } else {
+    // Portal closed — either user dismissed it or credentials were rejected
+    // (setConnectRetryMax(1) closes the portal after one failed attempt).
+    return portalConnectionFailed ? WiFiConfigurationPollResult::FAILED
+                                  : WiFiConfigurationPollResult::CANCELLED;
+  }
 }
 
 /**

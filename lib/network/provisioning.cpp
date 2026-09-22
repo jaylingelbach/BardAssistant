@@ -2,33 +2,38 @@
 #include "networkManager.h"
 #include <cstdint>
 
-static uint32_t operationStartedAt = 0;
-static uint32_t pollingStartedAt = 0;
-ProvisioningStartResult provisioningStart(uint32_t now) {
-  operationStartedAt = now;
-  return ProvisioningStartResult::STARTED;
-};
+ProvisioningStartResult provisioningStart() {
+  WiFiConfigurationStartResult result = startWiFiConfiguration();
 
-ProvisioningPollResult provisioningPoll(uint32_t now) {
-  // is it finished? Determined by provisioning state
-  //   ask WiFiManager:
-  //     "Are we done?"
-  //     ↓
-  // WiFiManager says:
-  //     still running
-  //     OR
-  //     credentials successfully obtained
-  //     OR
-  //     failed
-  //     ↓
-  // return IN_PROGRESS / SUCCESS / FAILED
-  // do I need uint32_ now? maybe for a timeout.
-  //     ├── no → IN_PROGRESS
-  //     ├── yes → SUCCESS
-  //     ├── failed → FAILED
-  //     └── cancelled → CANCELLED
-  //   pollingStartedAt = now;
+  switch (result) {
+    case WiFiConfigurationStartResult::ALREADY_ACTIVE:
+      return ProvisioningStartResult::ALREADY_ACTIVE;
+    case WiFiConfigurationStartResult::STARTED:
+      return ProvisioningStartResult::STARTED;
+    case WiFiConfigurationStartResult::START_FAILED:
+      return ProvisioningStartResult::START_FAILED;
+  }
+
+  return ProvisioningStartResult::START_FAILED;
+}
+
+ProvisioningPollResult provisioningPoll() {
+
+  WiFiConfigurationPollResult result = pollWiFiConfiguration();
+
+  switch (result) {
+  case WiFiConfigurationPollResult::IN_PROGRESS:
   return ProvisioningPollResult::IN_PROGRESS;
-};
 
-bool provisioningIsActive() { return true; };
+case WiFiConfigurationPollResult::SUCCESS:
+  return ProvisioningPollResult::SUCCESS;
+
+case WiFiConfigurationPollResult::FAILED:
+  return ProvisioningPollResult::FAILED;
+
+case WiFiConfigurationPollResult::CANCELLED:
+  return ProvisioningPollResult::CANCELLED;
+}
+
+return ProvisioningPollResult::FAILED;
+}

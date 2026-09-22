@@ -66,6 +66,8 @@ void exitWebMode();
  */
 bool hasKnownNetwork();
 
+bool wiFiIsConnected();
+
 /**
  * @brief Begins connecting to a known Wi-Fi network.
  *
@@ -105,6 +107,6 @@ WiFiConfigurationStartResult startWiFiConfiguration();
  */
 WiFiConfigurationPollResult pollWiFiConfiguration();
 
-static bool configurationTimedOut();
-static bool configurationCancelled();
+void resetWiFiSettings();
+
 #endif
