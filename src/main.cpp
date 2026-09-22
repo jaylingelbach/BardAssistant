@@ -240,8 +240,7 @@ void startProvisioning() {
   if (provisioningResult == ProvisioningStartResult::STARTED) {
     currentState = ApplicationState::Provisioning;
     provisioningState = ProvisioningState::Waiting;
-    // TODO: better messaging about where to connect?
-    displayRenderMessage("Connect to BardsAssistant WiFi");
+    displayRenderMessage("Connect to WiFi:\nBardsAssistant\n\nPassword:\nbardsassistant\n\nThen visit\n192.168.4.1");
 
   } else if (provisioningResult == ProvisioningStartResult::ALREADY_ACTIVE) {
     LOG_DEBUG("Provisioning is already active.");
