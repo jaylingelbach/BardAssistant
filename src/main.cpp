@@ -289,6 +289,18 @@ static void handleWebModeToggle() {
   }
 }
 
+static void handleExitWebMode() {
+  webServerManager.stop();
+  exitWebMode();
+  isWebModeActive = false;
+  LOG_INFO("[WebMode] Exited successfully.");
+  if (insultsHasAny()) {
+    displayRenderInsult(insultsGetCurrentText());
+  } else {
+    displayRenderEmptyState();
+  }
+}
+
 /**
  * @brief Handle a debounced button intent event and apply app-level behavior.
  *
@@ -449,15 +461,7 @@ static void handleButtonGestures(uint32_t now) {
       if (!isWebModeActive) {
         handleWebModeToggle();
       } else {
-        webServerManager.stop();
-        exitWebMode();
-        isWebModeActive = false;
-        LOG_INFO("[WebMode] Exited successfully.");
-        if (insultsHasAny()) {
-          displayRenderInsult(insultsGetCurrentText());
-        } else {
-          displayRenderEmptyState();
-        }
+        handleExitWebMode();
       }
       gestureTriggered = true;
     }
