@@ -3,8 +3,10 @@
 
 #include <stdint.h>
 
+/** Result of attempting to start the provisioning portal. */
 enum class ProvisioningStartResult { STARTED, ALREADY_ACTIVE, START_FAILED };
 
+/** Result of polling an active provisioning session. */
 enum class ProvisioningPollResult { IN_PROGRESS, SUCCESS, FAILED, CANCELLED };
 
 /**

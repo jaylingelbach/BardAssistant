@@ -7,8 +7,6 @@ static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
  */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
-/** Result of connecting to a known Wi-Fi network. */
-enum class WiFiConnectionResult { CONNECTED, IN_PROGRESS, FAILED };
 
 /** Result of polling the Wi-Fi configuration process. */
 enum class WiFiConfigurationPollResult {
@@ -40,10 +38,14 @@ void disconnectWiFi();
  * timeout, or MDNS_FAILED if mDNS fails.
  */
 WebModeResult enterWebMode();
+
 /**
  * @brief Starts mDNS for an existing Wi-Fi connection without reconnecting.
  *
- * @return SUCCESS if mDNS starts, or MDNS_FAILED if it does not.
+ * Used after a successful provisioning where WiFiManager already holds a live
+ * connection. Skips WiFi.begin() to avoid dropping the IP before mDNS starts.
+ *
+ * @return WebModeResult::SUCCESS if mDNS starts, MDNS_FAILED if it does not.
  */
 WebModeResult enterWebModeAlreadyConnected();
 
@@ -63,21 +65,6 @@ void exitWebMode();
  */
 bool hasKnownNetwork();
 
-bool wiFiIsConnected();
-
-/**
- * @brief Begins connecting to a known Wi-Fi network.
- *
- * Starts a connection attempt using saved network credentials. The caller
- * should use the return value to determine whether the connection succeeded,
- * is still in progress, or failed.
- *
- * @return WiFiConnectionResult::CONNECTED if already connected,
- *         WiFiConnectionResult::IN_PROGRESS if the connection attempt has
- *         started, or WiFiConnectionResult::FAILED if the connection could
- *         not be started.
- */
-WiFiConnectionResult connectToKnownNetwork();
 
 /**
  * @brief Starts the WiFiManager configuration portal in non-blocking mode.
