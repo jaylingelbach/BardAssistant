@@ -1,6 +1,8 @@
 #ifndef NETWORK_MANAGER_H
 #define NETWORK_MANAGER_H
 
+static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
+
 /** Result of entering web mode: covers WiFi.begin() and MDNS.begin() outcomes.
  */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };

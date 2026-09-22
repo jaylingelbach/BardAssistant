@@ -240,6 +240,7 @@ void startProvisioning() {
   if (provisioningResult == ProvisioningStartResult::STARTED) {
     currentState = ApplicationState::Provisioning;
     provisioningState = ProvisioningState::Waiting;
+    // TODO: better messaging about where to connect?
     displayRenderMessage("Connect to BardsAssistant WiFi");
 
   } else if (provisioningResult == ProvisioningStartResult::ALREADY_ACTIVE) {
@@ -581,8 +582,18 @@ void loop() {
     ProvisioningPollResult pollResult = provisioningPoll();
     if (pollResult == ProvisioningPollResult::SUCCESS) {
       provisioningState = ProvisioningState::Success;
+      WebModeResult webRes = enterWebMode();
+      if (webRes == WebModeResult::SUCCESS || webRes == WebModeResult::MDNS_FAILED) {
+        webServerManager.start();
+        isWebModeActive = true;
+        char msg[64];
+        snprintf(msg, sizeof(msg), "WiFi saved!\n%s.local\n%s", BARDS_HOSTNAME,
+                 WiFi.localIP().toString().c_str());
+        displayRenderMessage(msg);
+      } else {
+        displayRenderMessage("WiFi saved!\nCouldn't start web mode.");
+      }
       currentState = ApplicationState::Idle;
-      displayRenderMessage("WiFi saved!");
     } else if (pollResult == ProvisioningPollResult::FAILED) {
       provisioningState = ProvisioningState::Failed;
       currentState = ApplicationState::Idle;

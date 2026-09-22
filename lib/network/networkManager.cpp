@@ -39,7 +39,7 @@ WiFiConfigurationStartResult startWiFiConfiguration() {
     // Mark that credentials were submitted; if the portal closes without
     // process() succeeding, we know the connection attempt failed.
     wm.setSaveParamsCallback([]() { portalConnectionFailed = true; });
-    wm.startConfigPortal("BardsAssistant", "bardsassistant");
+    wm.startConfigPortal("BardsAssistant", BARDS_HOSTNAME);
 
     return wm.getConfigPortalActive()
                ? WiFiConfigurationStartResult::STARTED
@@ -144,7 +144,7 @@ WebModeResult enterWebMode() {
     LOG_INFO_PRINT("IP address: ");
     LOG_INFO_RAW(WiFi.localIP());
 
-    if (!MDNS.begin("bardsassistant")) {
+    if (!MDNS.begin(BARDS_HOSTNAME)) {
       LOG_ERROR("mDNS setup failed. Connect via IP:");
       LOG_INFO_RAW(WiFi.localIP());
       return WebModeResult::MDNS_FAILED;
