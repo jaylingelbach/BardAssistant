@@ -35,11 +35,17 @@ provisioningPoll() → SUCCESS
  v
 enterWebModeAlreadyConnected()
  |
- +-- Start mDNS (bardsassistant.local)
- +-- Start WebServerManager
- |
- v
-WEB MODE
+ +--[SUCCESS]-----------------------------+
+ |   Start mDNS (bardsassistant.local)   |
+ |   Start WebServerManager              |
+ |   Display: "WiFi saved!               |
+ |             bardsassistant.local      |
+ |             <IP>"                     |
+ |                                       v
+ +--[MDNS_FAILED]-------------------> WEB MODE
+     Start WebServerManager
+     Display: "WiFi saved!
+               <IP>"
 ```
 
 ### Re-provisioning (credentials already saved)
