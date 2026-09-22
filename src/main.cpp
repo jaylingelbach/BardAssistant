@@ -446,7 +446,6 @@ static void handleButtonGestures(uint32_t now) {
                                    prevButton.state == ButtonState::Pressed &&
                                    randomButton.state == ButtonState::Pressed;
 
-  // TODO: web mode path should become handleWebModeToggle(),
   if (provisioningGesture && currentState == ApplicationState::Idle) {
     if (!gestureActive || !gestureIsProvisioning) {
       gestureActive = true;
