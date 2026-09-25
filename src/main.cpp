@@ -142,8 +142,8 @@ static void enterUpdating() {
 /**
  * @brief Restore the LED pattern for the current application state.
  *
- * Provisioning uses the updating pattern; confirmation leaves the LED
- * unchanged.
+ * Provisioning uses the updating pattern; confirmation and WebModeConnecting
+ * leave the LED unchanged.
  */
 static void restoreLedForState() {
   switch (currentState) {
@@ -269,11 +269,13 @@ static void startProvisioning() {
 }
 
 /**
- * @brief Attempts to enter web mode and displays its connection address.
+ * @brief Starts a Wi-Fi connection attempt for web mode.
  *
- * Starts the web server even if mDNS fails, showing the IP address instead of
- * the hostname. If Wi-Fi connection fails, leaves web mode inactive and
- * restores the current insult or empty-state screen.
+ * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
+ * can finish the transition. On startup failure, disconnects Wi-Fi without
+ * changing the application state or display.
+ *
+ * @param now Current uptime in milliseconds, used to time the connection.
  */
 static void handleWebModeToggle(uint32_t now) {
   WebModeStartResult result = startWebModeConnection(now);
@@ -424,7 +426,8 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
  *
  * While idle, holding Next, Prev, and Random for two seconds starts
  * provisioning or requests confirmation when credentials are saved. Holding
- * Next and Prev for two seconds toggles web mode and updates the display.
+ * Next and Prev for two seconds starts a web mode connection attempt or exits
+ * active web mode. Connection results are handled by loop().
  *
  * @param now Current uptime in milliseconds, used to time the held gesture.
  */
@@ -481,8 +484,7 @@ static void handleButtonGestures(uint32_t now) {
  * @brief Initializes the device for a cold boot or wake from deep sleep.
  *
  * Configures hardware, restores persistent insult state, renders the
- * appropriate display content, and starts Wi-Fi and the web server when Web
- * Mode startup is enabled.
+ * appropriate display content, and enters the boot state.
  */
 void setup() {
   Serial.begin(115200);
@@ -562,6 +564,10 @@ void setup() {
  * before returning to the idle state. It also polls Wi-Fi provisioning,
  * starts web mode after successful configuration, and services web requests
  * whenever web mode is active.
+ *
+ * Polls pending web mode connections and starts the server on success, showing
+ * the hostname or the IP address if mDNS fails. A failed connection disconnects
+ * Wi-Fi and displays an error. Either outcome returns to idle.
  */
 void loop() {
   const uint32_t now = millis();
