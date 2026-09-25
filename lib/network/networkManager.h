@@ -35,7 +35,7 @@ enum class WiFiConfigurationStartResult {
 /**
  * @brief Disconnects from the current Wi-Fi network and powers down the radio.
  *
- * Credentials are preserved so a future enterWebMode() call can reconnect.
+ * Credentials are preserved so startWebModeConnection() can reconnect.
  */
 void disconnectWiFi();
 
@@ -106,8 +106,31 @@ WiFiConfigurationStartResult startWiFiConfiguration();
  */
 WiFiConfigurationPollResult pollWiFiConfiguration();
 
+/**
+ * @brief Starts connecting to Wi-Fi with saved credentials without waiting.
+ *
+ * Enables station mode. Call pollWebModeConnection() after STARTED to check
+ * the outcome; STARTED does not guarantee a connection. Each STARTED result
+ * resets the connection timeout. Does not start mDNS or the web server.
+ *
+ * @param now Current uptime in milliseconds, used as the timeout's start time.
+ * @return WebModeStartResult::START_FAILED if WiFi.begin() reports
+ * WL_CONNECT_FAILED, or STARTED otherwise. Failure does not disconnect Wi-Fi.
+ */
 WebModeStartResult startWebModeConnection(uint32_t now);
 
+/**
+ * @brief Checks a connection attempt started by startWebModeConnection().
+ *
+ * Call repeatedly after STARTED. Success takes precedence over the timeout,
+ * including at or after 5,000 milliseconds. Failure does not disconnect Wi-Fi;
+ * callers must handle cleanup.
+ *
+ * @param now Current uptime in milliseconds, on the same clock as the start.
+ * @return WebModePollResult::SUCCESS when connected with a nonzero local IP,
+ * FAILED if 5,000 milliseconds have elapsed or Wi-Fi reports WL_CONNECT_FAILED
+ * or WL_NO_SSID_AVAIL, or IN_PROGRESS otherwise.
+ */
 WebModePollResult pollWebModeConnection(uint32_t now);
 
 /**
