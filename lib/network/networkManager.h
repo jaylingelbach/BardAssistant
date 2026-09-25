@@ -1,12 +1,21 @@
 #ifndef NETWORK_MANAGER_H
 #define NETWORK_MANAGER_H
 
-static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
+#include <cstdint>
+
+static constexpr const char* BARDS_HOSTNAME = "bardsassistant";
 
 /** Result of entering web mode: covers WiFi.begin() and MDNS.begin() outcomes.
  */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
+/** Result of polling the WebMode configuration process. */
+enum class WebModePollResult { IN_PROGRESS, SUCCESS, FAILED };
+
+/** Result of starting the WebMode configuration process. */
+enum class WebModeStartResult { STARTED, START_FAILED };
+
+enum class MDNSResult { SUCCESS, MDNS_FAILED };
 
 /** Result of polling the Wi-Fi configuration process. */
 enum class WiFiConfigurationPollResult {
@@ -26,7 +35,7 @@ enum class WiFiConfigurationStartResult {
 /**
  * @brief Disconnects from the current Wi-Fi network and powers down the radio.
  *
- * Credentials are preserved so a future enterWebMode() call can reconnect.
+ * Credentials are preserved so startWebModeConnection() can reconnect.
  */
 void disconnectWiFi();
 
@@ -50,6 +59,13 @@ WebModeResult enterWebMode();
 WebModeResult enterWebModeAlreadyConnected();
 
 /**
+ * @brief Starts mDNS for the current Wi-Fi connection.
+ *
+ * @return MDNSResult::SUCCESS if mDNS starts, MDNS_FAILED if it does not.
+ */
+MDNSResult startMDNS();
+
+/**
  * @brief Stops mDNS and disconnects Wi-Fi, returning to offline mode.
  *
  * Callers must stop WebServerManager before calling this.
@@ -64,7 +80,6 @@ void exitWebMode();
  * @return true if Wi-Fi credentials are saved, false otherwise.
  */
 bool hasKnownNetwork();
-
 
 /**
  * @brief Starts the WiFiManager configuration portal in non-blocking mode.
@@ -90,6 +105,33 @@ WiFiConfigurationStartResult startWiFiConfiguration();
  *         CANCELLED when the portal closes without a submission.
  */
 WiFiConfigurationPollResult pollWiFiConfiguration();
+
+/**
+ * @brief Starts connecting to Wi-Fi with saved credentials without waiting.
+ *
+ * Enables station mode. Call pollWebModeConnection() after STARTED to check
+ * the outcome; STARTED does not guarantee a connection. Each STARTED result
+ * resets the connection timeout. Does not start mDNS or the web server.
+ *
+ * @param now Current uptime in milliseconds, used as the timeout's start time.
+ * @return WebModeStartResult::START_FAILED if WiFi.begin() reports
+ * WL_CONNECT_FAILED, or STARTED otherwise. Failure does not disconnect Wi-Fi.
+ */
+WebModeStartResult startWebModeConnection(uint32_t now);
+
+/**
+ * @brief Checks a connection attempt started by startWebModeConnection().
+ *
+ * Call repeatedly after STARTED. Success takes precedence over the timeout,
+ * including at or after 5,000 milliseconds. Failure does not disconnect Wi-Fi;
+ * callers must handle cleanup.
+ *
+ * @param now Current uptime in milliseconds, on the same clock as the start.
+ * @return WebModePollResult::SUCCESS when connected with a nonzero local IP,
+ * FAILED if 5,000 milliseconds have elapsed or Wi-Fi reports WL_CONNECT_FAILED
+ * or WL_NO_SSID_AVAIL, or IN_PROGRESS otherwise.
+ */
+WebModePollResult pollWebModeConnection(uint32_t now);
 
 /**
  * @brief Disconnects Wi-Fi, powers down the radio, and clears saved settings.

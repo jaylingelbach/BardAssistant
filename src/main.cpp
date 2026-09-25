@@ -1,12 +1,16 @@
-#include "HWCDC.h"
-#include "driver/rtc_io.h"
 #include <Arduino.h>
+#include <ElegantOTA.h>
 #include <LittleFS.h>
 #include <Preferences.h>
+#include <WiFi.h>
 #include <esp_sleep.h>
 
+#include <cstdint>
+
+#include "HWCDC.h"
 #include "button.h"
 #include "display.h"
+#include "driver/rtc_io.h"
 #include "insults.h"
 #include "led.h"
 #include "log.h"
@@ -14,12 +18,8 @@
 #include "persist_keys.h"
 #include "provisioning.h"
 #include "webServerManager.h"
-#include <ElegantOTA.h>
-#include <WiFi.h>
 
 // ───────────────── Development flags ─────────────
-// Set to false and implement button gesture before shipping.
-#define WEB_MODE_ON_BOOT false
 
 // ───────────────── Configuration ─────────────────
 
@@ -59,7 +59,8 @@ enum class ApplicationState {
   Idle,
   Updating,
   Provisioning,
-  ProvisioningConfirmation
+  ProvisioningConfirmation,
+  WebModeConnecting
 };
 enum class ButtonId { Sleep, Random, Next, Prev };
 // Idle means not provisioning. Waiting means provisioning has started and
@@ -141,22 +142,22 @@ static void enterUpdating() {
 /**
  * @brief Restore the LED pattern for the current application state.
  *
- * Provisioning uses the updating pattern; confirmation leaves the LED
- * unchanged.
+ * Provisioning uses the updating pattern; confirmation and WebModeConnecting
+ * leave the LED unchanged.
  */
 static void restoreLedForState() {
   switch (currentState) {
-  case ApplicationState::Boot:
-    ledShowBoot();
-    break;
-  case ApplicationState::Idle:
-    ledShowIdle();
-    break;
-  case ApplicationState::Updating:
-    ledShowUpdating();
-    break;
-  case ApplicationState::Provisioning:
-    ledShowUpdating();
+    case ApplicationState::Boot:
+      ledShowBoot();
+      break;
+    case ApplicationState::Idle:
+      ledShowIdle();
+      break;
+    case ApplicationState::Updating:
+      ledShowUpdating();
+      break;
+    case ApplicationState::Provisioning:
+      ledShowUpdating();
   }
 }
 
@@ -230,7 +231,7 @@ static void enterSleep() {
   Serial.flush();
   delay(50);
 
-  esp_deep_sleep_start(); // never returns
+  esp_deep_sleep_start();  // never returns
 }
 
 // ───────────────── Work Orchestration ────────────
@@ -252,10 +253,10 @@ static void startProvisioning() {
         "visit\n192.168.4.1");
 
   } else if (provisioningResult == ProvisioningStartResult::ALREADY_ACTIVE) {
-    LOG_DEBUG("Provisioning is already active.");
+    LOG_DEBUG("[startProvisioning] Provisioning is already active.");
 
   } else if (provisioningResult == ProvisioningStartResult::START_FAILED) {
-    LOG_ERROR("[Provisioning] Failed to start.");
+    LOG_ERROR("[startProvisioning] Provisioning Failed to start.");
 
     currentState = ApplicationState::Idle;
 
@@ -268,31 +269,23 @@ static void startProvisioning() {
 }
 
 /**
- * @brief Attempts to enter web mode and displays its connection address.
+ * @brief Starts a Wi-Fi connection attempt for web mode.
  *
- * Starts the web server even if mDNS fails, showing the IP address instead of
- * the hostname. If Wi-Fi connection fails, leaves web mode inactive and
- * restores the current insult or empty-state screen.
+ * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
+ * can finish the transition. On startup failure, disconnects Wi-Fi without
+ * changing the application state or display.
+ *
+ * @param now Current uptime in milliseconds, used to time the connection.
  */
-static void handleWebModeToggle() {
-  WebModeResult webRes = enterWebMode();
-  if (webRes == WebModeResult::SUCCESS) {
-    webServerManager.start();
-    isWebModeActive = true;
-    displayRenderMessage("bardsassistant.local");
-  } else if (webRes == WebModeResult::MDNS_FAILED) {
-    LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
-    webServerManager.start();
-    isWebModeActive = true;
-    displayRenderMessage(WiFi.localIP().toString().c_str());
-  } else if (webRes == WebModeResult::CONNECTION_FAILED) {
+static void handleWebModeToggle(uint32_t now) {
+  WebModeStartResult result = startWebModeConnection(now);
+
+  if (result == WebModeStartResult::STARTED) {
+    currentState = ApplicationState::WebModeConnecting;
     isWebModeActive = false;
-    LOG_ERROR("[WebMode] Connection failed.");
-    if (insultsHasAny()) {
-      displayRenderInsult(insultsGetCurrentText());
-    } else {
-      displayRenderEmptyState();
-    }
+  } else if (result == WebModeStartResult::START_FAILED) {
+    LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
+    disconnectWiFi();
   }
 }
 
@@ -397,33 +390,33 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 
   if (event == ButtonEvent::Tap) {
     switch (buttonId) {
-    case ButtonId::Random:
-      LOG_DEBUG("[Random] Tap");
-      if (insultsStartOperation(PendingAction::Random, now)) {
-        enterUpdating();
-      }
-      break;
-
-    case ButtonId::Next:
-      LOG_DEBUG("[Next] Tap");
-      if (!gestureActive && !gestureTriggered) {
-        if (insultsStartOperation(PendingAction::Next, now)) {
+      case ButtonId::Random:
+        LOG_DEBUG("[Random] Tap");
+        if (insultsStartOperation(PendingAction::Random, now)) {
           enterUpdating();
         }
-      }
-      break;
+        break;
 
-    case ButtonId::Prev:
-      LOG_DEBUG("[Prev] Tap");
-      if (!gestureActive && !gestureTriggered) {
-        if (insultsStartOperation(PendingAction::Prev, now)) {
-          enterUpdating();
+      case ButtonId::Next:
+        LOG_DEBUG("[Next] Tap");
+        if (!gestureActive && !gestureTriggered) {
+          if (insultsStartOperation(PendingAction::Next, now)) {
+            enterUpdating();
+          }
         }
-      }
-      break;
+        break;
 
-    default:
-      break;
+      case ButtonId::Prev:
+        LOG_DEBUG("[Prev] Tap");
+        if (!gestureActive && !gestureTriggered) {
+          if (insultsStartOperation(PendingAction::Prev, now)) {
+            enterUpdating();
+          }
+        }
+        break;
+
+      default:
+        break;
     }
   }
 }
@@ -433,12 +426,12 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
  *
  * While idle, holding Next, Prev, and Random for two seconds starts
  * provisioning or requests confirmation when credentials are saved. Holding
- * Next and Prev for two seconds toggles web mode and updates the display.
+ * Next and Prev for two seconds starts a web mode connection attempt or exits
+ * active web mode. Connection results are handled by loop().
  *
  * @param now Current uptime in milliseconds, used to time the held gesture.
  */
 static void handleButtonGestures(uint32_t now) {
-
   const bool webmodeGesture = nextButton.state == ButtonState::Pressed &&
                               prevButton.state == ButtonState::Pressed;
 
@@ -454,8 +447,9 @@ static void handleButtonGestures(uint32_t now) {
       gestureIsProvisioning = true;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
       if (hasKnownNetwork()) {
-        displayRenderMessage("Wifi Already configured, change/add settings?, "
-                             "press Next to confirm, or Sleep to cancel.");
+        displayRenderMessage(
+            "Wifi Already configured, change/add settings?, "
+            "press Next to confirm, or Sleep to cancel.");
         currentState = ApplicationState::ProvisioningConfirmation;
       } else {
         startProvisioning();
@@ -470,7 +464,7 @@ static void handleButtonGestures(uint32_t now) {
       gestureIsProvisioning = false;
     } else if (!gestureTriggered && now - gestureStartedAt >= 2000) {
       if (!isWebModeActive) {
-        handleWebModeToggle();
+        handleWebModeToggle(now);
       } else {
         handleExitWebMode();
       }
@@ -490,8 +484,7 @@ static void handleButtonGestures(uint32_t now) {
  * @brief Initializes the device for a cold boot or wake from deep sleep.
  *
  * Configures hardware, restores persistent insult state, renders the
- * appropriate display content, and starts Wi-Fi and the web server when Web
- * Mode startup is enabled.
+ * appropriate display content, and enters the boot state.
  */
 void setup() {
   Serial.begin(115200);
@@ -561,21 +554,6 @@ void setup() {
   } else {
     displayRenderEmptyState();
   }
-
-#if WEB_MODE_ON_BOOT
-  WebModeResult webRes = enterWebMode();
-  if (webRes == WebModeResult::SUCCESS) {
-    LOG_INFO("[WebMode] Entered: bardsassistant.local");
-    webServerManager.start();
-    isWebModeActive = true;
-  } else if (webRes == WebModeResult::MDNS_FAILED) {
-    LOG_WARN("[WebMode] mDNS failed — serving on IP only.");
-    webServerManager.start();
-    isWebModeActive = true;
-  } else if (webRes == WebModeResult::CONNECTION_FAILED) {
-    LOG_ERROR("[WebMode] Connection failed.");
-  }
-#endif
 }
 /**
  * @brief Polls device inputs, advances the application state, and services
@@ -586,6 +564,10 @@ void setup() {
  * before returning to the idle state. It also polls Wi-Fi provisioning,
  * starts web mode after successful configuration, and services web requests
  * whenever web mode is active.
+ *
+ * Polls pending web mode connections and starts the server on success, showing
+ * the hostname or the IP address if mDNS fails. A failed connection disconnects
+ * Wi-Fi and displays an error. Either outcome returns to idle.
  */
 void loop() {
   const uint32_t now = millis();
@@ -606,61 +588,96 @@ void loop() {
 
   // High-level app state machine
   switch (currentState) {
-  case ApplicationState::Boot:
-    if (now - stateEnteredAt >= LED_BOOT_DURATION_MS) {
-      enterIdle();
-    }
-    break;
-
-  case ApplicationState::Idle:
-    break;
-
-  case ApplicationState::Updating:
-    if (insultsPoll(now)) {
-      onOperationCompleted();
-    }
-    break;
-  case ApplicationState::Provisioning: {
-    ProvisioningPollResult pollResult = provisioningPoll();
-    if (pollResult == ProvisioningPollResult::SUCCESS) {
-      provisioningState = ProvisioningState::Success;
-      WebModeResult webRes = enterWebModeAlreadyConnected();
-      if (webRes == WebModeResult::SUCCESS) {
-        webServerManager.start();
-        isWebModeActive = true;
-        char msg[64];
-        snprintf(msg, sizeof(msg), "WiFi saved!\n%s.local\n%s", BARDS_HOSTNAME,
-                 WiFi.localIP().toString().c_str());
-        displayRenderMessage(msg);
-      } else if (webRes == WebModeResult::MDNS_FAILED) {
-        webServerManager.start();
-        isWebModeActive = true;
-        char msg[64];
-        snprintf(msg, sizeof(msg), "WiFi saved!\n%s",
-                 WiFi.localIP().toString().c_str());
-        displayRenderMessage(msg);
-      } else {
-        displayRenderMessage("WiFi saved!\nCouldn't start web mode.");
+    case ApplicationState::Boot:
+      if (now - stateEnteredAt >= LED_BOOT_DURATION_MS) {
+        enterIdle();
       }
-      currentState = ApplicationState::Idle;
-    } else if (pollResult == ProvisioningPollResult::FAILED) {
-      provisioningState = ProvisioningState::Failed;
-      currentState = ApplicationState::Idle;
-      displayRenderMessage("WiFi setup cancelled/failed.");
-    } else if (pollResult == ProvisioningPollResult::CANCELLED) {
-      provisioningState = ProvisioningState::Idle;
-      currentState = ApplicationState::Idle;
-      if (insultsHasAny()) {
-        displayRenderInsult(insultsGetCurrentText());
-      } else {
-        displayRenderEmptyState();
+      break;
+
+    case ApplicationState::Idle:
+      break;
+
+    case ApplicationState::Updating:
+      if (insultsPoll(now)) {
+        onOperationCompleted();
       }
+      break;
+    case ApplicationState::Provisioning: {
+      ProvisioningPollResult pollResult = provisioningPoll();
+      if (pollResult == ProvisioningPollResult::SUCCESS) {
+        provisioningState = ProvisioningState::Success;
+        WebModeResult webRes = enterWebModeAlreadyConnected();
+        if (webRes == WebModeResult::SUCCESS) {
+          webServerManager.start();
+          isWebModeActive = true;
+          char msg[64];
+          snprintf(msg, sizeof(msg), "WiFi saved!\n%s.local\n%s",
+                   BARDS_HOSTNAME, WiFi.localIP().toString().c_str());
+          displayRenderMessage(msg);
+        } else if (webRes == WebModeResult::MDNS_FAILED) {
+          webServerManager.start();
+          isWebModeActive = true;
+          char msg[64];
+          snprintf(msg, sizeof(msg), "WiFi saved!\n%s",
+                   WiFi.localIP().toString().c_str());
+          displayRenderMessage(msg);
+        } else {
+          displayRenderMessage("WiFi saved!\nCouldn't start web mode.");
+        }
+        currentState = ApplicationState::Idle;
+      } else if (pollResult == ProvisioningPollResult::FAILED) {
+        provisioningState = ProvisioningState::Failed;
+        currentState = ApplicationState::Idle;
+        displayRenderMessage("WiFi setup cancelled/failed.");
+      } else if (pollResult == ProvisioningPollResult::CANCELLED) {
+        provisioningState = ProvisioningState::Idle;
+        currentState = ApplicationState::Idle;
+        if (insultsHasAny()) {
+          displayRenderInsult(insultsGetCurrentText());
+        } else {
+          displayRenderEmptyState();
+        }
+      }
+      break;
     }
-    break;
-  }
-  case ApplicationState::ProvisioningConfirmation: {
-    break;
-  }
+    case ApplicationState::ProvisioningConfirmation: {
+      break;
+    }
+    case ApplicationState::WebModeConnecting: {
+      WebModePollResult result = pollWebModeConnection(now);
+
+      if (result == WebModePollResult::SUCCESS) {
+        currentState = ApplicationState::Idle;
+
+        MDNSResult mdnsRes = startMDNS();
+
+        if (mdnsRes == MDNSResult::MDNS_FAILED) {
+          currentState = ApplicationState::Idle;
+
+          isWebModeActive = true;
+          webServerManager.start();
+
+          displayRenderMessage(WiFi.localIP().toString().c_str());
+        } else {
+          isWebModeActive = true;
+          webServerManager.start();
+          displayRenderMessage(
+              "Web Mode Activated. Visit BardsAssistant.local in the browser.");
+        }
+
+      } else if (result == WebModePollResult::FAILED) {
+        currentState = ApplicationState::Idle;
+
+        isWebModeActive = false;
+        disconnectWiFi();
+
+        displayRenderMessage("Error activating Web Mode.");
+
+      } else if (result == WebModePollResult::IN_PROGRESS) {
+        // Nothing to do; keep polling next loop.
+      }
+      break;
+    }
   }
   if (isWebModeActive) {
     webServerManager.handle();
