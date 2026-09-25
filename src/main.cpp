@@ -648,7 +648,8 @@ void loop() {
         if (mdnsRes == MDNSResult::MDNS_FAILED) {
           currentState = ApplicationState::Idle;
 
-          isWebModeActive = false;
+          isWebModeActive = true;
+          webServerManager.start();
 
           displayRenderMessage(WiFi.localIP().toString().c_str());
         } else {
