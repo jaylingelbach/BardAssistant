@@ -13,7 +13,7 @@ enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 enum class WebModePollResult { IN_PROGRESS, SUCCESS, FAILED };
 
 /** Result of starting the WebMode configuration process. */
-enum class WebModeStartResult { STARTED, ALREADY_ACTIVE, START_FAILED };
+enum class WebModeStartResult { STARTED, START_FAILED };
 
 enum class MDNSResult { SUCCESS, MDNS_FAILED };
 

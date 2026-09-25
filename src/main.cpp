@@ -281,8 +281,6 @@ static void handleWebModeToggle(uint32_t now) {
   if (result == WebModeStartResult::STARTED) {
     currentState = ApplicationState::WebModeConnecting;
     isWebModeActive = false;
-  } else if (result == WebModeStartResult::ALREADY_ACTIVE) {
-    LOG_DEBUG("[handleWebModeToggle] WebMode already active");
   } else if (result == WebModeStartResult::START_FAILED) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
   }

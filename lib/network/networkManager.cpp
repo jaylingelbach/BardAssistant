@@ -42,9 +42,6 @@ WebModeStartResult startWebModeConnection(uint32_t now) {
   if (status == WL_CONNECT_FAILED) {
     return WebModeStartResult::START_FAILED;
   }
-  if (status == WL_CONNECTED) {
-    return WebModeStartResult::ALREADY_ACTIVE;
-  }
 
   connectionStartedAt = now;
   LOG_INFO("Attempting automatic connection...");
