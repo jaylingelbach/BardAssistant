@@ -283,6 +283,7 @@ static void handleWebModeToggle(uint32_t now) {
     isWebModeActive = false;
   } else if (result == WebModeStartResult::START_FAILED) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
+    disconnectWiFi();
   }
 }
 
@@ -661,6 +662,7 @@ void loop() {
         currentState = ApplicationState::Idle;
 
         isWebModeActive = false;
+        disconnectWiFi();
 
         displayRenderMessage("Error activating Web Mode.");
 
