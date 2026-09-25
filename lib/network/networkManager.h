@@ -1,12 +1,21 @@
 #ifndef NETWORK_MANAGER_H
 #define NETWORK_MANAGER_H
 
-static constexpr const char *BARDS_HOSTNAME = "bardsassistant";
+#include <cstdint>
+
+static constexpr const char* BARDS_HOSTNAME = "bardsassistant";
 
 /** Result of entering web mode: covers WiFi.begin() and MDNS.begin() outcomes.
  */
 enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 
+/** Result of polling the WebMode configuration process. */
+enum class WebModePollResult { IN_PROGRESS, SUCCESS, FAILED };
+
+/** Result of starting the WebMode configuration process. */
+enum class WebModeStartResult { STARTED, ALREADY_ACTIVE, START_FAILED };
+
+enum class MDNSResult { SUCCESS, MDNS_FAILED };
 
 /** Result of polling the Wi-Fi configuration process. */
 enum class WiFiConfigurationPollResult {
@@ -50,6 +59,13 @@ WebModeResult enterWebMode();
 WebModeResult enterWebModeAlreadyConnected();
 
 /**
+ * @brief Starts mDNS for the current Wi-Fi connection.
+ *
+ * @return MDNSResult::SUCCESS if mDNS starts, MDNS_FAILED if it does not.
+ */
+MDNSResult startMDNS();
+
+/**
  * @brief Stops mDNS and disconnects Wi-Fi, returning to offline mode.
  *
  * Callers must stop WebServerManager before calling this.
@@ -64,7 +80,6 @@ void exitWebMode();
  * @return true if Wi-Fi credentials are saved, false otherwise.
  */
 bool hasKnownNetwork();
-
 
 /**
  * @brief Starts the WiFiManager configuration portal in non-blocking mode.
@@ -90,6 +105,10 @@ WiFiConfigurationStartResult startWiFiConfiguration();
  *         CANCELLED when the portal closes without a submission.
  */
 WiFiConfigurationPollResult pollWiFiConfiguration();
+
+WebModeStartResult startWebModeConnection(uint32_t now);
+
+WebModePollResult pollWebModeConnection(uint32_t now);
 
 /**
  * @brief Disconnects Wi-Fi, powers down the radio, and clears saved settings.
