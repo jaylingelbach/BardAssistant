@@ -286,6 +286,9 @@ static void handleWebModeToggle(uint32_t now) {
   } else if (result == WebModeStartResult::START_FAILED) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
     disconnectWiFi();
+  } else if (result == WebModeStartResult::NO_CREDENTIALS) {
+    LOG_INFO("[handleWebModeToggle] No credentials saved, starting provisioning.");
+    startProvisioning();
   }
 }
 
