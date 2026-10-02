@@ -3,16 +3,22 @@
 #include <ESPmDNS.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
+#include <WiFiMulti.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include "WiFiType.h"
+#include "credentialStore.h"
 #include "log.h"
 
 // WiFi Manager
 WiFiManager wm;
 static constexpr uint32_t WEB_MODE_CONNECTION_TIMEOUT_MS = 5000;
 uint32_t connectionStartedAt = 0;
+
+// Multi WiFi
+static WiFiMulti wifiMulti;
 
 // MDNS
 bool isMdnsRunning = false;
@@ -35,11 +41,23 @@ void resetWiFiSettings() {
 WebModeStartResult startWebModeConnection(uint32_t now) {
   WiFi.mode(WIFI_STA);
 
-  // STARTED means Wi-Fi connection initiation succeeded and the connection is
-  // still being resolved. It does not mean Wi-Fi is connected.
-  wl_status_t status = WiFi.begin();
+  std::optional<size_t> credentialCount = getCredentialCount();
 
-  if (status == WL_CONNECT_FAILED) {
+  if (credentialCount == std::nullopt || credentialCount == 0) {
+    return WebModeStartResult::NO_CREDENTIALS;
+  }
+
+  for (size_t i = 0; i < *credentialCount; i++) {
+    std::optional<WiFiCredential> credential = getCredential(i);
+
+    if (credential == std::nullopt) {
+      return WebModeStartResult::START_FAILED;
+    }
+
+    wifiMulti.addAP(credential->ssid.c_str(), credential->password.c_str());
+  }
+
+  if (wifiMulti.run(WEB_MODE_CONNECTION_TIMEOUT_MS) == WL_CONNECT_FAILED) {
     return WebModeStartResult::START_FAILED;
   }
 

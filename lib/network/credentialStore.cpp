@@ -166,6 +166,25 @@ std::optional<WiFiCredential> getCredential(size_t index) {
   return credential;
 }
 
+std::optional<size_t> getCredentialCount() {
+  Preferences prefs;
+
+  if (!prefs.begin(NVS_NS_CREDS, true)) {
+    return std::nullopt;
+  }
+
+  uint8_t count = prefs.getUChar(NVS_KEY_COUNT, 0);
+
+  if (count > MAX_NETWORK_COUNT) {
+    prefs.end();
+    return std::nullopt;
+  }
+
+  prefs.end();
+
+  return count;
+}
+
 // Current implementation detects the failure, but doesn't roll back
 // earlier writes. That is for the first pass. A
 // future improvement could use a recovery marker or a temporary copy of the
@@ -331,23 +350,4 @@ CredentialStoreResult clearCredentials() {
   prefs.end();
 
   return CredentialStoreResult::SUCCESS;
-}
-
-std::optional<size_t> getCredentialCount() {
-  Preferences prefs;
-
-  if (!prefs.begin(NVS_NS_CREDS, true)) {
-    return std::nullopt;
-  }
-
-  uint8_t count = prefs.getUChar(NVS_KEY_COUNT, 0);
-
-  if (count > MAX_NETWORK_COUNT) {
-    prefs.end();
-    return std::nullopt;
-  }
-
-  prefs.end();
-
-  return count;
 }
