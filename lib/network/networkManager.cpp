@@ -144,6 +144,13 @@ WiFiConfigurationStartResult startWiFiConfiguration() {
 
     wm.setConfigPortalTimeoutCallback([]() { portalHasTimedOut = true; });
 
+    // saves to Credential store.
+    wm.setPreSaveConfigCallback([]() {
+      WiFiCredential credential{wm.getWiFiSSID().c_str(),
+                                wm.getWiFiPass().c_str()};
+      addCredential(credential);
+    });
+
     // Mark that credentials were submitted; if the portal closes without
     // process() succeeding, we know the connection attempt failed.
     wm.setSaveParamsCallback([]() { portalConnectionFailed = true; });
