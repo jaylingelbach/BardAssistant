@@ -9,6 +9,7 @@
 
 #include "HWCDC.h"
 #include "button.h"
+#include "credentialStore.h"
 #include "display.h"
 #include "driver/rtc_io.h"
 #include "insults.h"
@@ -287,7 +288,8 @@ static void handleWebModeToggle(uint32_t now) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
     disconnectWiFi();
   } else if (result == WebModeStartResult::NO_CREDENTIALS) {
-    LOG_INFO("[handleWebModeToggle] No credentials saved, starting provisioning.");
+    LOG_INFO(
+        "[handleWebModeToggle] No credentials saved, starting provisioning.");
     startProvisioning();
   }
 }
