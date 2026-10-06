@@ -17,9 +17,6 @@ WiFiManager wm;
 static constexpr uint32_t WEB_MODE_CONNECTION_TIMEOUT_MS = 5000;
 uint32_t connectionStartedAt = 0;
 
-// Multi WiFi
-static WiFiMulti wifiMulti;
-
 // MDNS
 bool isMdnsRunning = false;
 
@@ -39,6 +36,7 @@ void resetWiFiSettings() {
 }
 
 WebModeStartResult startWebModeConnection(uint32_t now) {
+  WiFiMulti wifiMulti;
   WiFi.mode(WIFI_STA);
 
   std::optional<size_t> credentialCount = getCredentialCount();
@@ -47,7 +45,8 @@ WebModeStartResult startWebModeConnection(uint32_t now) {
     return WebModeStartResult::NO_CREDENTIALS;
   }
 
-  LOG_INFOF("[webmode] Loading %d credential(s) into WiFiMulti.\n", *credentialCount);
+  LOG_INFOF("[webmode] Loading %d credential(s) into WiFiMulti.\n",
+            *credentialCount);
   for (size_t i = 0; i < *credentialCount; i++) {
     std::optional<WiFiCredential> credential = getCredential(i);
 
@@ -149,11 +148,13 @@ WiFiConfigurationStartResult startWiFiConfiguration() {
 
     // saves to Credential store.
     wm.setPreSaveConfigCallback([]() {
-      LOG_INFOF("[provisioning] Pre-save callback fired. SSID: %s\n", wm.getWiFiSSID().c_str());
+      LOG_INFOF("[provisioning] Pre-save callback fired. SSID: %s\n",
+                wm.getWiFiSSID().c_str());
       WiFiCredential credential{wm.getWiFiSSID().c_str(),
                                 wm.getWiFiPass().c_str()};
       CredentialStoreResult result = addCredential(credential);
-      LOG_INFOF("[provisioning] addCredential result: %d\n", static_cast<int>(result));
+      LOG_INFOF("[provisioning] addCredential result: %d\n",
+                static_cast<int>(result));
     });
 
     // Mark that credentials were submitted; if the portal closes without
