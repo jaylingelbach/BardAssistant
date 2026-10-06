@@ -11,9 +11,8 @@
 static bool writeVerifiedPassword(Preferences& prefs, const std::string& key,
                                   const std::string& password) {
   if (password.empty()) {
-    if (prefs.putString(key.c_str(), password.c_str()) == 0) {
-      return false;
-    }
+    // putString returns strlen(value), which is 0 for an empty string.
+    prefs.putString(key.c_str(), password.c_str());
 
     if (!prefs.isKey(key.c_str())) {
       return false;
