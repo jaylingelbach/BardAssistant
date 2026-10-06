@@ -273,8 +273,9 @@ static void startProvisioning() {
  * @brief Starts a Wi-Fi connection attempt for web mode.
  *
  * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
- * can finish the transition. On startup failure, disconnects Wi-Fi without
- * changing the application state or display.
+ * can finish the transition. On START_FAILED, disconnects Wi-Fi without
+ * changing the application state or display. On NO_CREDENTIALS (including an
+ * unreadable or invalid stored count), starts provisioning.
  *
  * @param now Current uptime in milliseconds, used to time the connection.
  */

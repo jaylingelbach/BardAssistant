@@ -701,9 +701,13 @@ static void renderInsultById(uint32_t id, PendingAction action,
  * @brief Restores the current insult and navigation history from NVS.
  *
  * Validates the persisted metadata and active history entries against the
- * currently loaded insult collection before updating the in-memory state.
+ * currently loaded insult collection before updating the current ID and history
+ * metadata. The history buffer may already be overwritten when validation
+ * fails.
  *
- * @param[out] outId Receives the restored current insult ID.
+ * @param[out] outId Receives the restored current insult ID on success;
+ * unchanged
+ * on failure.
  * @return `true` if valid state was restored, `false` otherwise.
  */
 static bool loadInsultsStateFromNvs(uint32_t& outId) {
