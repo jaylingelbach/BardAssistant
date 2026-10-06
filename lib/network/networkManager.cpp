@@ -3,10 +3,13 @@
 #include <ESPmDNS.h>
 #include <WiFi.h>
 #include <WiFiManager.h>
+#include <WiFiMulti.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include "WiFiType.h"
+#include "credentialStore.h"
 #include "log.h"
 
 // WiFi Manager
@@ -22,8 +25,8 @@ bool portalConnectionFailed = false;
 bool portalHasTimedOut = false;
 
 bool hasKnownNetwork() {
-  WiFi.mode(WIFI_STA);
-  return wm.getWiFiIsSaved();
+  std::optional<size_t> credentialCount = getCredentialCount();
+  return credentialCount.has_value() && *credentialCount > 0;
 }
 
 void resetWiFiSettings() {
@@ -33,13 +36,30 @@ void resetWiFiSettings() {
 }
 
 WebModeStartResult startWebModeConnection(uint32_t now) {
+  WiFiMulti wifiMulti;
   WiFi.mode(WIFI_STA);
 
-  // STARTED means Wi-Fi connection initiation succeeded and the connection is
-  // still being resolved. It does not mean Wi-Fi is connected.
-  wl_status_t status = WiFi.begin();
+  std::optional<size_t> credentialCount = getCredentialCount();
 
-  if (status == WL_CONNECT_FAILED) {
+  if (credentialCount == std::nullopt || credentialCount == 0) {
+    return WebModeStartResult::NO_CREDENTIALS;
+  }
+
+  LOG_INFOF("[webmode] Loading %d credential(s) into WiFiMulti.\n",
+            *credentialCount);
+  for (size_t i = 0; i < *credentialCount; i++) {
+    std::optional<WiFiCredential> credential = getCredential(i);
+
+    if (credential == std::nullopt) {
+      LOG_INFOF("[webmode] Failed to read credential at index %d.\n", i);
+      return WebModeStartResult::START_FAILED;
+    }
+
+    LOG_INFOF("[webmode] Adding AP: %s\n", credential->ssid.c_str());
+    wifiMulti.addAP(credential->ssid.c_str(), credential->password.c_str());
+  }
+
+  if (wifiMulti.run(WEB_MODE_CONNECTION_TIMEOUT_MS) == WL_CONNECT_FAILED) {
     return WebModeStartResult::START_FAILED;
   }
 
@@ -125,6 +145,17 @@ WiFiConfigurationStartResult startWiFiConfiguration() {
         1);  // Close portal after one failed attempt instead of re-opening
 
     wm.setConfigPortalTimeoutCallback([]() { portalHasTimedOut = true; });
+
+    // saves to Credential store.
+    wm.setPreSaveConfigCallback([]() {
+      LOG_INFOF("[provisioning] Pre-save callback fired. SSID: %s\n",
+                wm.getWiFiSSID().c_str());
+      WiFiCredential credential{wm.getWiFiSSID().c_str(),
+                                wm.getWiFiPass().c_str()};
+      CredentialStoreResult result = addCredential(credential);
+      LOG_INFOF("[provisioning] addCredential result: %d\n",
+                static_cast<int>(result));
+    });
 
     // Mark that credentials were submitted; if the portal closes without
     // process() succeeding, we know the connection attempt failed.

@@ -1,6 +1,4 @@
 #include "insults.h"
-#include "log.h"
-#include "persist_keys.h"
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
@@ -11,6 +9,9 @@
 #include <array>
 #include <string>
 #include <vector>
+
+#include "log.h"
+#include "persist_keys.h"
 
 // ============================================================================
 // INTERNAL TYPES
@@ -98,16 +99,16 @@ static uint32_t pendingInsultId = 0;
 static RTC_DATA_ATTR uint32_t history[HISTORY_CAP] = {0};
 
 static RTC_DATA_ATTR size_t historyHead =
-    0; // physical write index (next append), where the newest history entry is
-       // stored physically.
+    0;  // physical write index (next append), where the newest history entry is
+        // stored physically.
 
 static RTC_DATA_ATTR size_t historySize =
-    0; // number of valid entries (0..HISTORY_CAP), how many valid entries are
-       // in history
+    0;  // number of valid entries (0..HISTORY_CAP), how many valid entries are
+        // in history
 
 static RTC_DATA_ATTR size_t historyPosition =
-    0; // logical cursor (0=oldest .. size-1=newest), where you currently are
-       // when navigating Prev/Next
+    0;  // logical cursor (0=oldest .. size-1=newest), where you currently are
+        // when navigating Prev/Next
 
 static RTC_DATA_ATTR uint32_t currentInsultId = 0;
 
@@ -129,7 +130,7 @@ static RTC_DATA_ATTR uint32_t currentInsultId = 0;
  * @return std::vector<DeckEntry> Parsed entries, or an empty vector if the file
  * cannot be opened or parsed.
  */
-static std::vector<DeckEntry> readJsonFile(const char *path) {
+static std::vector<DeckEntry> readJsonFile(const char* path) {
   File file = LittleFS.open(path, "r");
 
   if (!file) {
@@ -152,8 +153,8 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
 
   for (JsonObject entry : arr) {
     uint32_t id = entry["id"];
-    const char *text = entry["text"];
-    const char *source = entry["source"];
+    const char* text = entry["text"];
+    const char* source = entry["source"];
 
     deckEntries.emplace_back(id, text, source);
   }
@@ -171,8 +172,7 @@ static std::vector<DeckEntry> readJsonFile(const char *path) {
  * @param deck Entries to serialize.
  * @return `true` if the file is saved successfully, `false` otherwise.
  */
-static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
-
+static bool saveJsonFile(const char* path, const std::vector<DeckEntry>& deck) {
   // Write to a temp file first so the primary file is never truncated before
   // we know serialization succeeded.
   String tmpPath = String(path) + ".tmp";
@@ -188,7 +188,7 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   JsonDocument doc;
   JsonArray arr = doc.to<JsonArray>();
 
-  for (const DeckEntry &card : deck) {
+  for (const DeckEntry& card : deck) {
     JsonObject obj = arr.add<JsonObject>();
     obj["id"] = card.id;
     obj["text"] = card.text;
@@ -206,7 +206,6 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
 
   // Keep the previous file as a backup before replacing it.
   if (LittleFS.exists(path)) {
-
     if (LittleFS.exists(bakPath.c_str())) {
       LittleFS.remove(bakPath.c_str());
     }
@@ -219,7 +218,6 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
   }
 
   if (!LittleFS.rename(tmpPath.c_str(), path)) {
-
     LOG_ERROR("[insults] Failed to rename temp file to primary.");
 
     // Attempt to restore the backup so the deck isn't lost.
@@ -254,11 +252,9 @@ static bool saveJsonFile(const char *path, const std::vector<DeckEntry> &deck) {
  * collection.
  */
 static uint32_t generateNextId() {
-
   uint32_t highestId = 0;
 
-  for (const DeckEntry &insult : insults) {
-
+  for (const DeckEntry& insult : insults) {
     if (insult.id > highestId) {
       highestId = insult.id;
     }
@@ -275,10 +271,9 @@ static uint32_t generateNextId() {
  * matches.
  */
 static std::vector<DeckEntry>::iterator findInsultById(uint32_t entryId) {
-
   auto it = std::find_if(
       insults.begin(), insults.end(),
-      [entryId](const DeckEntry &entry) { return entry.id == entryId; });
+      [entryId](const DeckEntry& entry) { return entry.id == entryId; });
 
   if (it != insults.end()) {
     return it;
@@ -301,7 +296,7 @@ static std::vector<DeckEntry>::iterator findInsultById(uint32_t entryId) {
  * @return const std::vector<DeckEntry>& Reference to the loaded insult
  * collection.
  */
-const std::vector<DeckEntry> &insultsGetAll() { return insults; }
+const std::vector<DeckEntry>& insultsGetAll() { return insults; }
 
 // ============================================================================
 // DECK MECHANICS
@@ -326,7 +321,6 @@ const std::vector<DeckEntry> &insultsGetAll() { return insults; }
  * pattern.
  */
 static void initDeck() {
-
   deck.resize(insults.size());
 
   if (insults.empty()) {
@@ -338,8 +332,7 @@ static void initDeck() {
   }
 
   for (size_t i = insults.size() - 1; i > 0; --i) {
-
-    const long r = random(0, static_cast<long>(i + 1)); // 0..i
+    const long r = random(0, static_cast<long>(i + 1));  // 0..i
 
     const uint32_t tmp = deck[i];
     deck[i] = deck[r];
@@ -357,7 +350,6 @@ static void initDeck() {
  * @return uint32_t The selected insult id, or 0 when no insults are loaded.
  */
 static uint32_t drawFromDeck() {
-
   if (insults.size() == 0) {
     return 0;
   }
@@ -403,7 +395,6 @@ static uint32_t drawFromDeck() {
  * @return size_t Remainder of index divided by mod, or zero when mod is zero.
  */
 static size_t wrapIndex(size_t index, size_t mod) {
-
   if (mod == 0) {
     return 0;
   }
@@ -418,7 +409,6 @@ static size_t wrapIndex(size_t index, size_t mod) {
  *   head - size (with wrap).
  */
 static size_t historyOldestPhysicalIndex() {
-
   if (HISTORY_CAP == 0) {
     return 0;
   }
@@ -433,8 +423,7 @@ static size_t historyOldestPhysicalIndex() {
  * @param outId Receives the stored insult ID.
  * @return true if found; false if history empty/out of range.
  */
-static bool historyGetAtLogical(size_t logicalPos, uint32_t &outId) {
-
+static bool historyGetAtLogical(size_t logicalPos, uint32_t& outId) {
   if (HISTORY_CAP == 0 || historySize == 0) {
     return false;
   }
@@ -461,7 +450,6 @@ static bool historyGetAtLogical(size_t logicalPos, uint32_t &outId) {
  * After appending, historyPosition is set to the newest entry.
  */
 static void appendToHistory(uint32_t id) {
-
   if (HISTORY_CAP == 0) {
     return;
   }
@@ -498,10 +486,8 @@ static bool removeFromHistory(uint32_t id) {
 
     // Get the ID at this logical history position.
     if (historyGetAtLogical(i, historyId)) {
-
       // Check whether this is the ID being deleted.
       if (historyId == id) {
-
         // Record where the deleted ID is located in logical history.
         deletedLogicalPosition = i;
         isHistoryIdFound = true;
@@ -527,7 +513,6 @@ static bool removeFromHistory(uint32_t id) {
 
     // Get the ID at this logical history position.
     if (historyGetAtLogical(i, historyId)) {
-
       // Skip all occurrences of the deleted ID.
       if (historyId == id) {
         continue;
@@ -554,7 +539,7 @@ static bool removeFromHistory(uint32_t id) {
   if (historySize == 0) {
     historyPosition = 0;
   } else {
-    historyPosition = historySize - 1; // default to newest
+    historyPosition = historySize - 1;  // default to newest
     for (size_t i = 0; i < historySize; ++i) {
       if (tempHistory[i] == currentInsultId) {
         historyPosition = i;
@@ -580,25 +565,45 @@ static bool removeFromHistory(uint32_t id) {
  * @brief Prints the Mackey ASCII-art logo to the serial monitor.
  */
 static void renderLogo() {
-
-  LOG_INFO(" /$$      /$$                     /$$                                   ");
-  LOG_INFO("| $$$    /$$$                    | $$                                   ");
-  LOG_INFO("| $$$$  /$$$$  /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   /$$$$$$  /$$   /$$");
-  LOG_INFO("| $$ $$/$$ $$ /$$__  $$ /$$_____/| $$  /$$/ /$$__  $$ /$$__  $$| $$  | $$");
-  LOG_INFO("| $$  $$$| $$| $$  \\ $$| $$      | $$$$$$/ | $$$$$$$$| $$  \\__/| $$  | $$");
-  LOG_INFO("| $$\\  $ | $$| $$  | $$| $$      | $$_  $$ | $$_____/| $$      | $$  | $$");
-  LOG_INFO("| $$ \\/  | $$|  $$$$$$/|  $$$$$$$| $$ \\  $$|  $$$$$$$| $$      |  $$$$$$$");
-  LOG_INFO("|__/     |__/ \\______/  \\_______/|__/  \\__/ \\_______/|__/       \\____  $$");
-  LOG_INFO("                                                                    /$$  | $$");
-  LOG_INFO("                                                                   |  $$$$$$/");
-  LOG_INFO("                                                                    \\______/ ");
+  LOG_INFO(
+      " /$$      /$$                     /$$                                  "
+      " ");
+  LOG_INFO(
+      "| $$$    /$$$                    | $$                                  "
+      " ");
+  LOG_INFO(
+      "| $$$$  /$$$$  /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$   /$$$$$$  /$$   "
+      "/$$");
+  LOG_INFO(
+      "| $$ $$/$$ $$ /$$__  $$ /$$_____/| $$  /$$/ /$$__  $$ /$$__  $$| $$  | "
+      "$$");
+  LOG_INFO(
+      "| $$  $$$| $$| $$  \\ $$| $$      | $$$$$$/ | $$$$$$$$| $$  \\__/| $$  "
+      "| $$");
+  LOG_INFO(
+      "| $$\\  $ | $$| $$  | $$| $$      | $$_  $$ | $$_____/| $$      | $$  | "
+      "$$");
+  LOG_INFO(
+      "| $$ \\/  | $$|  $$$$$$/|  $$$$$$$| $$ \\  $$|  $$$$$$$| $$      |  "
+      "$$$$$$$");
+  LOG_INFO(
+      "|__/     |__/ \\______/  \\_______/|__/  \\__/ \\_______/|__/       "
+      "\\____  $$");
+  LOG_INFO(
+      "                                                                    /$$ "
+      " | $$");
+  LOG_INFO(
+      "                                                                   |  "
+      "$$$$$$/");
+  LOG_INFO(
+      "                                                                    "
+      "\\______/ ");
 }
 
 /**
  * @brief Prints the boot title and logo to the serial monitor.
  */
 static void renderTitleScreen() {
-
   LOG_INFO("");
   LOG_INFO("Brown Bear Creative presents...");
   LOG_INFO("The Bard's Assistant");
@@ -618,7 +623,6 @@ static void renderTitleScreen() {
  */
 static void renderInsultById(uint32_t id, PendingAction action,
                              RenderReason reason) {
-
   if (insults.size() == 0) {
     LOG_WARN("[insults] No insults available.");
     return;
@@ -632,53 +636,51 @@ static void renderInsultById(uint32_t id, PendingAction action,
     return;
   }
 
-  const char *line = it->text.c_str();
+  const char* line = it->text.c_str();
 
   LOG_DEBUG("────────────────────────────");
 
   switch (reason) {
+    case RenderReason::Boot:
+      LOG_DEBUG("[Boot]");
+      break;
 
-  case RenderReason::Boot:
-    LOG_DEBUG("[Boot]");
-    break;
+    case RenderReason::Wake:
+      LOG_DEBUG("[Wake]");
+      break;
 
-  case RenderReason::Wake:
-    LOG_DEBUG("[Wake]");
-    break;
+    case RenderReason::OperationStart:
+      LOG_DEBUG("[Starting]");
+      break;
 
-  case RenderReason::OperationStart:
-    LOG_DEBUG("[Starting]");
-    break;
+    case RenderReason::OperationComplete:
+      LOG_DEBUG("[Done]");
+      break;
 
-  case RenderReason::OperationComplete:
-    LOG_DEBUG("[Done]");
-    break;
+    case RenderReason::UserTap:
+      LOG_DEBUG("[Tap]");
+      break;
 
-  case RenderReason::UserTap:
-    LOG_DEBUG("[Tap]");
-    break;
-
-  case RenderReason::Deleted:
-    LOG_DEBUG("[Deleted]");
-    break;
+    case RenderReason::Deleted:
+      LOG_DEBUG("[Deleted]");
+      break;
   }
 
   switch (action) {
+    case PendingAction::Random:
+      LOG_DEBUG("(Random)");
+      break;
 
-  case PendingAction::Random:
-    LOG_DEBUG("(Random)");
-    break;
+    case PendingAction::Next:
+      LOG_DEBUG("(Next)");
+      break;
 
-  case PendingAction::Next:
-    LOG_DEBUG("(Next)");
-    break;
+    case PendingAction::Prev:
+      LOG_DEBUG("(Previous)");
+      break;
 
-  case PendingAction::Prev:
-    LOG_DEBUG("(Previous)");
-    break;
-
-  case PendingAction::None:
-    break;
+    case PendingAction::None:
+      break;
   }
 
   LOG_DEBUG_RAW(line);
@@ -699,13 +701,16 @@ static void renderInsultById(uint32_t id, PendingAction action,
  * @brief Restores the current insult and navigation history from NVS.
  *
  * Validates the persisted metadata and active history entries against the
- * currently loaded insult collection before updating the in-memory state.
+ * currently loaded insult collection before updating the current ID and history
+ * metadata. The history buffer may already be overwritten when validation
+ * fails.
  *
- * @param[out] outId Receives the restored current insult ID.
+ * @param[out] outId Receives the restored current insult ID on success;
+ * unchanged
+ * on failure.
  * @return `true` if valid state was restored, `false` otherwise.
  */
-static bool loadInsultsStateFromNvs(uint32_t &outId) {
-
+static bool loadInsultsStateFromNvs(uint32_t& outId) {
   Preferences prefs;
 
   if (!prefs.begin(NVS_NS, true)) {
@@ -719,10 +724,11 @@ static bool loadInsultsStateFromNvs(uint32_t &outId) {
     return false;
   }
 
-  const uint32_t savedCur = prefs.getUInt("cur", 0);
-  const uint16_t savedHead = prefs.getUShort("hH", 0);
-  const uint16_t savedSize = prefs.getUShort("hS", 0);
-  const uint16_t savedPos = prefs.getUShort("hP", 0);
+  const uint32_t savedCur =
+      prefs.getUInt("cur", 0);  // which insult was showing
+  const uint16_t savedHead = prefs.getUShort("hH", 0);  // historyHead
+  const uint16_t savedSize = prefs.getUShort("hS", 0);  // historySize
+  const uint16_t savedPos = prefs.getUShort("hP", 0);   // // historyPosition
 
   const size_t expectedBytes = sizeof(history);
   const size_t gotBytes = prefs.getBytesLength("hist");
@@ -764,13 +770,11 @@ static bool loadInsultsStateFromNvs(uint32_t &outId) {
       wrapIndex(savedHead + HISTORY_CAP - savedSize, HISTORY_CAP);
 
   for (size_t i = 0; i < savedSize; i++) {
-
     const size_t physical = wrapIndex(oldest + i, HISTORY_CAP);
 
     auto it = findInsultById(history[physical]);
 
     if (it == insults.end()) {
-
       return false;
     }
   }
@@ -791,7 +795,6 @@ static bool loadInsultsStateFromNvs(uint32_t &outId) {
  * Called from main right before esp_deep_sleep_start().
  */
 void insultsPersistForSleep() {
-
   Preferences prefs;
 
   if (!prefs.begin(NVS_NS, false)) {
@@ -832,11 +835,9 @@ void insultsPersistForSleep() {
  * unsupported or its requested history entry cannot be selected.
  */
 static bool beginWorkFor(PendingAction action) {
-
   operationIsNewInsult = false;
 
   if (action == PendingAction::Random) {
-
     pendingInsultId = drawFromDeck();
     operationIsNewInsult = true;
     operationPhase = OperationPhase::Waiting;
@@ -845,7 +846,6 @@ static bool beginWorkFor(PendingAction action) {
   }
 
   if (action == PendingAction::Prev) {
-
     if (historySize == 0) {
       LOG_WARN("[insults] Prev: no history yet.");
       return false;
@@ -859,7 +859,6 @@ static bool beginWorkFor(PendingAction action) {
     historyPosition--;
 
     if (!historyGetAtLogical(historyPosition, pendingInsultId)) {
-
       LOG_ERROR("[insults] Prev: history read failed.");
       return false;
     }
@@ -870,9 +869,7 @@ static bool beginWorkFor(PendingAction action) {
   }
 
   if (action == PendingAction::Next) {
-
     if (historySize == 0) {
-
       // No history yet; treat Next like Random.
       pendingInsultId = drawFromDeck();
       operationIsNewInsult = true;
@@ -882,12 +879,10 @@ static bool beginWorkFor(PendingAction action) {
     }
 
     if (historyPosition < historySize - 1) {
-
       // Still within history; move forward.
       historyPosition++;
 
       if (!historyGetAtLogical(historyPosition, pendingInsultId)) {
-
         LOG_ERROR("[insults] Next: history read failed.");
         return false;
       }
@@ -931,13 +926,11 @@ static bool beginWorkFor(PendingAction action) {
  * @return true if an insult is rendered during initialization, false otherwise.
  */
 bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
-
   insults = readJsonFile("/insults.json");
 
   initDeck();
 
   if (!wokeFromSleep) {
-
     // Cold boot: reset history and show the splash/title.
     historyHead = 0;
     historySize = 0;
@@ -946,7 +939,6 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
     renderTitleScreen();
 
     if (printInsultOnBoot && insults.size() > 0) {
-
       currentInsultId = drawFromDeck();
 
       appendToHistory(currentInsultId);
@@ -964,10 +956,9 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
   uint32_t unusedRestoredId = 0;
 
   if (loadInsultsStateFromNvs(unusedRestoredId)) {
-
     LOG_INFO("[insults] Wake: restored insult state.");
 
-    return false; // nothing rendered
+    return false;  // nothing rendered
   }
 
   // Fallback: no saved state; draw one and seed history so Next/Prev behave.
@@ -1009,14 +1000,12 @@ bool insultsInit(bool printInsultOnBoot, bool wokeFromSleep) {
  * unsupported or its requested history entry cannot be selected.
  */
 bool insultsStartOperation(PendingAction action, uint32_t now) {
-
   pendingAction = action;
   operationPhase = OperationPhase::Idle;
   operationIsNewInsult = false;
   operationStartedAt = now;
 
   if (!beginWorkFor(action)) {
-
     pendingAction = PendingAction::None;
     operationPhase = OperationPhase::Idle;
     operationIsNewInsult = false;
@@ -1039,7 +1028,6 @@ bool insultsStartOperation(PendingAction action, uint32_t now) {
  * @return true if an operation completed during this call, false otherwise.
  */
 bool insultsPoll(uint32_t now) {
-
   if (operationPhase != OperationPhase::Waiting) {
     return false;
   }
@@ -1073,15 +1061,12 @@ bool insultsPoll(uint32_t now) {
   // - Prev does not append (cursor moved within beginWork)
   // - Fallback (deleted-while-in-flight) always appends regardless of action
   if (usedFallback) {
-
     appendToHistory(currentInsultId);
 
   } else if (completedAction == PendingAction::Random) {
-
     appendToHistory(currentInsultId);
 
   } else if (completedAction == PendingAction::Next) {
-
     if (operationIsNewInsult) {
       appendToHistory(currentInsultId);
     }
@@ -1124,15 +1109,12 @@ uint32_t insultsGetCurrentId() { return currentInsultId; }
  * @return const char* The current insult text, or a status message when no
  * valid insult is selected.
  */
-const char *insultsGetCurrentText() {
-
-  if (insults.size() == 0)
-    return "No insults";
+const char* insultsGetCurrentText() {
+  if (insults.size() == 0) return "No insults";
 
   auto it = findInsultById(currentInsultId);
 
   if (it == insults.end()) {
-
     return "Invalid insult";
   }
 
@@ -1151,7 +1133,6 @@ const char *insultsGetCurrentText() {
  * and containing the created entry.
  */
 DeckEntryResult createInsult(std::string text) {
-
   // 1. Generate ID
   uint32_t id = generateNextId();
 
@@ -1162,7 +1143,6 @@ DeckEntryResult createInsult(std::string text) {
   insults.emplace_back(newEntry);
 
   if (saveJsonFile("/insults.json", insults)) {
-
     initDeck();
 
     // If this is the first insult, set it as current so the display has
@@ -1178,7 +1158,6 @@ DeckEntryResult createInsult(std::string text) {
     return {true, newEntry};
 
   } else {
-
     // Save failed.
     LOG_ERROR("[insults] createInsult: save failed.");
 
@@ -1199,7 +1178,6 @@ DeckEntryResult createInsult(std::string text) {
  * whose reason distinguishes a missing entry from a persistence failure.
  */
 DeckEntryResult editInsult(uint32_t entryId, std::string text) {
-
   // Find existing entry.
   auto it = findInsultById(entryId);
 
@@ -1213,14 +1191,12 @@ DeckEntryResult editInsult(uint32_t entryId, std::string text) {
   it->text = text;
 
   if (saveJsonFile("/insults.json", insults)) {
-
     // Saved successfully.
     LOG_INFO("[insults] editInsult: saved successfully.");
 
     return {true, *it};
 
   } else {
-
     // Save failed.
     LOG_ERROR("[insults] editInsult: save failed.");
 

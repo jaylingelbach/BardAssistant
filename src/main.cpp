@@ -9,6 +9,7 @@
 
 #include "HWCDC.h"
 #include "button.h"
+#include "credentialStore.h"
 #include "display.h"
 #include "driver/rtc_io.h"
 #include "insults.h"
@@ -272,8 +273,9 @@ static void startProvisioning() {
  * @brief Starts a Wi-Fi connection attempt for web mode.
  *
  * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
- * can finish the transition. On startup failure, disconnects Wi-Fi without
- * changing the application state or display.
+ * can finish the transition. On START_FAILED, disconnects Wi-Fi without
+ * changing the application state or display. On NO_CREDENTIALS (including an
+ * unreadable or invalid stored count), starts provisioning.
  *
  * @param now Current uptime in milliseconds, used to time the connection.
  */
@@ -286,6 +288,10 @@ static void handleWebModeToggle(uint32_t now) {
   } else if (result == WebModeStartResult::START_FAILED) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
     disconnectWiFi();
+  } else if (result == WebModeStartResult::NO_CREDENTIALS) {
+    LOG_INFO(
+        "[handleWebModeToggle] No credentials saved, starting provisioning.");
+    startProvisioning();
   }
 }
 

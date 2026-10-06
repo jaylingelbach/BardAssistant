@@ -13,7 +13,7 @@ enum class WebModeResult { SUCCESS, CONNECTION_FAILED, MDNS_FAILED };
 enum class WebModePollResult { IN_PROGRESS, SUCCESS, FAILED };
 
 /** Result of starting the WebMode configuration process. */
-enum class WebModeStartResult { STARTED, START_FAILED };
+enum class WebModeStartResult { STARTED, START_FAILED, NO_CREDENTIALS };
 
 enum class MDNSResult { SUCCESS, MDNS_FAILED };
 
@@ -77,7 +77,9 @@ void exitWebMode();
 /**
  * @brief Determines whether at least one known Wi-Fi network is configured.
  *
- * @return true if Wi-Fi credentials are saved, false otherwise.
+ * @return true if the credential store reports a nonzero valid count, false
+ * if it is empty, cannot be opened, or has an invalid count. Individual
+ * credentials are not checked.
  */
 bool hasKnownNetwork();
 
@@ -86,6 +88,9 @@ bool hasKnownNetwork();
  *
  * The configuration process continues to be serviced by
  * pollWiFiConfiguration() while the main application loop continues running.
+ * Submitted credentials are offered to the credential store before the
+ * connection outcome is known; storage failures do not abort provisioning or
+ * change its reported result. The portal timeout is 180 seconds.
  *
  * @return WiFiConfigurationStartResult::STARTED if configuration started,
  *         ALREADY_ACTIVE if configuration is already running, or
@@ -107,14 +112,17 @@ WiFiConfigurationStartResult startWiFiConfiguration();
 WiFiConfigurationPollResult pollWiFiConfiguration();
 
 /**
- * @brief Starts connecting to Wi-Fi with saved credentials without waiting.
+ * @brief Attempts a Wi-Fi connection using the credential store's networks.
  *
- * Enables station mode. Call pollWebModeConnection() after STARTED to check
- * the outcome; STARTED does not guarantee a connection. Each STARTED result
- * resets the connection timeout. Does not start mDNS or the web server.
+ * Enables station mode and runs WiFiMulti with a 5,000-millisecond connection
+ * timeout. Call pollWebModeConnection() after STARTED to check the outcome;
+ * STARTED does not guarantee a connection. Each STARTED result resets the
+ * polling timeout to now. Does not start mDNS or the web server.
  *
  * @param now Current uptime in milliseconds, used as the timeout's start time.
- * @return WebModeStartResult::START_FAILED if WiFi.begin() reports
+ * @return WebModeStartResult::NO_CREDENTIALS if the count is unavailable or
+ * zero,
+ * START_FAILED if a credential cannot be read or WiFiMulti reports
  * WL_CONNECT_FAILED, or STARTED otherwise. Failure does not disconnect Wi-Fi.
  */
 WebModeStartResult startWebModeConnection(uint32_t now);
