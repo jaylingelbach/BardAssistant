@@ -8,6 +8,13 @@
 
 #include "persist_keys.h"
 
+/**
+ * @brief Writes a password to an already open, writable Preferences namespace.
+ *
+ * @return true if a nonempty password is written and read back unchanged, or if
+ * an empty password is attempted and the key exists afterward; false otherwise.
+ * An existing key can therefore mask a failed empty-password write.
+ */
 static bool writeVerifiedPassword(Preferences& prefs, const std::string& key,
                                   const std::string& password) {
   if (password.empty()) {
