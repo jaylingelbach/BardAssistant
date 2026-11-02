@@ -414,10 +414,14 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
         } else {
           displayRenderEmptyState();
         }
+        return;
+      }
+      if (currentState == ApplicationState::Menu) {
+        // fall through to Menu handler below
       } else {
         restoreLedForState();
+        return;
       }
-      return;
     }
   }
 
