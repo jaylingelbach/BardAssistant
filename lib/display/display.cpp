@@ -663,15 +663,16 @@ bool displayRenderInsult(const char *text) {
 /**
  * @brief Renders a menu list on the e-ink display.
  *
- * Draws each item label on its own row. The selected item is highlighted with
- * an inverted black background and white text; all others are black text on
- * white.
+ * Draws each non-null item label on its own row. The selected item is
+ * highlighted with an inverted black background and white text; all others
+ * are black text on white. An out-of-range selection highlights no row.
  *
  * @param items   Array of menu items to render.
  * @param count   Number of items in the array.
  * @param selectedIndex Index of the currently highlighted item.
  * @return `true` if the display is ready and the render completes,
- *         `false` if the display is unavailable or items is null.
+ *         `false` if the display is unavailable, items is null, or count is
+ *         zero.
  */
 bool displayRenderMenu(const MenuItem *items, uint8_t count,
                        uint8_t selectedIndex) {
