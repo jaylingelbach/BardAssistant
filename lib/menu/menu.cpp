@@ -19,6 +19,9 @@ MenuInitResult menuInit(const MenuItem* items, uint8_t count) {
   currentItems = items;
   currentCount = count;
   selectedIndex = 0;
+  parentCurrentItems = nullptr;
+  parentCurrentCount = 0;
+  parentSelectedIndex = 0;
 
   return MenuInitResult::SUCCESS;
 }
