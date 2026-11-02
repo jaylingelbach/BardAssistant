@@ -280,10 +280,11 @@ static void startProvisioning() {
 /**
  * @brief Starts a Wi-Fi connection attempt for web mode.
  *
- * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
- * can finish the transition. On START_FAILED, disconnects Wi-Fi without
- * changing the application state or display. On NO_CREDENTIALS (including an
- * unreadable or invalid stored count), starts provisioning.
+ * On STARTED, enters WebModeConnecting, marks web mode inactive, and displays
+ * "Connecting..." while loop() finishes the transition. On START_FAILED,
+ * disconnects Wi-Fi without changing the application state or display. On
+ * NO_CREDENTIALS (including an unreadable or invalid stored count), starts
+ * provisioning.
  *
  * @param now Current uptime in milliseconds, used to time the connection.
  */
@@ -321,6 +322,9 @@ static void handleExitWebMode() {
   }
 }
 
+/**
+ * @brief Exits the menu and displays the current insult or the empty state.
+ */
 static void selectInsultsDeck() {
   // Only one deck, eventually would need a selectInsultsDeck function that
   // switches the active deck and exits the menu.
@@ -344,8 +348,10 @@ static void selectInsultsDeck() {
 static const MenuItem deckMenuItems[] = {
     {"Insults", selectInsultsDeck, nullptr, 0}};
 
+/** @brief Starts a web mode connection attempt using the current uptime. */
 static void toggleWebMode() { handleWebModeToggle(millis()); }
 
+/** @brief Placeholder for the Settings menu action; currently does nothing. */
 static void openSettings() {
   // laceholder, does nothing for now
 }
@@ -368,14 +374,18 @@ static const MenuItem rootMenuItems[] = {
  * - HoldEnd triggers deep sleep if sleep was armed ("hold → release to
  * sleep").
  * - Tap cancels any pending arming; in provisioning confirmation it also
- *   returns to idle and restores the insult or empty-state screen.
+ *   returns to idle and restores the insult or empty-state screen. In the
+ *   menu it goes back, or exits to idle if no parent is available.
  *
  * Random/Next/Prev behavior:
  * - In provisioning confirmation, a Next tap starts provisioning; other
  *   non-Sleep events are ignored.
- * - Otherwise, only processed while in Idle and outside web mode.
- * - Tap attempts the corresponding insult operation and transitions to
- * Updating when an operation starts.
+ * - In the menu, Next and Prev taps move the selection and Random selects it.
+ * - In Idle outside web mode, taps attempt the corresponding insult operation
+ *   and transition to Updating when it starts. Holding and releasing Random
+ *   opens the menu.
+ *
+ * @param now Current uptime in milliseconds, used to time insult operations.
  */
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
