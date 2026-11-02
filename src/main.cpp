@@ -442,15 +442,17 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
       // handle four buttons
       // Next → menuNext(), re-render
       if (buttonId == ButtonId::Next) {
-        menuNext();
-        displayRenderMenu(menuGetItems(), menuGetCount(),
-                          menuGetSelectedIndex());
+        if (menuNext()) {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
       }
       // Prev → menuPrev(), re-render
       if (buttonId == ButtonId::Prev) {
-        menuPrev();
-        displayRenderMenu(menuGetItems(), menuGetCount(),
-                          menuGetSelectedIndex());
+        if (menuPrev()) {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
       }
       // Random → menuSelect()
       if (buttonId == ButtonId::Random) {
