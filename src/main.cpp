@@ -56,6 +56,11 @@ static DisplayConfig displayConfig{};
 // Web Server
 static WebServerManager webServerManager;
 
+// Sleep after inactivity
+static uint32_t inactivityTimeoutMs = 45 * 60 * 1000;  // 45 minutes
+
+static uint32_t lastActivityAt = 0;
+
 // ───────────────── App State ─────────────────────
 
 enum class ApplicationState {
@@ -393,6 +398,8 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     return;
   }
 
+  lastActivityAt = now;
+
   // Ignore all button intent events for a short window after boot/wake.
   // Wraparound-safe check.
   if (static_cast<int32_t>(now - ignoreInputUntil) < 0) {
@@ -638,6 +645,14 @@ void setup() {
       prefs.end();
     }
   }
+  {
+    Preferences prefs;
+    if (prefs.begin(NVS_NS)) {
+      uint32_t sleep_ms = prefs.getUInt("sleep_after_ms", inactivityTimeoutMs);
+      inactivityTimeoutMs = sleep_ms;
+    }
+    prefs.end();
+  }
 
   LOG_INFO("");
   LOG_INFO("Booting Bard's Assistant...");
@@ -647,6 +662,8 @@ void setup() {
 
   // Ignore intent events briefly after boot/wake.
   ignoreInputUntil = millis() + 200;
+
+  lastActivityAt = ignoreInputUntil;
 
   ledInit();
 
@@ -712,6 +729,14 @@ void loop() {
 
   // enable/disable webMode
   handleButtonGestures(now);
+
+  // Inactivity sleep
+  if ((currentState == ApplicationState::Idle ||
+       currentState == ApplicationState::Menu) &&
+      !isWebModeActive && now - lastActivityAt >= inactivityTimeoutMs) {
+    LOG_DEBUG("SLEEP MODE DUE TO INACTIVITY");
+    enterSleep();
+  }
 
   // High-level app state machine
   switch (currentState) {
