@@ -5,6 +5,7 @@
 #include <WiFi.h>
 #include <esp_sleep.h>
 
+#include <cstddef>
 #include <cstdint>
 
 #include "HWCDC.h"
@@ -12,9 +13,11 @@
 #include "credentialStore.h"
 #include "display.h"
 #include "driver/rtc_io.h"
+#include "esp32-hal.h"
 #include "insults.h"
 #include "led.h"
 #include "log.h"
+#include "menu.h"
 #include "networkManager.h"
 #include "persist_keys.h"
 #include "provisioning.h"
@@ -58,12 +61,14 @@ static WebServerManager webServerManager;
 enum class ApplicationState {
   Boot,
   Idle,
-  Updating,
+  Menu,
   Provisioning,
   ProvisioningConfirmation,
+  Updating,
   WebModeConnecting
 };
 enum class ButtonId { Sleep, Random, Next, Prev };
+
 // Idle means not provisioning. Waiting means provisioning has started and
 // we are waiting for a result.
 enum class ProvisioningState { Idle, Waiting, Success, Failed };
@@ -76,6 +81,9 @@ static uint32_t stateEnteredAt = 0;
 
 // Sleep gesture
 static bool sleepArmed = false;
+
+// menu
+static bool menuArmed = false;
 
 // Ignore early input right after boot/wake (prevents accidental actions)
 static uint32_t ignoreInputUntil = 0;
@@ -272,10 +280,11 @@ static void startProvisioning() {
 /**
  * @brief Starts a Wi-Fi connection attempt for web mode.
  *
- * On STARTED, enters WebModeConnecting and marks web mode inactive so loop()
- * can finish the transition. On START_FAILED, disconnects Wi-Fi without
- * changing the application state or display. On NO_CREDENTIALS (including an
- * unreadable or invalid stored count), starts provisioning.
+ * On STARTED, enters WebModeConnecting, marks web mode inactive, and displays
+ * "Connecting..." while loop() finishes the transition. On START_FAILED,
+ * disconnects Wi-Fi without changing the application state or display. On
+ * NO_CREDENTIALS (including an unreadable or invalid stored count), starts
+ * provisioning.
  *
  * @param now Current uptime in milliseconds, used to time the connection.
  */
@@ -285,6 +294,7 @@ static void handleWebModeToggle(uint32_t now) {
   if (result == WebModeStartResult::STARTED) {
     currentState = ApplicationState::WebModeConnecting;
     isWebModeActive = false;
+    displayRenderMessage("Connecting...");
   } else if (result == WebModeStartResult::START_FAILED) {
     LOG_ERROR("[handleWebModeToggle] Web Mode start failed.");
     disconnectWiFi();
@@ -313,7 +323,47 @@ static void handleExitWebMode() {
 }
 
 /**
- * @brief Handle a debounced button intent event and apply app-level behavior.
+ * @brief Exits the menu and displays the current insult or the empty state.
+ */
+static void selectInsultsDeck() {
+  // Only one deck, eventually would need a selectInsultsDeck function that
+  // switches the active deck and exits the menu.
+  //  What would "switching the active deck" mean in practice right now, when
+  //  there's only one deck?
+  // Probably just closing the menu and making sure insults is showing on the
+  // display.
+  // Will need a concept of "which deck is currently active."
+
+  // And the deck items array has one entry: {"Insults", selectInsultsDeck}.
+
+  currentState = ApplicationState::Idle;
+  // Restore the display to the current insult
+  if (insultsHasAny()) {
+    displayRenderInsult(insultsGetCurrentText());
+  } else {
+    displayRenderEmptyState();
+  }
+}
+
+static const MenuItem deckMenuItems[] = {
+    {"Insults", selectInsultsDeck, nullptr, 0}};
+
+/** @brief Starts a web mode connection attempt using the current uptime. */
+static void toggleWebMode() { handleWebModeToggle(millis()); }
+
+/** @brief Placeholder for the Settings menu action; currently does nothing. */
+static void openSettings() {
+  // laceholder, does nothing for now
+}
+
+static const MenuItem rootMenuItems[] = {
+    {"Decks", nullptr, deckMenuItems, 1},
+    {"Web Mode", toggleWebMode, nullptr, 0},
+    {"Settings", openSettings, nullptr, 0}};
+
+/**
+ * @brief Handle a debounced button intent event and apply app-level
+ * behavior.
  *
  * Input gating:
  * - Events are ignored during a short post-boot/post-wake window to prevent
@@ -321,16 +371,21 @@ static void handleExitWebMode() {
  *
  * Sleep button behavior (allowed in any state):
  * - HoldStart arms sleep.
- * - HoldEnd triggers deep sleep if sleep was armed ("hold → release to sleep").
+ * - HoldEnd triggers deep sleep if sleep was armed ("hold → release to
+ * sleep").
  * - Tap cancels any pending arming; in provisioning confirmation it also
- *   returns to idle and restores the insult or empty-state screen.
+ *   returns to idle and restores the insult or empty-state screen. In the
+ *   menu it goes back, or exits to idle if no parent is available.
  *
  * Random/Next/Prev behavior:
  * - In provisioning confirmation, a Next tap starts provisioning; other
  *   non-Sleep events are ignored.
- * - Otherwise, only processed while in Idle and outside web mode.
- * - Tap attempts the corresponding insult operation and transitions to Updating
- *   when an operation starts.
+ * - In the menu, Next and Prev taps move the selection and Random selects it.
+ * - In Idle outside web mode, taps attempt the corresponding insult operation
+ *   and transition to Updating when it starts. Holding and releasing Random
+ *   opens the menu.
+ *
+ * @param now Current uptime in milliseconds, used to time insult operations.
  */
 static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
                               uint32_t now) {
@@ -370,10 +425,14 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
         } else {
           displayRenderEmptyState();
         }
+        return;
+      }
+      if (currentState == ApplicationState::Menu) {
+        // fall through to Menu handler below
       } else {
         restoreLedForState();
+        return;
       }
-      return;
     }
   }
 
@@ -385,6 +444,50 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
     if (buttonId == ButtonId::Next) {
       startProvisioning();
       return;
+    }
+    return;
+  }
+
+  if (currentState == ApplicationState::Menu) {
+    if (event == ButtonEvent::Tap) {
+      // handle four buttons
+      // Next → menuNext(), re-render
+      if (buttonId == ButtonId::Next) {
+        if (menuNext()) {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
+      }
+      // Prev → menuPrev(), re-render
+      if (buttonId == ButtonId::Prev) {
+        if (menuPrev()) {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
+      }
+      // Random → menuSelect()
+      if (buttonId == ButtonId::Random) {
+        menuSelect();
+        if (currentState == ApplicationState::Menu) {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
+      }
+      // Sleep tap → menuBack(), if it returns false you're at root so exit menu
+      if (buttonId == ButtonId::Sleep) {
+        bool res = menuBack();
+        if (res == false) {
+          currentState = ApplicationState::Idle;
+          if (insultsHasAny()) {
+            displayRenderInsult(insultsGetCurrentText());
+          } else {
+            displayRenderEmptyState();
+          }
+        } else {
+          displayRenderMenu(menuGetItems(), menuGetCount(),
+                            menuGetSelectedIndex());
+        }
+      }
     }
     return;
   }
@@ -423,6 +526,24 @@ static void handleButtonEvent(ButtonId buttonId, ButtonEvent event,
 
       default:
         break;
+    }
+  } else if (event == ButtonEvent::HoldStart) {
+    if (buttonId == ButtonId::Random) {
+      menuArmed = true;
+      LOG_DEBUG("[Random] HoldStart");
+      return;
+    }
+  } else if (event == ButtonEvent::HoldEnd) {
+    if (buttonId == ButtonId::Random && menuArmed) {
+      menuArmed = false;
+      LOG_DEBUG("[Random] HoldEnd — open menu");
+
+      menuInit(rootMenuItems, sizeof(rootMenuItems) / sizeof(rootMenuItems[0]));
+
+      currentState = ApplicationState::Menu;
+
+      displayRenderMenu(menuGetItems(), menuGetCount(), menuGetSelectedIndex());
+      return;
     }
   }
 }
@@ -571,9 +692,9 @@ void setup() {
  * starts web mode after successful configuration, and services web requests
  * whenever web mode is active.
  *
- * Polls pending web mode connections and starts the server on success, showing
- * the hostname or the IP address if mDNS fails. A failed connection disconnects
- * Wi-Fi and displays an error. Either outcome returns to idle.
+ * Polls pending web mode connections and starts the server on success,
+ * showing the hostname or the IP address if mDNS fails. A failed connection
+ * disconnects Wi-Fi and displays an error. Either outcome returns to idle.
  */
 void loop() {
   const uint32_t now = millis();
@@ -668,7 +789,8 @@ void loop() {
           isWebModeActive = true;
           webServerManager.start();
           displayRenderMessage(
-              "Web Mode Activated. Visit BardsAssistant.local in the browser.");
+              "Web Mode Activated. Visit BardsAssistant.local in the "
+              "browser.");
         }
 
       } else if (result == WebModePollResult::FAILED) {
@@ -682,6 +804,9 @@ void loop() {
       } else if (result == WebModePollResult::IN_PROGRESS) {
         // Nothing to do; keep polling next loop.
       }
+      break;
+    }
+    case ApplicationState::Menu: {
       break;
     }
   }

@@ -1,5 +1,6 @@
 #include "display.h"
 #include "log.h"
+#include "menu.h"
 #include <Arduino.h>
 #include <GxEPD2_BW.h>
 #include <SPI.h>
@@ -654,6 +655,62 @@ bool displayRenderInsult(const char *text) {
     // Body
     drawWrappedText(text, margin, bodyTop, bodyWidth, bodyHeight, bodySize);
 
+  } while (displayDriver->nextPage());
+
+  return true;
+}
+
+/**
+ * @brief Renders a menu list on the e-ink display.
+ *
+ * Draws each non-null item label on its own row. The selected item is
+ * highlighted with an inverted black background and white text; all others
+ * are black text on white. An out-of-range selection highlights no row.
+ *
+ * @param items   Array of menu items to render.
+ * @param count   Number of items in the array.
+ * @param selectedIndex Index of the currently highlighted item.
+ * @return `true` if the display is ready and the render completes,
+ *         `false` if the display is unavailable, items is null, or count is
+ *         zero.
+ */
+bool displayRenderMenu(const MenuItem *items, uint8_t count,
+                       uint8_t selectedIndex) {
+  if (!displayReady || displayDriver == nullptr)
+    return false;
+  if (items == nullptr || count == 0)
+    return false;
+
+  const int16_t screenW = static_cast<int16_t>(displayDriver->width());
+
+  const int16_t margin = 4;
+  const uint8_t textSize = 2;
+  const int16_t lineHeight = static_cast<int16_t>(8 * textSize + 4);
+  const int16_t rowPad = 2;
+
+  displayDriver->setFullWindow();
+  displayDriver->firstPage();
+  do {
+    displayDriver->fillScreen(GxEPD_WHITE);
+    displayDriver->setTextSize(textSize);
+
+    for (uint8_t i = 0; i < count; i++) {
+      if (items[i].label == nullptr)
+        continue;
+
+      const int16_t rowTop = static_cast<int16_t>(margin + i * lineHeight);
+
+      if (i == selectedIndex) {
+        displayDriver->fillRect(0, rowTop, screenW,
+                                static_cast<int16_t>(lineHeight), GxEPD_BLACK);
+        displayDriver->setTextColor(GxEPD_WHITE);
+      } else {
+        displayDriver->setTextColor(GxEPD_BLACK);
+      }
+
+      displayDriver->setCursor(margin, static_cast<int16_t>(rowTop + rowPad));
+      displayDriver->print(items[i].label);
+    }
   } while (displayDriver->nextPage());
 
   return true;

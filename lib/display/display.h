@@ -26,6 +26,8 @@ struct DisplayConfig {
   DisplayMode modeDefault = DisplayMode::FullRefresh;
   bool pulldownRstMode = true; // B74 requires pulldown RST sequence
 };
+struct MenuItem;
+
 // ─── API ────────────────────────────────────────────────────────
 bool displayValidateConfig(const DisplayConfig &config);
 bool displayInit(const DisplayConfig &config);
@@ -34,6 +36,8 @@ bool displayRenderBlankScreen();
 bool displayRenderEmptyState();
 bool displayRenderMessage(const char *msg);
 bool displayRenderInsult(const char *text);
+bool displayRenderMenu(const MenuItem *items, uint8_t count,
+                       uint8_t selectedIndex);
 bool displaySleep(DisplaySleepMode mode);
 
 // ─── Helpers ────────────────────────────────────────────────────
